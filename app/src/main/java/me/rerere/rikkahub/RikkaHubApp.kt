@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import me.rerere.rikkahub.data.ai.MemoryConsolidationScheduler
 import me.rerere.rikkahub.data.files.FileFolders
+import me.rerere.rikkahub.data.files.LocalFileUrlRepair
 import me.rerere.rikkahub.data.skills.SkillManager
 import java.io.File
 import kotlinx.coroutines.SupervisorJob
@@ -62,8 +63,9 @@ class RikkaHubApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Restore files and settings before eager Koin singletons or workers can access them.
+        var restored = false
         try {
-            val restored = runBlocking(Dispatchers.IO) {
+            restored = runBlocking(Dispatchers.IO) {
                 BackupManager.applyPendingRestore(this@RikkaHubApp, JsonInstant)
             }
             if (restored) {
@@ -101,6 +103,9 @@ class RikkaHubApp : Application() {
 
         // sync upload files to DB
         syncManagedFiles()
+
+        // repair attachment URLs after restoring a backup into a different applicationId
+        repairLocalFileUrls(force = restored)
 
         // Extract builtin skills from assets after install/update
         extractBuiltinSkills()
@@ -207,6 +212,16 @@ class RikkaHubApp : Application() {
                 get<FilesManager>().syncFolder()
             }.onFailure {
                 Log.e(TAG, "syncManagedFiles failed", it)
+            }
+        }
+    }
+
+    private fun repairLocalFileUrls(force: Boolean) {
+        get<AppScope>().launch(Dispatchers.IO) {
+            runCatching {
+                get<LocalFileUrlRepair>().repair(force = force)
+            }.onFailure {
+                Log.e(TAG, "repairLocalFileUrls failed", it)
             }
         }
     }

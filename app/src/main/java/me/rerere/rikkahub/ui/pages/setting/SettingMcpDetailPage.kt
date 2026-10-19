@@ -95,6 +95,7 @@ import me.rerere.ui.toast.ToastType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.uuid.Uuid
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class McpDetailTab(
     override val icon: ImageVector,
@@ -179,13 +180,15 @@ fun SettingMcpDetailPage(id: Uuid, vm: SettingVM = koinViewModel()) {
                 navigationIcon = {
                     BackButton()
                 },
-                colors = CustomColors.topBarColors,
+                colors = CustomColors.transparentTopBarColors,
                 title = {
-                    Text(
-                        text = config.commonOptions.name.ifBlank { "MCP" },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    SettingsTopBarTitle {
+                        Text(
+                            text = config.commonOptions.name.ifBlank { "MCP" },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 },
             )
         },

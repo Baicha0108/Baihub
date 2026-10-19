@@ -8,6 +8,8 @@ import me.rerere.rikkahub.AppScope
 import me.rerere.rikkahub.data.ai.ChatRequestFactory
 import me.rerere.rikkahub.data.ai.tools.local.LocalTools
 import me.rerere.rikkahub.data.ai.tools.ChatToolFactory
+import me.rerere.rikkahub.data.files.LocalFileUrlRepair
+import me.rerere.rikkahub.data.repository.SystemPromptV2Repository
 import me.rerere.rikkahub.data.event.AppEventBus
 import me.rerere.rikkahub.service.ChatNotificationManager
 import me.rerere.rikkahub.service.ChatService
@@ -20,6 +22,7 @@ import me.rerere.rikkahub.utils.SoundEffectPlayer
 import me.rerere.rikkahub.utils.UpdateChecker
 import me.rerere.rikkahub.web.WebServerManager
 import me.rerere.tts.provider.TTSManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val appModule = module {
@@ -27,6 +30,14 @@ val appModule = module {
 
     single {
         AppEventBus()
+    }
+
+    single {
+        LocalFileUrlRepair(androidContext(), get(), get())
+    }
+
+    single {
+        SystemPromptV2Repository(androidContext())
     }
 
     single {
@@ -97,6 +108,7 @@ val appModule = module {
             providerManager = get(),
             chatToolFactory = get(),
             memoryRepository = get(),
+            systemPromptV2Repository = get(),
             templateTransformer = get(),
             workspaceRepository = get(),
         )

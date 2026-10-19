@@ -43,6 +43,7 @@ import me.rerere.rikkahub.utils.onLoading
 import me.rerere.rikkahub.utils.onSuccess
 import me.rerere.rikkahub.utils.openUrl
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
 fun SettingDonatePage() {
@@ -52,13 +53,15 @@ fun SettingDonatePage() {
         topBar = {
             LargeFlexibleTopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.donate_page_title))
+                    SettingsTopBarTitle {
+                        Text(text = stringResource(R.string.donate_page_title))
+                    }
                 },
                 navigationIcon = {
                     BackButton()
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors,
+                colors = CustomColors.transparentTopBarColors,
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

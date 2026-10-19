@@ -78,6 +78,7 @@ import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.Tag
 import me.rerere.rikkahub.ui.components.ui.TagType
+import me.rerere.rikkahub.ui.components.ui.settingsTopScrim
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.extendColors
@@ -85,6 +86,7 @@ import me.rerere.rikkahub.utils.writeClipboardText
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
 fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
@@ -97,7 +99,9 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
         topBar = {
             LargeFlexibleTopAppBar(
                 title = {
-                    Text(stringResource(R.string.setting_mcp_page_title))
+                    SettingsTopBarTitle {
+                        Text(stringResource(R.string.setting_mcp_page_title))
+                    }
                 },
                 navigationIcon = {
                     BackButton()
@@ -124,7 +128,7 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors
+                colors = CustomColors.transparentTopBarColors
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -148,7 +152,8 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .settingsTopScrim(innerPadding.calculateTopPadding()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(
                     start = innerPadding.calculateStartPadding(layoutDirection) + 16.dp,

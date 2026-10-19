@@ -79,6 +79,7 @@ import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class SpeechTab(
     override val icon: ImageVector,
@@ -103,7 +104,9 @@ fun SettingSpeechPage(vm: SettingVM = koinViewModel()) {
         topBar = {
             LargeFlexibleTopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.speech_page_title))
+                    SettingsTopBarTitle {
+                        Text(text = stringResource(R.string.speech_page_title))
+                    }
                 },
                 navigationIcon = {
                     BackButton()
@@ -129,7 +132,7 @@ fun SettingSpeechPage(vm: SettingVM = koinViewModel()) {
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors
+                colors = CustomColors.transparentTopBarColors
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

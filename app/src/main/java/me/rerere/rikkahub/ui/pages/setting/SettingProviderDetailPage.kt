@@ -146,6 +146,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class ProviderDetailTab(
     override val icon: ImageVector,
@@ -207,14 +208,16 @@ fun SettingProviderDetailPage(id: Uuid, vm: SettingVM = koinViewModel()) {
                 navigationIcon = {
                     BackButton()
                 },
-                colors = CustomColors.topBarColors,
+                colors = CustomColors.transparentTopBarColors,
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        AutoAIIcon(provider.name, modifier = Modifier.size(22.dp))
-                        Text(text = provider.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    SettingsTopBarTitle {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            AutoAIIcon(provider.name, modifier = Modifier.size(22.dp))
+                            Text(text = provider.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
                     }
                 },
                 actions = {

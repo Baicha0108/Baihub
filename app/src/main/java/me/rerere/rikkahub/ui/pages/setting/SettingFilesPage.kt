@@ -89,6 +89,7 @@ import me.rerere.rikkahub.utils.fileSizeToString
 import org.koin.compose.koinInject
 import java.io.File
 import java.util.concurrent.TimeUnit
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,7 +176,7 @@ fun SettingFilesPage(
     Scaffold(
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text(stringResource(R.string.setting_files_page_title)) },
+                title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_files_page_title)) } },
                 navigationIcon = { BackButton() },
                 actions = {
                     IconButton(
@@ -189,7 +190,7 @@ fun SettingFilesPage(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors
+                colors = CustomColors.transparentTopBarColors
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

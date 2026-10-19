@@ -182,6 +182,12 @@ object CustomColors {
             ) else TopAppBarDefaults.topAppBarColors()
         }
 
+    val transparentTopBarColors: TopAppBarColors
+        @Composable get() = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent,
+        )
+
     val cardColors: CardColors
         @Composable get() = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainer)
 

@@ -40,9 +40,11 @@ import me.rerere.rikkahub.data.datastore.findProvider
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Conversation
 import me.rerere.rikkahub.data.model.MemoryFile
+import me.rerere.rikkahub.data.model.SystemPromptEntry
 import me.rerere.rikkahub.data.model.getAssistantOf
 import me.rerere.rikkahub.data.model.getChatModelOf
 import me.rerere.rikkahub.data.repository.MemoryRepository
+import me.rerere.rikkahub.data.repository.SystemPromptV2Repository
 import me.rerere.rikkahub.data.repository.WorkspaceRepository
 import me.rerere.rikkahub.data.repository.memoryId
 import kotlin.time.Clock
@@ -74,6 +76,7 @@ class ChatRequestFactory(
     private val providerManager: ProviderManager,
     private val chatToolFactory: ChatToolFactory,
     private val memoryRepository: MemoryRepository,
+    private val systemPromptV2Repository: SystemPromptV2Repository,
     templateTransformer: TemplateTransformer,
     workspaceRepository: WorkspaceRepository,
 ) {
@@ -199,7 +202,10 @@ class ChatRequestFactory(
                     if (assistant.allowConversationSystemPrompt && !turn.conversationSystemPrompt.isNullOrBlank()) {
                         turn.conversationSystemPrompt
                     } else {
-                        assistant.systemPrompt
+                        appendSystemPromptV2(
+                            assistant.systemPrompt,
+                            systemPromptV2Repository.get(assistant.id),
+                        )
                     }
                 if (effectiveSystemPrompt.isNotBlank()) {
                     append(effectiveSystemPrompt)
@@ -248,6 +254,16 @@ class ChatRequestFactory(
         )
         return StepRequest(requestMessages, params)
     }
+}
+
+internal fun appendSystemPromptV2(
+    base: String,
+    entries: List<SystemPromptEntry>,
+): String {
+    val enabled = entries.filter { it.enabled && it.content.isNotBlank() }
+    if (enabled.isEmpty()) return base
+    val joined = enabled.joinToString("\n\n---\n\n") { it.content.trim() }
+    return if (base.isBlank()) joined else "$base\n\n$joined"
 }
 
 /**

@@ -53,6 +53,7 @@ import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.remote.toProxyOrNull
 import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.ui.CardGroup
+import me.rerere.rikkahub.ui.components.ui.settingsTopScrim
 import me.rerere.rikkahub.ui.components.ui.switchItem
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
@@ -61,6 +62,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private const val PROXY_TEST_URL = "https://www.google.com/generate_204"
 
@@ -260,10 +262,10 @@ fun SettingPreferencesNetworkPage(vm: SettingVM = koinViewModel()) {
     Scaffold(
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text(stringResource(R.string.setting_page_preferences_network)) },
+                title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_page_preferences_network)) } },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors,
+                colors = CustomColors.transparentTopBarColors,
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -272,7 +274,8 @@ fun SettingPreferencesNetworkPage(vm: SettingVM = koinViewModel()) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding(),
+                .imePadding()
+                .settingsTopScrim(contentPadding.calculateTopPadding()),
             contentPadding = contentPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

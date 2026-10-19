@@ -50,6 +50,7 @@ import me.rerere.highlight.LocalCodeHighlighter
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.richtext.HighlightCodeVisualTransformation
+import me.rerere.rikkahub.ui.components.ui.settingsTopScrim
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
@@ -63,6 +64,7 @@ import me.rerere.search.SearchServiceOptions
 import me.rerere.ui.components.FormItem
 import org.koin.androidx.compose.koinViewModel
 import kotlin.uuid.Uuid
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
 fun SettingSearchDetailPage(
@@ -88,7 +90,9 @@ fun SettingSearchDetailPage(
         topBar = {
             LargeFlexibleTopAppBar(
                 title = {
-                    Text(options.displayName)
+                    SettingsTopBarTitle {
+                        Text(options.displayName)
+                    }
                 },
                 navigationIcon = {
                     BackButton()
@@ -111,7 +115,7 @@ fun SettingSearchDetailPage(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors
+                colors = CustomColors.transparentTopBarColors
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -120,7 +124,8 @@ fun SettingSearchDetailPage(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding(),
+                .imePadding()
+                .settingsTopScrim(padding.calculateTopPadding()),
             contentPadding = padding + PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

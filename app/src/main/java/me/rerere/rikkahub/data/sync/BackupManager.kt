@@ -11,10 +11,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import me.rerere.rikkahub.data.datastore.Settings
 import me.rerere.rikkahub.data.datastore.SettingsStore
 import me.rerere.rikkahub.data.datastore.migration.SettingsJsonMigrator
@@ -23,6 +25,8 @@ import me.rerere.rikkahub.data.db.AppDatabase
 import me.rerere.rikkahub.data.db.SQLiteConfiguration
 import me.rerere.rikkahub.data.files.FileFolders
 import me.rerere.rikkahub.data.files.MediaCreationFiles
+import me.rerere.rikkahub.data.files.mapSettingsLocalFiles
+import me.rerere.rikkahub.data.files.rewriteFileUrl
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
@@ -47,14 +51,29 @@ class BackupManager(
         val staging = Files.createTempDirectory(context.cacheDir.toPath(), "backup-").toFile()
         try {
             val settings = settingsStore.awaitLoaded()
+            val sourceFilesDir = context.filesDir
+            val targetFilesDir = BackupPathRewriter.originalFilesDir(context)
+            val backupSettings = mapSettingsLocalFiles(settings) { url ->
+                rewriteFileUrl(url, sourceFilesDir, targetFilesDir)
+            }
+            var rewrittenMessageRows = 0
             ZipOutputStream(FileOutputStream(archive)).use { zip ->
                 zip.putNextEntry(ZipEntry("settings.json"))
-                val settingsJson = json.encodeSettings(settings, settingsStore.launchCountFlow.first())
+                val settingsJson = json.encodeSettings(
+                    backupSettings,
+                    settingsStore.launchCountFlow.first(),
+                )
                 zip.write(settingsJson.toByteArray(Charsets.UTF_8))
                 zip.closeEntry()
                 if (includeDatabase) {
                     val snapshot = File(staging, SQLiteConfiguration.DATABASE_NAME)
                     DatabaseBackup.createSnapshot(database.openHelper.writableDatabase, snapshot)
+                    rewrittenMessageRows = BackupPathRewriter.rewriteSnapshot(
+                        context = context,
+                        snapshot = snapshot,
+                        sourceFilesDir = sourceFilesDir,
+                        targetFilesDir = targetFilesDir,
+                    )
                     addFile(zip, snapshot, DatabaseBackup.ARCHIVE_DATABASE)
                 }
                 if (includeFiles) {
@@ -74,6 +93,17 @@ class BackupManager(
                         }
                     }
                 }
+                zip.putNextEntry(ZipEntry(EXPORT_INFO))
+                val exportInfo = buildJsonObject {
+                    put("format", 1)
+                    put("sourcePackage", context.packageName)
+                    put("targetPackage", ORIGINAL_APPLICATION_ID)
+                    put("sourceFilesDir", sourceFilesDir.absolutePath)
+                    put("targetFilesDir", targetFilesDir.absolutePath)
+                    put("rewrittenMessageRows", rewrittenMessageRows)
+                }
+                zip.write(exportInfo.toString().toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
             }
             archive
         } catch (e: Throwable) {
@@ -168,13 +198,20 @@ class BackupManager(
 
     companion object {
         private val ATTACHMENT_FOLDERS =
-            listOf(FileFolders.UPLOAD, FileFolders.SKILLS, FileFolders.FONTS, FileFolders.MEDIA_CREATION)
+            listOf(
+                FileFolders.UPLOAD,
+                FileFolders.SKILLS,
+                FileFolders.FONTS,
+                FileFolders.MEDIA_CREATION,
+                FileFolders.SYSTEM_PROMPT_V2,
+            )
 
         /** Backed up with their subdirectories; the other folders only contain top-level files. */
         private val NESTED_ATTACHMENT_FOLDERS = setOf(FileFolders.SKILLS, FileFolders.MEDIA_CREATION)
 
         // 启动次数不在 Settings 里，备份文件里仍放在 settings.json 的这个字段，和旧备份保持一致
         private const val LAUNCH_COUNT_KEY = "launchCount"
+        private const val EXPORT_INFO = "baihub_export_info.json"
 
         private fun Json.encodeSettings(settings: Settings, launchCount: Int): String {
             val fields = encodeToJsonElement(settings).jsonObject + (LAUNCH_COUNT_KEY to JsonPrimitive(launchCount))

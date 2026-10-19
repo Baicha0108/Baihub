@@ -138,6 +138,12 @@ fun AssistantDetailPage(id: String) {
                         supportingContent = { Text(stringResource(R.string.assistant_detail_prompt_desc)) },
                         headlineContent = { Text(stringResource(R.string.assistant_page_tab_prompt)) },
                     )
+                    item(
+                        onClick = { navController.navigate(Screen.AssistantSystemPromptV2(id)) },
+                        leadingContent = { CardGroupIcon(HugeIcons.Message02, containerColor = containerColor, contentColor = contentColor) },
+                        supportingContent = { Text(stringResource(R.string.assistant_detail_system_prompt_v2_desc)) },
+                        headlineContent = { Text(stringResource(R.string.assistant_page_system_prompt_v2)) },
+                    )
                 }
             }
 

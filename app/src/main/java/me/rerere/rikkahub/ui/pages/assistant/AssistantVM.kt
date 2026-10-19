@@ -13,6 +13,7 @@ import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Avatar
 import me.rerere.rikkahub.data.repository.MemoryRepository
+import me.rerere.rikkahub.data.repository.SystemPromptV2Repository
 import me.rerere.rikkahub.data.repository.memoryId
 import me.rerere.rikkahub.service.ChatService
 
@@ -21,6 +22,7 @@ class AssistantVM(
     private val memoryRepository: MemoryRepository,
     private val chatService: ChatService,
     private val filesManager: FilesManager,
+    private val systemPromptV2Repository: SystemPromptV2Repository,
 ) : ViewModel() {
     val settings: StateFlow<Settings> = settingsStore.settingsFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, Settings.dummy())
@@ -40,6 +42,7 @@ class AssistantVM(
     fun removeAssistant(assistant: Assistant) {
         viewModelScope.launch {
             cleanupAssistantFiles(assistant)
+            systemPromptV2Repository.delete(assistant.id)
 
             settingsStore.update { settings ->
                 settings.copy(assistants = settings.assistants.filter { it.id != assistant.id })
@@ -68,6 +71,7 @@ class AssistantVM(
                 avatar = if(assistant.avatar is Avatar.Image) Avatar.Dummy else assistant.avatar,
             )
             settingsStore.update { it.copy(assistants = it.assistants.plus(copiedAssistant)) }
+            systemPromptV2Repository.copy(assistant.id, copiedAssistant.id)
             if (copyMemories) {
                 memoryRepository.copyFiles(
                     fromAssistantId = assistant.id.toString(),

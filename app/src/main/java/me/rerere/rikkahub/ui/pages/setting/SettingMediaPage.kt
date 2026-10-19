@@ -85,6 +85,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class MediaTab(
     override val icon: ImageVector,
@@ -108,7 +109,9 @@ fun SettingMediaPage(vm: SettingVM = koinViewModel()) {
         topBar = {
             LargeFlexibleTopAppBar(
                 title = {
-                    Text(stringResource(R.string.setting_page_media))
+                    SettingsTopBarTitle {
+                        Text(stringResource(R.string.setting_page_media))
+                    }
                 },
                 navigationIcon = {
                     BackButton()
@@ -125,7 +128,7 @@ fun SettingMediaPage(vm: SettingVM = koinViewModel()) {
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = CustomColors.topBarColors
+                colors = CustomColors.transparentTopBarColors
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

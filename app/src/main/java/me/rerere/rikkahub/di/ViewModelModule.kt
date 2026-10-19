@@ -2,6 +2,7 @@ package me.rerere.rikkahub.di
 
 import me.rerere.rikkahub.ui.pages.assistant.AssistantVM
 import me.rerere.rikkahub.ui.pages.assistant.detail.AssistantDetailVM
+import me.rerere.rikkahub.ui.pages.assistant.detail.AssistantSystemPromptV2VM
 import me.rerere.rikkahub.ui.pages.backup.BackupVM
 import me.rerere.rikkahub.ui.pages.chat.ChatDrawerVM
 import me.rerere.rikkahub.ui.pages.chat.ChatVM
@@ -54,6 +55,13 @@ val viewModelModule = module {
             filesManager = get(),
             skillManager = get(),
             workspaceRepository = get(),
+        )
+    }
+    viewModel<AssistantSystemPromptV2VM> { params ->
+        AssistantSystemPromptV2VM(
+            assistantId = params.get(),
+            repository = get(),
+            settingsStore = get(),
         )
     }
     viewModel<MemoryFileVM> {
