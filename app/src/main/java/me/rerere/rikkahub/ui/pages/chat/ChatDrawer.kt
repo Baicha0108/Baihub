@@ -84,6 +84,7 @@ import me.rerere.rikkahub.data.repository.ConversationRepository
 import me.rerere.rikkahub.ui.components.ai.AssistantPicker
 import me.rerere.rikkahub.ui.components.ui.BackupReminderCard
 import me.rerere.rikkahub.ui.components.ui.Greeting
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.components.ui.UIAvatar
 import me.rerere.rikkahub.ui.components.ui.UpdateCard
 import androidx.compose.ui.draw.clip
@@ -413,7 +414,8 @@ fun ChatDrawerContent(
                     )
                     DropdownMenu(
                         expanded = showMenuPopup,
-                        onDismissRequest = { showMenuPopup = false }
+                        onDismissRequest = { showMenuPopup = false },
+                        shape = PopupMenuShape,
                     ) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.chat_page_menu_image_generation)) },
@@ -919,6 +921,7 @@ private fun FolderBar(
                 DropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
+                    shape = PopupMenuShape,
                 ) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.chat_page_rename)) },
@@ -978,6 +981,7 @@ private fun ConversationSortButton(
         DropdownMenu(
             expanded = menuExpanded,
             onDismissRequest = { menuExpanded = false },
+            shape = PopupMenuShape,
         ) {
             ConversationSortOrder.entries.forEach { option ->
                 DropdownMenuItem(

@@ -83,7 +83,6 @@ import me.rerere.rikkahub.data.export.parseCustomPromptExport
 import me.rerere.rikkahub.data.model.SystemPromptEntry
 import me.rerere.rikkahub.ui.components.ai.ExtensionEmptyState
 import me.rerere.rikkahub.ui.components.nav.BackButton
-import me.rerere.rikkahub.ui.components.ui.CardGroupIcon
 import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.Tag
@@ -353,7 +352,7 @@ private fun AssistantSystemPromptV2Content(
                     enabled = selectedIds.isNotEmpty(),
                     shape = RoundedCornerShape(20.dp),
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(width = 148.dp, height = 56.dp),
+                    modifier = Modifier.size(width = 140.dp, height = 52.dp),
                 ) {
                     Text(
                         text = stringResource(R.string.assistant_system_prompt_v2_export),
@@ -504,7 +503,7 @@ private fun SystemPromptEntryCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
+                .padding(start = 20.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -514,19 +513,6 @@ private fun SystemPromptEntryCard(
                     onCheckedChange = { onClick() },
                 )
             }
-            CardGroupIcon(
-                icon = HugeIcons.Message02,
-                containerColor = if (entry.enabled) {
-                    MaterialTheme.colorScheme.primaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHighest
-                },
-                contentColor = if (entry.enabled) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp),

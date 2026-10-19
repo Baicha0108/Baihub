@@ -105,6 +105,7 @@ import me.rerere.rikkahub.ui.components.ai.completion.ChatCompletionItem
 import me.rerere.rikkahub.ui.components.ai.completion.ChatCompletionList
 import me.rerere.rikkahub.ui.components.ai.completion.ChatCompletionProvider
 import me.rerere.rikkahub.ui.components.ui.KeepScreenOn
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.components.ui.permission.PermissionManager
 import me.rerere.rikkahub.ui.components.ui.permission.PermissionRecordAudio
 import me.rerere.rikkahub.ui.components.ui.permission.rememberPermissionState
@@ -770,6 +771,7 @@ private fun QuickMessageButton(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            shape = PopupMenuShape,
             modifier = Modifier
                 .widthIn(min = 200.dp, max = 360.dp)
         ) {

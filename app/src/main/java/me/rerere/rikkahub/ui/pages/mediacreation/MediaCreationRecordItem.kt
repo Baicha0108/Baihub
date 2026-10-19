@@ -85,6 +85,7 @@ import me.rerere.rikkahub.data.model.MediaCreationOutput
 import me.rerere.rikkahub.data.model.MediaCreationRecord
 import me.rerere.rikkahub.data.model.MediaCreationStatus
 import me.rerere.rikkahub.ui.components.ui.ImagePreviewDialog
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.components.ui.VideoPlayerDialog
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
@@ -497,7 +498,11 @@ private fun OutputMenu(
                 modifier = Modifier.size(16.dp),
             )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            shape = PopupMenuShape,
+        ) {
             if (output.isVideo) {
                 MenuItem(stringResource(R.string.media_creation_page_continue_video_long), HugeIcons.Video01) {
                     vm.continueVideo(output)

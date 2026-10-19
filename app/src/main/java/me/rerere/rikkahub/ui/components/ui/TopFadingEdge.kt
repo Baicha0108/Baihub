@@ -19,16 +19,10 @@ internal fun Modifier.topFadingEdge(height: Dp): Modifier = this
     .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
     .drawWithCache {
         val fadeHeight = height.toPx()
-        // Use a sampled quartic curve instead of a few hard stops. A stop such as
-        // "60% at 15% alpha, then 100% at 100%" creates a visible slope discontinuity
-        // (a horizontal band) across the fade.
-        val steps = 64
-        val colors = List(steps + 1) { index ->
-            val t = index / steps.toFloat()
-            Color.Black.copy(alpha = t * t * t * t)
-        }
         val brush = Brush.verticalGradient(
-            colors = colors,
+            0f to Color.Transparent,
+            0.6f to Color.Black.copy(alpha = 0.15f),
+            1f to Color.Black,
             startY = 0f,
             endY = fadeHeight,
         )

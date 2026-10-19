@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import me.rerere.hugeicons.stroke.MoreVertical
 import me.rerere.rikkahub.ui.components.nav.BackButton
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
 import me.rerere.ui.webview.WEB_VIEW_BASE_URL
 import me.rerere.ui.webview.WebView
@@ -115,7 +116,8 @@ fun WebViewPage(url: String, contentId: String) {
 
                         DropdownMenu(
                             expanded = showDropdown,
-                            onDismissRequest = { showDropdown = false }
+                            onDismissRequest = { showDropdown = false },
+                            shape = PopupMenuShape,
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Open in Browser") },

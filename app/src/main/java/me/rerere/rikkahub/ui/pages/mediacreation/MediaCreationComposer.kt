@@ -126,6 +126,7 @@ import me.rerere.ui.components.FormItem
 import me.rerere.ui.components.Tooltip
 import me.rerere.ui.sketch.SketchDialog
 import me.rerere.rikkahub.ui.components.ui.AutoAIIcon
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.components.ui.Tag
 import me.rerere.rikkahub.ui.pages.setting.components.label
 import me.rerere.rikkahub.ui.pages.setting.components.typeName
@@ -610,7 +611,11 @@ private fun AssetTile(
                 modifier = Modifier.size(12.dp),
             )
         }
-        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            shape = PopupMenuShape,
+        ) {
             roleOptions.forEach { role ->
                 DropdownMenuItem(
                     text = {

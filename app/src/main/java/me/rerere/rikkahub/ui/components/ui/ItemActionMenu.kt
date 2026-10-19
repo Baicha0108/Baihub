@@ -52,6 +52,7 @@ fun ItemActionMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            shape = PopupMenuShape,
         ) {
             actions.forEach { action ->
                 DropdownMenuItem(

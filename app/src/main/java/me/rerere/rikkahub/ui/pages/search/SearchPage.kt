@@ -55,6 +55,7 @@ import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.db.fts.MessageSearchResult
 import me.rerere.rikkahub.data.db.fts.MessageSearchSort
 import me.rerere.rikkahub.ui.components.nav.BackButton
+import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.utils.navigateToChatPage
@@ -265,6 +266,7 @@ private fun SortMenuButton(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            shape = PopupMenuShape,
         ) {
             MessageSearchSort.entries.forEach { sort ->
                 DropdownMenuItem(
