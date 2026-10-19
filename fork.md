@@ -488,3 +488,24 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `192`，versionName `3.0.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-20 05:05
+
+任务：同步合并上游 `rikkahub/rikkahub` 更新。
+
+合并内容：
+
+- 拉取并合并上游 `upstream/master`（`e5bb7073`，22 个提交），合并提交为 `33fa65be`。
+- 唯一冲突为 `di/AppModule.kt` 的 import 块：保留我们的 `LocalFileUrlRepair`、`SystemPromptV2Repository`，同时保留上游新增的 `LocalTools`；没有逻辑冲突。
+- 版本跟随上游升级到 `3.1.0`、versionCode `193`；`applicationId = me.baicha.baihub`、显示名 `Baihub`、仅 `arm64-v8a` 均保留。
+- 合并前已将本地未提交改动提交为 `237ac2db`，避免丢失。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 8 分 19 秒。
+- 自定义提示词、导出合并、文件路径修复、备份路径改写相关单元测试全部通过，耗时 2 分 22 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-同步上游3.1.0.apk`（42,133,186 字节）。
+- SHA-256：`904C4AAF3253912A9CEAF45D7E56CA8397FDEADBAD1A2207CC67D24D40B05A1B`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：未推送。当前没有连接设备，尚未做真机验证。
