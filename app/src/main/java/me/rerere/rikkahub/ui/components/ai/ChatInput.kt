@@ -90,6 +90,7 @@ import me.rerere.hugeicons.stroke.Add01
 import me.rerere.hugeicons.stroke.ArrowUp02
 import me.rerere.hugeicons.stroke.Cancel01
 import me.rerere.hugeicons.stroke.Fullscreen
+import me.rerere.hugeicons.stroke.Message02
 import me.rerere.hugeicons.stroke.Zap
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.datastore.Settings
@@ -133,6 +134,7 @@ fun ChatInput(
     onUpdateChatModel: (Model) -> Unit,
     onUpdateAssistant: (Assistant) -> Unit,
     onUpdateSearchService: (Int) -> Unit,
+    onCustomPromptClick: () -> Unit,
     onMoreClick: () -> Unit,
     onCancelClick: () -> Unit,
     onSendClick: () -> Unit,
@@ -331,6 +333,15 @@ fun ChatInput(
                                 )
                             }
 
+                        }
+
+                        ActionIconButton(
+                            onClick = onCustomPromptClick
+                        ) {
+                            Icon(
+                                imageVector = HugeIcons.Message02,
+                                contentDescription = stringResource(R.string.assistant_page_system_prompt_v2)
+                            )
                         }
 
                         ActionIconButton(

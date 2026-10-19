@@ -432,3 +432,59 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `192`，versionName `3.0.0`，显示名 `Baihub`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-19 12:29
+
+任务：聊天界面右上角按钮不再跟随主题配色，改为与左侧标题同色（深色模式白、浅色模式黑）。
+
+实现：
+
+- `ChatPage.kt` 的 `TopAppBar` 显式设置 `actionIconContentColor = MaterialTheme.colorScheme.onSurface`。
+- 标题原本就使用 `onSurface`，右侧“预览/新对话”两个按钮现在与标题颜色一致，不再使用 `onSurfaceVariant` 的偏灰主题色。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 4 分 21 秒。
+- 产物：`dist/baihub-3.0.0-arm64-v8a-聊天顶栏按钮配色.apk`（42,020,746 字节）。
+- SHA-256：`2C470FEE47FD1C8E138C695936F8C0468237822CB9B34FD93A503EF2844EF797`。
+- 校验：包名 `me.baicha.baihub`，versionCode `192`，versionName `3.0.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-19 12:40
+
+任务：在聊天页输入栏下方加号左侧增加当前助手的“自定义提示词”快捷入口；调整自定义提示词多选状态的导出按钮样式。
+
+实现：
+
+- `ChatInput.kt` 新增 `onCustomPromptClick`，在加号按钮左侧增加 `Message02` 图标按钮，点击进入当前助手的自定义提示词页面。
+- `ChatPage.kt` 通过 `navController.navigate(Screen.AssistantSystemPromptV2(assistant.id))` 压入提示词页面；页面返回时弹栈回到原聊天页，不新开聊天。
+- 多选状态右下角导出按钮由 88dp 正方形改为 148×56dp、20dp 圆角的长方形，按钮文字使用 `titleMedium` 字号。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 4 分 20 秒。
+- 产物：`dist/baihub-3.0.0-arm64-v8a-聊天页快捷入口与导出按钮.apk`（42,027,610 字节）。
+- SHA-256：`940EB3FB75F0431348D6C5BDA40278CF9CAB7E62AC90080CE3783C135F7EBCE0`。
+- 校验：包名 `me.baicha.baihub`，versionCode `192`，versionName `3.0.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-19 13:01
+
+任务：继续放大自定义提示词多选状态的导出按钮文字；去掉新增提示词时标题框默认预填的“未命名”。
+
+实现：
+
+- 导出按钮文字由 `titleMedium`（16sp）改为 22sp、`FontWeight.SemiBold`。
+- “添加提示词”改为创建空标题的 `SystemPromptEntry()`，标题输入框不再预填“未命名”。
+- 保留标题为空时列表显示“未命名”的兜底，保存空白标题时仍按原逻辑存为“未命名”。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 4 分 26 秒。
+- 产物：`dist/baihub-3.0.0-arm64-v8a-导出字号与新增标题.apk`（42,026,770 字节）。
+- SHA-256：`293CC3210E661388FAB2EF8AD3F416BAC266ECEE0101C9580431D83399396755`。
+- 校验：包名 `me.baicha.baihub`，versionCode `192`，versionName `3.0.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。

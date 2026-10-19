@@ -55,9 +55,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -349,11 +351,15 @@ private fun AssistantSystemPromptV2Content(
                         exportLauncher.launch(exportFileName)
                     },
                     enabled = selectedIds.isNotEmpty(),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(20.dp),
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(88.dp),
+                    modifier = Modifier.size(width = 148.dp, height = 56.dp),
                 ) {
-                    Text(stringResource(R.string.assistant_system_prompt_v2_export))
+                    Text(
+                        text = stringResource(R.string.assistant_system_prompt_v2_export),
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
         } else {
@@ -384,7 +390,7 @@ private fun AssistantSystemPromptV2Content(
                     Text(stringResource(R.string.assistant_system_prompt_v2_import))
                 }
                 Button(
-                    onClick = { editing = SystemPromptEntry(title = unnamed) },
+                    onClick = { editing = SystemPromptEntry() },
                     enabled = entries != null,
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                 ) {

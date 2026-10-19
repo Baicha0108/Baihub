@@ -62,6 +62,7 @@ import me.rerere.hugeicons.stroke.LeftToRightListBullet
 import me.rerere.hugeicons.stroke.Menu03
 import me.rerere.hugeicons.stroke.MessageAdd01
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.Screen
 import me.rerere.rikkahub.data.datastore.Settings
 import me.rerere.rikkahub.data.datastore.findProvider
 import me.rerere.rikkahub.data.datastore.getSelectedASRProvider
@@ -405,6 +406,9 @@ private fun ChatPageContent(
                     onUpdateSearchService = { index ->
                         vm.updateSettings { it.copy(searchServiceSelected = index) }
                     },
+                    onCustomPromptClick = {
+                        navController.navigate(Screen.AssistantSystemPromptV2(assistant.id.toString()))
+                    },
                     onMoreClick = {
                         showFilesSheet = true
                     },
@@ -577,7 +581,10 @@ private fun TopBar(
     }
 
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+        ),
         navigationIcon = {
             if (!bigScreen) {
                 IconButton(
