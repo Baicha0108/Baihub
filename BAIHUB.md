@@ -10,7 +10,12 @@ Baihub 是基于 [RikkaHub](https://github.com/rikkahub/rikkahub) 的个人定�
 - 应用显示名：`Baihub`（所有语言）
 - 只构建 Release `arm64-v8a`，不生成 universal APK
 - 版本号跟随上游，不单独修改
-- 关于页的应用名、GitHub 和 License 链接指向本 fork
+
+## 维护约定
+
+- 本 fork 仅用于个人使用，不向上游提交 PR
+- 上游更新由用户明确要求时再同步
+- 构建产物只保留 Release `arm64-v8a`
 
 ## 助手自定义提示词
 
@@ -40,9 +45,4 @@ Baihub 是基于 [RikkaHub](https://github.com/rikkahub/rikkahub) 的个人定�
 - 项目内弹出菜单统一使用 24dp 大圆角
 - 自定义提示词卡片不显示左侧图标
 - 自定义提示词多选导出按钮为 140×52dp、22sp 半粗体文字
-
-## 维护约定
-
-- 本 fork 仅用于个人使用，不向上游提交 PR
-- 上游更新由用户明确要求时再同步
-- 构建产物只保留 Release `arm64-v8a`
+- 自定义提示词页底部操作栏使用可随滚动展开/收拢的胶囊

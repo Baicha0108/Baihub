@@ -3,6 +3,7 @@ package me.rerere.rikkahub.ui.pages.assistant.detail
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -29,7 +31,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
+import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
@@ -45,10 +49,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -207,7 +213,15 @@ private fun AssistantSystemPromptV2Content(
     var deleting by remember { mutableStateOf<SystemPromptEntry?>(null) }
     var pendingImport by remember { mutableStateOf<CustomPromptMergeResult?>(null) }
     var exportEntries by remember { mutableStateOf<List<SystemPromptEntry>>(emptyList()) }
+    var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
     val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(selectionMode, entries?.isEmpty()) {
+        if (!selectionMode || entries.isNullOrEmpty()) {
+            toolbarExpanded = true
+        }
+    }
+
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         onMove(from.index, to.index)
     }
@@ -288,7 +302,19 @@ private fun AssistantSystemPromptV2Content(
 
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (selectionMode) {
+                                Modifier
+                            } else {
+                                Modifier.floatingToolbarVerticalNestedScroll(
+                                    expanded = toolbarExpanded,
+                                    onExpand = { toolbarExpanded = true },
+                                    onCollapse = { toolbarExpanded = false },
+                                )
+                            }
+                        ),
                     contentPadding = innerPadding + PaddingValues(
                         start = 16.dp,
                         top = 8.dp,
@@ -362,40 +388,53 @@ private fun AssistantSystemPromptV2Content(
                 }
             }
         } else {
-            Row(
+            HorizontalFloatingToolbar(
+                expanded = toolbarExpanded,
+                colors = CustomColors.floatingToolbarColors,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    .offset(y = -ScreenOffset),
+                leadingContent = {
+                    IconButton(
+                        onClick = onStartSelection,
+                        enabled = !entries.isNullOrEmpty(),
+                    ) {
+                        Icon(
+                            imageVector = HugeIcons.Download01,
+                            contentDescription = stringResource(
+                                R.string.assistant_system_prompt_v2_export
+                            ),
+                        )
+                    }
+                },
             ) {
-                FilledTonalButton(
-                    onClick = onStartSelection,
-                    enabled = !entries.isNullOrEmpty(),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                ) {
-                    Icon(HugeIcons.Download01, null)
-                    Spacer(Modifier.size(6.dp))
-                    Text(stringResource(R.string.assistant_system_prompt_v2_export))
-                }
-                FilledTonalButton(
+                IconButton(
                     onClick = { importLauncher.launch(arrayOf("application/json")) },
                     enabled = entries != null,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                 ) {
-                    Icon(HugeIcons.FileImport, null)
-                    Spacer(Modifier.size(6.dp))
-                    Text(stringResource(R.string.assistant_system_prompt_v2_import))
+                    Icon(
+                        imageVector = HugeIcons.FileImport,
+                        contentDescription = stringResource(
+                            R.string.assistant_system_prompt_v2_import
+                        ),
+                    )
                 }
                 Button(
                     onClick = { editing = SystemPromptEntry() },
                     enabled = entries != null,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                 ) {
-                    Icon(HugeIcons.Add01, null)
-                    Spacer(Modifier.size(6.dp))
-                    Text(stringResource(R.string.assistant_system_prompt_v2_add))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(HugeIcons.Add01, null)
+                        AnimatedVisibility(toolbarExpanded) {
+                            Row {
+                                Spacer(Modifier.size(8.dp))
+                                Text(stringResource(R.string.assistant_system_prompt_v2_add))
+                            }
+                        }
+                    }
                 }
             }
         }

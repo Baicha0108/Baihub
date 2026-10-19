@@ -570,3 +570,23 @@
 - 不重复上游通用功能介绍。
 
 备注：未构建、未推送。
+
+## 2026-10-20 06:11
+
+任务：把自定义提示词页底部的三个按钮改成可随滚动展开/收拢的胶囊。
+
+实现：
+
+- 使用与提示词注入页一致的 `HorizontalFloatingToolbar` 和 `floatingToolbarVerticalNestedScroll`。
+- 胶囊内为导出图标、导入图标和“添加提示词”主按钮；滚动时隐藏按钮文字并收拢。
+- 多选状态的“取消 + 导出”底部栏保持原样；空列表和退出多选时胶囊自动展开。
+- `BAIHUB.md` 补充该界面差异。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 4 分 8 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-自定义提示词底部胶囊.apk`（42,133,886 字节）。
+- SHA-256：`E1F89EAE142CBFC61EC93E40853F3D860702EEEBFB817D13647523A7006B8FC0`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
