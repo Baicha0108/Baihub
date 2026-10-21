@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerDefaults
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +32,12 @@ import kotlinx.coroutines.launch
 private object ChatDrawerSpec {
     val WIDTH = 300.dp
 
-    const val CONTENT_SCALE = 0.95f
+    const val CONTENT_SCALE = 0.90f
     val CORNER_RADIUS = 22.dp
     val SHADOW = 20.dp
     const val SCRIM_ALPHA = 0.12f
     const val SETTLE_THRESHOLD = 0.25f
-    val EDGE_DRAG_WIDTH = 24.dp
+    val EDGE_DRAG_WIDTH = 32.dp
 
     val SettleSpec = spring<Float>(
         dampingRatio = Spring.DampingRatioNoBouncy,
@@ -49,7 +51,7 @@ private object ChatDrawerSpec {
  * 交互参数参考 Yuihub（AGPL-3.0），按本项目侧栏宽度做了适配。
  */
 @Composable
-fun ChatScalingDrawer(
+internal fun ChatScalingDrawer(
     open: Boolean,
     onOpenChange: (Boolean) -> Unit,
     drawerContent: @Composable () -> Unit,
@@ -77,13 +79,22 @@ fun ChatScalingDrawer(
                 delta < -ChatDrawerSpec.SETTLE_THRESHOLD -> false
                 else -> progress.value > 0.5f
             }
-            scope.launch {
-                progress.animateTo(
-                    targetValue = if (target) 1f else 0f,
-                    animationSpec = ChatDrawerSpec.SettleSpec,
-                )
-            }
+            val openChanged = target != open
             onOpenChange(target)
+            if (!openChanged) {
+                scope.launch {
+                    progress.animateTo(
+                        targetValue = if (target) 1f else 0f,
+                        animationSpec = ChatDrawerSpec.SettleSpec,
+                    )
+                }
+            }
+        }
+
+        fun dragBy(fraction: Float) {
+            scope.launch {
+                progress.snapTo((progress.value + fraction).coerceIn(0f, 1f))
+            }
         }
 
         val currentProgress = progress.value
@@ -93,7 +104,14 @@ fun ChatScalingDrawer(
             modifier = Modifier
                 .fillMaxSize()
                 .background(backdropColor)
-                .background(Color.Black.copy(alpha = scrimAlpha)),
+                .background(Color.Black.copy(alpha = scrimAlpha))
+                .horizontalDrawerDrag(
+                    enabled = open,
+                    dragSpan = dragSpanDp,
+                    progress = { progress.value },
+                    onDrag = ::dragBy,
+                    onSettle = ::settle,
+                ),
         ) {
             DrawerSlidePanel(
                 width = drawerWidth,
@@ -105,9 +123,7 @@ fun ChatScalingDrawer(
                 drawerWidth = drawerWidth,
                 progress = currentProgress,
                 onTapWhenOpen = {
-                    if (currentProgress > 0.01f) {
-                        onOpenChange(false)
-                    }
+                    onOpenChange(false)
                 },
                 content = content,
             )
@@ -118,30 +134,41 @@ fun ChatScalingDrawer(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .fillMaxHeight()
+                        .padding(top = 72.dp)
                         .width(ChatDrawerSpec.EDGE_DRAG_WIDTH)
-                        .pointerInput(dragSpanDp) {
-                            val dragSpan = dragSpanDp.toPx()
-                            var startProgress = 0f
-                            detectHorizontalDragGestures(
-                                onDragStart = {
-                                    startProgress = progress.value
-                                },
-                                onHorizontalDrag = { _, dragAmount ->
-                                    scope.launch {
-                                        progress.snapTo(
-                                            (progress.value + dragAmount / dragSpan)
-                                                .coerceIn(0f, 1f)
-                                        )
-                                    }
-                                },
-                                onDragEnd = { settle(startProgress) },
-                                onDragCancel = { settle(startProgress) },
-                            )
-                        },
+                        .horizontalDrawerDrag(
+                            enabled = !open,
+                            dragSpan = dragSpanDp,
+                            progress = { progress.value },
+                            onDrag = ::dragBy,
+                            onSettle = ::settle,
+                        ),
                 )
             }
         }
     }
+}
+
+private fun Modifier.horizontalDrawerDrag(
+    enabled: Boolean,
+    dragSpan: Dp,
+    progress: () -> Float,
+    onDrag: (Float) -> Unit,
+    onSettle: (Float) -> Unit,
+): Modifier = pointerInput(enabled, dragSpan) {
+    if (!enabled) return@pointerInput
+    val dragSpanPx = dragSpan.toPx()
+    var startProgress = progress()
+    detectHorizontalDragGestures(
+        onDragStart = {
+            startProgress = progress()
+        },
+        onHorizontalDrag = { _, dragAmount ->
+            onDrag(dragAmount / dragSpanPx)
+        },
+        onDragEnd = { onSettle(startProgress) },
+        onDragCancel = { onSettle(startProgress) },
+    )
 }
 
 @Composable
@@ -170,6 +197,7 @@ private fun ScaledHomePanel(
     content: @Composable () -> Unit,
 ) {
     val scale = 1f - (1f - ChatDrawerSpec.CONTENT_SCALE) * progress
+    val currentOnTapWhenOpen = rememberUpdatedState(onTapWhenOpen)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -189,7 +217,7 @@ private fun ScaledHomePanel(
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectTapGestures { onTapWhenOpen() }
+                        detectTapGestures { currentOnTapWhenOpen.value() }
                     },
             )
         }

@@ -278,18 +278,18 @@
 
 实现：
 
-- 新增 `ChatScalingDrawer`：侧栏从左侧滑入，聊天页右移并围绕左边缘缩放到 95%。
+- 新增 `ChatScalingDrawer`：侧栏从左侧滑入，聊天页右移并围绕左边缘缩放到 90%。
 - 展开时聊天页带 22dp 圆角、20dp 阴影和上下留白；背景使用抽屉容器色。
 - 保留 300dp 侧栏宽度；`ChatDrawerContent` 内部布局和功能不变。
-- 支持左边缘拖动打开、点击聊天页关闭、返回键关闭。
+- 支持左边缘拖动打开、展开后横向左滑关闭、点击聊天页关闭、返回键关闭。
 - 横屏大屏的 `PermanentNavigationDrawer` 保持不变。
 - `BAIHUB.md` 补充该界面差异。
 
 验证：
 
-- `:app:assembleRelease` 成功，耗时 3 分 26 秒。
-- 产物：`dist/baihub-3.1.0-arm64-v8a-缩放式侧栏.apk`（42,122,846 字节）。
-- SHA-256：`FCE09F230F18F17CE4D66886BEE07E7E63C2F098CD2CF93D2C129D4150EDA66D`。
+- `:app:assembleRelease` 成功，耗时 4 分 54 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-缩放式侧栏.apk`（42,123,838 字节）。
+- SHA-256：`29078DD0AA8F9DD3950D2F9FA3636C93787FE5BD1CD15C02493432657AD376F0`。
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机拖动和动画验证。未提交、未推送。
