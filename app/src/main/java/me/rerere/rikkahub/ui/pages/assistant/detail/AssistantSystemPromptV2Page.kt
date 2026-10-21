@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -62,12 +61,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,7 +75,6 @@ import me.rerere.hugeicons.stroke.Copy01
 import me.rerere.hugeicons.stroke.Delete01
 import me.rerere.hugeicons.stroke.Download01
 import me.rerere.hugeicons.stroke.FileImport
-import me.rerere.hugeicons.stroke.Fullscreen
 import me.rerere.hugeicons.stroke.Message02
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.export.CustomPromptMergeResult
@@ -89,6 +84,7 @@ import me.rerere.rikkahub.data.export.parseCustomPromptExport
 import me.rerere.rikkahub.data.model.SystemPromptEntry
 import me.rerere.rikkahub.ui.components.ai.ExtensionEmptyState
 import me.rerere.rikkahub.ui.components.nav.BackButton
+import me.rerere.rikkahub.ui.components.ui.FullScreenContentField
 import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.Tag
@@ -180,7 +176,6 @@ fun AssistantSystemPromptV2Page(id: String) {
         )
     }
 }
-
 @Composable
 private fun AssistantSystemPromptV2Content(
     innerPadding: PaddingValues,
@@ -615,8 +610,6 @@ private fun SystemPromptEntryEditSheet(
     )
     val scope = rememberCoroutineScope()
     var draft by remember(entry.id) { mutableStateOf(entry) }
-    var fullscreenContent by remember(entry.id) { mutableStateOf("") }
-    var showFullscreen by remember(entry.id) { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -673,33 +666,24 @@ private fun SystemPromptEntryEditSheet(
                     },
                 )
 
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = draft.content,
-                        onValueChange = { draft = draft.copy(content = it) },
-                        label = { Text(stringResource(R.string.assistant_system_prompt_v2_content)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(260.dp),
-                        minLines = 8,
-                    )
-                    IconButton(
-                        onClick = {
-                            fullscreenContent = draft.content
-                            showFullscreen = true
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp),
-                    ) {
-                        Icon(
-                            imageVector = HugeIcons.Fullscreen,
-                            contentDescription = stringResource(
-                                R.string.assistant_system_prompt_v2_fullscreen
-                            ),
-                        )
-                    }
-                }
+                FullScreenContentField(
+                    value = draft.content,
+                    onValueChange = { draft = draft.copy(content = it) },
+                    label = stringResource(R.string.assistant_system_prompt_v2_content),
+                    fullscreenTitle = stringResource(
+                        R.string.assistant_system_prompt_v2_fullscreen_title
+                    ),
+                    fullscreenDescription = stringResource(
+                        R.string.assistant_system_prompt_v2_fullscreen
+                    ),
+                    fullscreenPlaceholder = stringResource(
+                        R.string.assistant_system_prompt_v2_content
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(260.dp),
+                    minLines = 8,
+                )
             }
 
             Row(
@@ -724,75 +708,4 @@ private fun SystemPromptEntryEditSheet(
         }
     }
 
-    if (showFullscreen) {
-        FullScreenContentEditor(
-            initial = fullscreenContent,
-            onDismiss = { showFullscreen = false },
-            onConfirm = {
-                draft = draft.copy(content = it)
-                showFullscreen = false
-            },
-        )
-    }
-}
-
-@Composable
-private fun FullScreenContentEditor(
-    initial: String,
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit,
-) {
-    var text by remember(initial) { mutableStateOf(initial) }
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false,
-        ),
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .imePadding(),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    Text(
-                        text = stringResource(R.string.assistant_system_prompt_v2_fullscreen_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton(onClick = { onConfirm(text) }) {
-                        Text(stringResource(R.string.confirm))
-                    }
-                }
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = {
-                        Text(stringResource(R.string.assistant_system_prompt_v2_content))
-                    },
-                )
-            }
-        }
-    }
 }

@@ -705,3 +705,23 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机操作验证。未提交、未推送。
+
+## 2026-10-21 17:36
+
+任务：为模式注入和世界书条目的“注入内容”增加全屏编辑按钮。
+
+实现：
+
+- 提取共用 `FullScreenContentField` 和 `FullScreenContentEditor`。
+- 自定义提示词、模式注入、世界书条目统一使用同一套全屏编辑组件。
+- 模式注入和世界书条目的内容框右下角新增全屏按钮，确认后写回当前编辑草稿。
+- 新增“编辑注入内容”和“全屏编辑注入内容”文案。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 3 分 30 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-注入内容全屏编辑.apk`（42,129,218 字节）。
+- SHA-256：`F9A67DCFC26F73416208C1D049CF47299D756B20E5046666F819F5AE4EB3AE65`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机操作验证。未提交、未推送。

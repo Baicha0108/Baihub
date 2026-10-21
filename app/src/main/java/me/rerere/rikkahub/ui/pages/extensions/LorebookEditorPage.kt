@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,6 +63,7 @@ import me.rerere.rikkahub.data.model.InjectionPosition
 import me.rerere.rikkahub.data.model.Lorebook
 import me.rerere.rikkahub.data.model.PromptInjection
 import me.rerere.rikkahub.ui.components.nav.BackButton
+import me.rerere.rikkahub.ui.components.ui.FullScreenContentField
 import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.Tag
@@ -529,14 +529,19 @@ private fun RegexInjectionEditSheet(
                     }
                 }
 
-                OutlinedTextField(
+                FullScreenContentField(
                     value = entry.content,
                     onValueChange = { onEdit(entry.copy(content = it)) },
-                    label = { Text(stringResource(R.string.prompt_page_injection_content)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    minLines = 5,
+                    label = stringResource(R.string.prompt_page_injection_content),
+                    fullscreenTitle = stringResource(
+                        R.string.prompt_page_edit_injection_content
+                    ),
+                    fullscreenDescription = stringResource(
+                        R.string.prompt_page_fullscreen_content
+                    ),
+                    fullscreenPlaceholder = stringResource(
+                        R.string.prompt_page_injection_content
+                    ),
                 )
             }
 

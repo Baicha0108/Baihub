@@ -505,6 +505,8 @@
   <string name="prompt_page_disabled">Disabled</string>
   <string name="prompt_page_edit">Edit</string>
   <string name="prompt_page_edit_entry">Edit Entry</string>
+  <string name="prompt_page_edit_injection_content">Edit injection content</string>
+  <string name="prompt_page_fullscreen_content">Edit injection content in fullscreen</string>
   <string name="prompt_page_edit_lorebook">Edit Lorebook</string>
   <string name="prompt_page_edit_mode_injection">Edit Mode Injection</string>
   <string name="prompt_page_empty_hint">Click the button below to add</string>

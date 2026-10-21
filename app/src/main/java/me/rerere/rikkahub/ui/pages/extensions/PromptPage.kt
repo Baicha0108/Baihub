@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -90,6 +89,7 @@ import me.rerere.rikkahub.ui.components.ui.CardGroupIcon
 import me.rerere.rikkahub.ui.components.ui.ConnectedChoiceButtons
 import me.rerere.rikkahub.ui.components.ui.ConnectedChoiceLabel
 import me.rerere.rikkahub.ui.components.ui.ExportDialog
+import me.rerere.rikkahub.ui.components.ui.FullScreenContentField
 import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.PagerTab
@@ -494,14 +494,19 @@ private fun ModeInjectionEditSheet(
                     }
                 }
 
-                OutlinedTextField(
+                FullScreenContentField(
                     value = injection.content,
                     onValueChange = { onEdit(injection.copy(content = it)) },
-                    label = { Text(stringResource(R.string.prompt_page_injection_content)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    minLines = 5
+                    label = stringResource(R.string.prompt_page_injection_content),
+                    fullscreenTitle = stringResource(
+                        R.string.prompt_page_edit_injection_content
+                    ),
+                    fullscreenDescription = stringResource(
+                        R.string.prompt_page_fullscreen_content
+                    ),
+                    fullscreenPlaceholder = stringResource(
+                        R.string.prompt_page_injection_content
+                    ),
                 )
             }
 
