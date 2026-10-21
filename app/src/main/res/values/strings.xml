@@ -492,10 +492,12 @@
   <string name="prompt_page_add">Add</string>
   <string name="prompt_page_add_entry">Add Entry</string>
   <string name="prompt_page_add_lorebook">Add Lorebook</string>
+  <string name="prompt_page_new_lorebook">New Lorebook</string>
   <string name="prompt_page_add_mode_injection">Add Mode Injection</string>
   <string name="prompt_page_cancel">Cancel</string>
   <string name="prompt_page_case_sensitive">Case Sensitive</string>
   <string name="prompt_page_confirm">Confirm</string>
+  <string name="prompt_page_save">Save</string>
   <string name="prompt_page_constant_active">Always Active</string>
   <string name="prompt_page_constant_active_desc">Trigger without keyword matching</string>
   <string name="prompt_page_delete">Delete</string>

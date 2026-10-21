@@ -487,10 +487,12 @@
   <string name="prompt_page_add">添加</string>
   <string name="prompt_page_add_entry">添加条目</string>
   <string name="prompt_page_add_lorebook">添加世界书</string>
+  <string name="prompt_page_new_lorebook">新建世界书</string>
   <string name="prompt_page_add_mode_injection">添加模式注入</string>
   <string name="prompt_page_cancel">取消</string>
   <string name="prompt_page_case_sensitive">大小写敏感</string>
   <string name="prompt_page_confirm">确定</string>
+  <string name="prompt_page_save">保存</string>
   <string name="prompt_page_constant_active">常驻激活</string>
   <string name="prompt_page_constant_active_desc">无需匹配关键词即触发</string>
   <string name="prompt_page_delete">删除</string>

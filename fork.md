@@ -684,3 +684,24 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-21 17:10
+
+任务：把世界书编辑从弹窗拆成独立页面，并把条目编辑改成模式注入风格的底部面板。
+
+实现：
+
+- 世界书列表点击和“添加世界书”改为跳转新的 `Screen.LorebookEditor` 页面。
+- 新增 `LorebookEditorPage.kt`，使用本地草稿编辑名称、描述、启用状态和条目，顶部保存后写回设置。
+- 条目编辑改为 `ModalBottomSheet`，保留关键词、正则、常驻激活、扫描深度、注入位置和内容等全部字段。
+- 移除 `PromptPage.kt` 中旧的 `LorebookEditSheet` 和条目 `AlertDialog`。
+- 模式注入编辑面板和逻辑保持不变。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 3 分 27 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-世界书独立编辑页.apk`（42,127,894 字节）。
+- SHA-256：`3C4BAA7C1241DE7537E382D1EF11451112B2C0845B97E76E0D191E9AAE98414A`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机操作验证。未提交、未推送。
