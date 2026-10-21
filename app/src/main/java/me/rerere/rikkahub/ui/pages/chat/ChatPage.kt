@@ -9,14 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -28,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowDpSize
 import androidx.compose.material3.rememberBottomSheetState
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,7 +96,6 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
     )
     val filesManager: FilesManager = koinInject()
     val navController = LocalNavController.current
-    val scope = rememberCoroutineScope()
 
     val setting by vm.settings.collectAsStateWithLifecycle()
     val conversation by vm.conversation.collectAsStateWithLifecycle()
@@ -117,20 +112,18 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
         vm.updateDraftFolder(selectedFolderId)
     }
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var drawerOpen by rememberSaveable { mutableStateOf(false) }
     val softwareKeyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
     // Handle back press when drawer is open
-    BackHandler(enabled = drawerState.isOpen) {
-        scope.launch {
-            drawerState.close()
-        }
+    BackHandler(enabled = drawerOpen) {
+        drawerOpen = false
     }
 
     // Clear input focus so popup transitions cannot reopen the keyboard.
-    LaunchedEffect(drawerState.isOpen) {
-        if (drawerState.isOpen) {
+    LaunchedEffect(drawerOpen) {
+        if (drawerOpen) {
             focusManager.clearFocus(force = true)
             softwareKeyboardController?.hide()
         }
@@ -143,8 +136,8 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
     // 进入大屏（永久抽屉）模式时重置抽屉状态为关闭，
     // 避免从横屏旋转回竖屏后，模态抽屉残留为打开状态且无法关闭（#1304）
     LaunchedEffect(isBigScreen) {
-        if (isBigScreen && drawerState.isOpen) {
-            drawerState.close()
+        if (isBigScreen && drawerOpen) {
+            drawerOpen = false
         }
     }
 
@@ -214,7 +207,7 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                     processingStatus = processingStatus,
                     setting = setting,
                     conversation = conversation,
-                    drawerState = drawerState,
+                    onOpenDrawer = {},
                     navController = navController,
                     vm = vm,
                     chatListState = chatListState,
@@ -229,8 +222,9 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
         }
 
         else -> {
-            ModalNavigationDrawer(
-                drawerState = drawerState,
+            ChatScalingDrawer(
+                open = drawerOpen,
+                onOpenChange = { drawerOpen = it },
                 drawerContent = {
                     ChatDrawerContent(
                         navController = navController,
@@ -247,7 +241,7 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                     processingStatus = processingStatus,
                     setting = setting,
                     conversation = conversation,
-                    drawerState = drawerState,
+                    onOpenDrawer = { drawerOpen = true },
                     navController = navController,
                     vm = vm,
                     chatListState = chatListState,
@@ -258,9 +252,6 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                     onDismissError = { vm.dismissError(it) },
                     onClearAllErrors = { vm.clearAllErrors() },
                 )
-            }
-            BackHandler(drawerState.isOpen) {
-                scope.launch { drawerState.close() }
             }
         }
     }
@@ -275,7 +266,7 @@ private fun ChatPageContent(
     setting: Settings,
     bigScreen: Boolean,
     conversation: Conversation,
-    drawerState: DrawerState,
+    onOpenDrawer: () -> Unit,
     navController: Navigator,
     vm: ChatVM,
     chatListState: LazyListState,
@@ -327,7 +318,7 @@ private fun ChatPageContent(
                     chatModel = currentChatModel,
                     conversation = conversation,
                     bigScreen = bigScreen,
-                    drawerState = drawerState,
+                    onOpenDrawer = onOpenDrawer,
                     previewMode = previewMode,
                     onNewChat = {
                         navigateToChatPage(navController)
@@ -567,14 +558,13 @@ private fun TopBar(
     assistant: Assistant,
     chatModel: Model?,
     conversation: Conversation,
-    drawerState: DrawerState,
+    onOpenDrawer: () -> Unit,
     bigScreen: Boolean,
     previewMode: Boolean,
     onClickMenu: () -> Unit,
     onNewChat: () -> Unit,
     onUpdateTitle: (String) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val toaster = LocalToaster.current
     val titleState = useEditState<String> {
         onUpdateTitle(it)
@@ -589,7 +579,7 @@ private fun TopBar(
             if (!bigScreen) {
                 IconButton(
                     onClick = {
-                        scope.launch { drawerState.open() }
+                        onOpenDrawer()
                     }
                 ) {
                     Icon(HugeIcons.Menu03, "Messages")

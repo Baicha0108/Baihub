@@ -1,0 +1,197 @@
+package me.rerere.rikkahub.ui.pages.chat
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DrawerDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+
+private object ChatDrawerSpec {
+    val WIDTH = 300.dp
+
+    const val CONTENT_SCALE = 0.95f
+    val CORNER_RADIUS = 22.dp
+    val SHADOW = 20.dp
+    const val SCRIM_ALPHA = 0.12f
+    const val SETTLE_THRESHOLD = 0.25f
+    val EDGE_DRAG_WIDTH = 24.dp
+
+    val SettleSpec = spring<Float>(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMediumLow,
+    )
+}
+
+/**
+ * 缩放式侧栏：聊天页右移并围绕左边缘缩放，露出侧栏和上下留白。
+ * 只负责外层动画和手势，侧栏内容由调用方原样提供。
+ * 交互参数参考 Yuihub（AGPL-3.0），按本项目侧栏宽度做了适配。
+ */
+@Composable
+fun ChatScalingDrawer(
+    open: Boolean,
+    onOpenChange: (Boolean) -> Unit,
+    drawerContent: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val backdropColor = DrawerDefaults.modalContainerColor
+    val progress = remember { Animatable(if (open) 1f else 0f) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(open) {
+        progress.animateTo(
+            targetValue = if (open) 1f else 0f,
+            animationSpec = ChatDrawerSpec.SettleSpec,
+        )
+    }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val drawerWidth = ChatDrawerSpec.WIDTH.coerceAtMost(maxWidth)
+        val dragSpanDp = maxWidth * 0.6f
+
+        fun settle(startProgress: Float) {
+            val delta = progress.value - startProgress
+            val target = when {
+                delta > ChatDrawerSpec.SETTLE_THRESHOLD -> true
+                delta < -ChatDrawerSpec.SETTLE_THRESHOLD -> false
+                else -> progress.value > 0.5f
+            }
+            scope.launch {
+                progress.animateTo(
+                    targetValue = if (target) 1f else 0f,
+                    animationSpec = ChatDrawerSpec.SettleSpec,
+                )
+            }
+            onOpenChange(target)
+        }
+
+        val currentProgress = progress.value
+        val scrimAlpha = ChatDrawerSpec.SCRIM_ALPHA * (1f - currentProgress)
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backdropColor)
+                .background(Color.Black.copy(alpha = scrimAlpha)),
+        ) {
+            DrawerSlidePanel(
+                width = drawerWidth,
+                progress = currentProgress,
+                content = drawerContent,
+            )
+
+            ScaledHomePanel(
+                drawerWidth = drawerWidth,
+                progress = currentProgress,
+                onTapWhenOpen = {
+                    if (currentProgress > 0.01f) {
+                        onOpenChange(false)
+                    }
+                },
+                content = content,
+            )
+
+            // 仅在关闭时从屏幕左边缘拖动打开，避免抢占聊天内容的横向手势。
+            if (!open) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .fillMaxHeight()
+                        .width(ChatDrawerSpec.EDGE_DRAG_WIDTH)
+                        .pointerInput(dragSpanDp) {
+                            val dragSpan = dragSpanDp.toPx()
+                            var startProgress = 0f
+                            detectHorizontalDragGestures(
+                                onDragStart = {
+                                    startProgress = progress.value
+                                },
+                                onHorizontalDrag = { _, dragAmount ->
+                                    scope.launch {
+                                        progress.snapTo(
+                                            (progress.value + dragAmount / dragSpan)
+                                                .coerceIn(0f, 1f)
+                                        )
+                                    }
+                                },
+                                onDragEnd = { settle(startProgress) },
+                                onDragCancel = { settle(startProgress) },
+                            )
+                        },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DrawerSlidePanel(
+    width: Dp,
+    progress: Float,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(width)
+            .graphicsLayer {
+                translationX = -width.toPx() * (1f - progress)
+            },
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun ScaledHomePanel(
+    drawerWidth: Dp,
+    progress: Float,
+    onTapWhenOpen: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val scale = 1f - (1f - ChatDrawerSpec.CONTENT_SCALE) * progress
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                translationX = (drawerWidth * progress).toPx()
+                scaleX = scale
+                scaleY = scale
+                transformOrigin = TransformOrigin(0f, 0.5f)
+                shadowElevation = (ChatDrawerSpec.SHADOW * progress).toPx()
+                shape = RoundedCornerShape(ChatDrawerSpec.CORNER_RADIUS * progress)
+                clip = true
+            },
+    ) {
+        content()
+        if (progress > 0.01f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures { onTapWhenOpen() }
+                    },
+            )
+        }
+    }
+}
