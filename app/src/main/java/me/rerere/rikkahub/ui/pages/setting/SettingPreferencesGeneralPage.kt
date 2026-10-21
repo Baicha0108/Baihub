@@ -165,17 +165,17 @@ fun SettingPreferencesGeneralPage(vm: SettingVM = koinViewModel()) {
             item {
                 CardGroup {
                     switchItem(
-                        checked = displaySetting.enableChatInputEdgeShadow,
+                        checked = displaySetting.enableChatBottomShadow,
                         onCheckedChange = {
                             updateDisplaySetting(
-                                displaySetting.copy(enableChatInputEdgeShadow = it)
+                                displaySetting.copy(enableChatBottomShadow = it)
                             )
                         },
                         supportingContent = {
-                            Text(stringResource(R.string.setting_display_page_chat_input_edge_shadow_desc))
+                            Text(stringResource(R.string.setting_display_page_chat_bottom_shadow_desc))
                         },
                         headlineContent = {
-                            Text(stringResource(R.string.setting_display_page_chat_input_edge_shadow_title))
+                            Text(stringResource(R.string.setting_display_page_chat_bottom_shadow_title))
                         },
                     )
                 }

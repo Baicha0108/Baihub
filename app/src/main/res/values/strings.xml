@@ -1397,8 +1397,8 @@
   <string name="setting_display_page_background_effect_type">Background effect type</string>
   <string name="setting_display_page_background_effect_blur">Blur</string>
   <string name="setting_display_page_background_effect_glass">Glass</string>
-  <string name="setting_display_page_chat_input_edge_shadow_title">Input bar bottom shadow</string>
-  <string name="setting_display_page_chat_input_edge_shadow_desc">Show the edge shadow on a glass input bar; visible only with the glass background effect</string>
+  <string name="setting_display_page_chat_bottom_shadow_title">Chat bottom shadow</string>
+  <string name="setting_display_page_chat_bottom_shadow_desc">Control the gradient shadow at the very bottom of the chat screen</string>
   <string name="setting_display_page_chat_background_scrim_title">Chat background image scrim</string>
   <string name="setting_display_page_chat_background_scrim_desc">Overlay a light white or dark black theme scrim on the background image</string>
   <string name="skills_page_search_placeholder">Search skills</string>

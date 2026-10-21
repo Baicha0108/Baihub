@@ -211,19 +211,24 @@ fun ChatInput(
         }
     }
 
-    // 底部渐变遮罩：从输入区顶部一直过渡到屏幕底部（键盘弹出时到键盘上沿），避免消息透到系统导航栏
+    // 底部渐变阴影：从输入区顶部一直过渡到屏幕底部（键盘弹出时到键盘上沿），避免消息透到系统导航栏
     val scrimColor = MaterialTheme.colorScheme.background
     val imeInsets = WindowInsets.ime
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier.drawWithCache {
+    val bottomShadowModifier = if (settings.displaySetting.enableChatBottomShadow) {
+        Modifier.drawWithCache {
             val brush = Brush.verticalGradient(
                 colors = listOf(scrimColor.copy(alpha = 0f), scrimColor),
                 startY = 0f,
                 endY = (size.height - imeInsets.getBottom(this)).coerceAtLeast(1f),
             )
             onDrawBehind { drawRect(brush) }
-        },
+        }
+    } else {
+        Modifier
+    }
+    Surface(
+        color = Color.Transparent,
+        modifier = bottomShadowModifier,
     ) {
         Column(
             modifier = modifier
