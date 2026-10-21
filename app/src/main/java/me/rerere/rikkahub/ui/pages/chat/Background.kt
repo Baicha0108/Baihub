@@ -33,19 +33,21 @@ fun AssistantBackground(setting: Settings, modifier: Modifier) {
                     .alpha(backgroundOpacity)
             )
 
-            // 全屏渐变遮罩
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                backgroundColor.copy(alpha = 0.2f),
-                                backgroundColor.copy(alpha = 0.5f)
+            if (setting.displaySetting.enableChatBackgroundScrim) {
+                // 全屏渐变遮罩
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    backgroundColor.copy(alpha = 0.2f),
+                                    backgroundColor.copy(alpha = 0.5f)
+                                )
                             )
                         )
-                    )
-            )
+                )
+            }
         }
     }
 }

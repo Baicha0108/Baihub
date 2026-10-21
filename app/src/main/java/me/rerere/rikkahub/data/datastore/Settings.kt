@@ -165,6 +165,8 @@ data class DisplaySetting(
     val enableQuoteHighlight: Boolean = false,
     val enableBlurEffect: Boolean = false,
     val backgroundEffectType: BackgroundEffectType = BackgroundEffectType.BLUR,
+    val enableChatInputEdgeShadow: Boolean = true,
+    val enableChatBackgroundScrim: Boolean = true,
     val chatFontFamily: ChatFontFamily = ChatFontFamily.DEFAULT,
     val chatCustomFontPath: String = "",
     val chatCustomFontName: String = "",

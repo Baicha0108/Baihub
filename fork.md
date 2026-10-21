@@ -643,3 +643,24 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机流畅度验证。未提交、未推送。
+
+## 2026-10-21 12:50
+
+任务：为聊天输入栏底部阴影和聊天背景图遮罩增加独立开关。
+
+实现：
+
+- `DisplaySetting` 新增 `enableChatInputEdgeShadow` 和 `enableChatBackgroundScrim`，默认均开启，旧配置自动兼容。
+- 常规设置“输入栏背景效果”块下新增两个独立设置块。
+- 输入栏底部阴影开关控制玻璃输入栏的 `edgeShadow`；关闭时使用透明阴影。
+- 聊天背景图遮罩开关控制背景图上的主题色渐变遮罩；关闭后只保留背景图和原透明度。
+- `BAIHUB.md` 补充两个开关的界面差异。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 5 分 13 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-聊天阴影与背景遮罩开关.apk`（42,127,014 字节）。
+- SHA-256：`942AC24281AB5FA8A45FA4701C529C78DFDE0DC2128BD069DEAE0BBAE90190C9`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。

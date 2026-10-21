@@ -165,6 +165,44 @@ fun SettingPreferencesGeneralPage(vm: SettingVM = koinViewModel()) {
             item {
                 CardGroup {
                     switchItem(
+                        checked = displaySetting.enableChatInputEdgeShadow,
+                        onCheckedChange = {
+                            updateDisplaySetting(
+                                displaySetting.copy(enableChatInputEdgeShadow = it)
+                            )
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.setting_display_page_chat_input_edge_shadow_desc))
+                        },
+                        headlineContent = {
+                            Text(stringResource(R.string.setting_display_page_chat_input_edge_shadow_title))
+                        },
+                    )
+                }
+            }
+
+            item {
+                CardGroup {
+                    switchItem(
+                        checked = displaySetting.enableChatBackgroundScrim,
+                        onCheckedChange = {
+                            updateDisplaySetting(
+                                displaySetting.copy(enableChatBackgroundScrim = it)
+                            )
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.setting_display_page_chat_background_scrim_desc))
+                        },
+                        headlineContent = {
+                            Text(stringResource(R.string.setting_display_page_chat_background_scrim_title))
+                        },
+                    )
+                }
+            }
+
+            item {
+                CardGroup {
+                    switchItem(
                         checked = displaySetting.skipCropImage,
                         onCheckedChange = { updateDisplaySetting(displaySetting.copy(skipCropImage = it)) },
                         supportingContent = { Text(stringResource(R.string.setting_display_page_skip_crop_image_desc)) },

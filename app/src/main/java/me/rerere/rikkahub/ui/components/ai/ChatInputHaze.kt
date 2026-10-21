@@ -49,7 +49,10 @@ internal fun Modifier.chatInputHaze(
                     containerColor = containerColor,
                     tint = containerColor.copy(alpha = 0.3f),
                 ) {
-                    appearanceResponse(dark = darkMode)
+                    appearanceResponse(
+                        dark = darkMode,
+                        showEdgeShadow = displaySetting.enableChatInputEdgeShadow,
+                    )
                     // Keep background text from competing with the input text.
                     optics(
                         GlassDefaults.optics.copy(
@@ -66,17 +69,22 @@ internal fun Modifier.chatInputHaze(
 
 // Haze 按系统夜间模式选玻璃的明暗预设，应用内单独设置主题时会选错（深色主题下被提亮发白），
 // 所以按应用主题显式写入。深色数值对应库里 internal 的 GlassStyle.regularDark。
-private fun GlassStyleScope.appearanceResponse(dark: Boolean) {
+private fun GlassStyleScope.appearanceResponse(
+    dark: Boolean,
+    showEdgeShadow: Boolean,
+) {
     if (dark) {
         specularIntensity(0.38f)
-        edgeShadow(Color.Black.copy(alpha = 0.32f))
+        edgeShadow(
+            if (showEdgeShadow) Color.Black.copy(alpha = 0.32f) else Color.Transparent
+        )
         ambientResponse(0.08f)
         contrast(0.08f)
         whitePoint(-0.22f)
         chromaMultiplier(1.1f)
     } else {
         specularIntensity(GlassDefaults.specularIntensity)
-        edgeShadow(GlassDefaults.edgeShadow)
+        edgeShadow(if (showEdgeShadow) GlassDefaults.edgeShadow else Color.Transparent)
         ambientResponse(GlassDefaults.ambientResponse)
         contrast(GlassDefaults.contrast)
         whitePoint(GlassDefaults.whitePoint)

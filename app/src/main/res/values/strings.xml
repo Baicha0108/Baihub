@@ -1397,6 +1397,10 @@
   <string name="setting_display_page_background_effect_type">Background effect type</string>
   <string name="setting_display_page_background_effect_blur">Blur</string>
   <string name="setting_display_page_background_effect_glass">Glass</string>
+  <string name="setting_display_page_chat_input_edge_shadow_title">Input bar bottom shadow</string>
+  <string name="setting_display_page_chat_input_edge_shadow_desc">Show the edge shadow on a glass input bar; visible only with the glass background effect</string>
+  <string name="setting_display_page_chat_background_scrim_title">Chat background image scrim</string>
+  <string name="setting_display_page_chat_background_scrim_desc">Overlay a light white or dark black theme scrim on the background image</string>
   <string name="skills_page_search_placeholder">Search skills</string>
   <string name="skills_page_search_no_result">No matching skills</string>
   <string name="assistant_page_local_tools_chart_display_title">Chart Display</string>
