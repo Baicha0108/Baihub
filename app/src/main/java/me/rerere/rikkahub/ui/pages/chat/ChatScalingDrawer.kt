@@ -15,10 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -55,6 +58,7 @@ internal fun ChatScalingDrawer(
 ) {
     val backdropColor = DrawerDefaults.modalContainerColor
     val progress = remember { Animatable(if (open) 1f else 0f) }
+    val progressState = remember(progress) { derivedStateOf { progress.value } }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(open) {
@@ -93,14 +97,16 @@ internal fun ChatScalingDrawer(
             }
         }
 
-        val currentProgress = progress.value
-        val scrimAlpha = ChatDrawerSpec.SCRIM_ALPHA * (1f - currentProgress)
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(backdropColor)
-                .background(Color.Black.copy(alpha = scrimAlpha))
+                .drawBehind {
+                    drawRect(
+                        color = Color.Black,
+                        alpha = ChatDrawerSpec.SCRIM_ALPHA * (1f - progressState.value),
+                    )
+                }
                 .horizontalDrawerDrag(
                     gestureKey = open,
                     dragSpan = dragSpanDp,
@@ -111,13 +117,13 @@ internal fun ChatScalingDrawer(
         ) {
             DrawerSlidePanel(
                 width = drawerWidth,
-                progress = currentProgress,
+                progress = progressState,
                 content = drawerContent,
             )
 
             ScaledHomePanel(
                 drawerWidth = drawerWidth,
-                progress = currentProgress,
+                progress = progressState,
                 onTapWhenOpen = {
                     onOpenChange(false)
                 },
@@ -151,7 +157,7 @@ private fun Modifier.horizontalDrawerDrag(
 @Composable
 private fun DrawerSlidePanel(
     width: Dp,
-    progress: Float,
+    progress: State<Float>,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -159,7 +165,7 @@ private fun DrawerSlidePanel(
             .fillMaxHeight()
             .width(width)
             .graphicsLayer {
-                translationX = -width.toPx() * (1f - progress)
+                translationX = -width.toPx() * (1f - progress.value)
             },
     ) {
         content()
@@ -169,27 +175,31 @@ private fun DrawerSlidePanel(
 @Composable
 private fun ScaledHomePanel(
     drawerWidth: Dp,
-    progress: Float,
+    progress: State<Float>,
     onTapWhenOpen: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val scale = 1f - (1f - ChatDrawerSpec.CONTENT_SCALE) * progress
     val currentOnTapWhenOpen = rememberUpdatedState(onTapWhenOpen)
+    val showTapBlocker = remember(progress) {
+        derivedStateOf { progress.value > 0.01f }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer {
-                translationX = (drawerWidth * progress).toPx()
+                val currentProgress = progress.value
+                val scale = 1f - (1f - ChatDrawerSpec.CONTENT_SCALE) * currentProgress
+                translationX = (drawerWidth * currentProgress).toPx()
                 scaleX = scale
                 scaleY = scale
                 transformOrigin = TransformOrigin(0f, 0.5f)
-                shadowElevation = (ChatDrawerSpec.SHADOW * progress).toPx()
-                shape = RoundedCornerShape(ChatDrawerSpec.CORNER_RADIUS * progress)
+                shadowElevation = (ChatDrawerSpec.SHADOW * currentProgress).toPx()
+                shape = RoundedCornerShape(ChatDrawerSpec.CORNER_RADIUS * currentProgress)
                 clip = true
             },
     ) {
         content()
-        if (progress > 0.01f) {
+        if (showTapBlocker.value) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

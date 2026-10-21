@@ -624,3 +624,22 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机视觉验证。未提交、未推送。
+
+## 2026-10-21 12:33
+
+任务：优化缩放式侧栏动画的流畅度，不改变现有视觉和交互。
+
+实现：
+
+- 仅修改 `ChatScalingDrawer.kt`。
+- 动画进度改为 `State<Float>`，位移、缩放、圆角、阴影在 `graphicsLayer` 中读取，避免逐帧重组侧栏和聊天页。
+- 遮罩改为 `drawBehind` 绘制；点击拦截层使用 `derivedStateOf`，只在阈值变化时重组。
+
+验证：
+
+- `:app:assembleRelease` 成功，耗时 4 分 56 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-缩放式侧栏流畅优化.apk`（42,123,094 字节）。
+- SHA-256：`F7B5CDC12F5F57F2158205BE52B9CEAA3F03E3FAA53DF1F46D1200321164ECF2`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机流畅度验证。未提交、未推送。
