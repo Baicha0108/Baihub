@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerDefaults
@@ -19,7 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -37,8 +35,6 @@ private object ChatDrawerSpec {
     val SHADOW = 20.dp
     const val SCRIM_ALPHA = 0.12f
     const val SETTLE_THRESHOLD = 0.25f
-    val EDGE_DRAG_WIDTH = 32.dp
-
     val SettleSpec = spring<Float>(
         dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMediumLow,
@@ -106,7 +102,7 @@ internal fun ChatScalingDrawer(
                 .background(backdropColor)
                 .background(Color.Black.copy(alpha = scrimAlpha))
                 .horizontalDrawerDrag(
-                    enabled = open,
+                    gestureKey = open,
                     dragSpan = dragSpanDp,
                     progress = { progress.value },
                     onDrag = ::dragBy,
@@ -127,36 +123,17 @@ internal fun ChatScalingDrawer(
                 },
                 content = content,
             )
-
-            // 仅在关闭时从屏幕左边缘拖动打开，避免抢占聊天内容的横向手势。
-            if (!open) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .fillMaxHeight()
-                        .padding(top = 72.dp)
-                        .width(ChatDrawerSpec.EDGE_DRAG_WIDTH)
-                        .horizontalDrawerDrag(
-                            enabled = !open,
-                            dragSpan = dragSpanDp,
-                            progress = { progress.value },
-                            onDrag = ::dragBy,
-                            onSettle = ::settle,
-                        ),
-                )
-            }
         }
     }
 }
 
 private fun Modifier.horizontalDrawerDrag(
-    enabled: Boolean,
+    gestureKey: Any?,
     dragSpan: Dp,
     progress: () -> Float,
     onDrag: (Float) -> Unit,
     onSettle: (Float) -> Unit,
-): Modifier = pointerInput(enabled, dragSpan) {
-    if (!enabled) return@pointerInput
+): Modifier = pointerInput(gestureKey, dragSpan) {
     val dragSpanPx = dragSpan.toPx()
     var startProgress = progress()
     detectHorizontalDragGestures(
