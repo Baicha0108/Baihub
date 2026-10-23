@@ -15,7 +15,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -62,6 +61,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private const val PROXY_TEST_URL = "https://www.google.com/generate_204"
@@ -261,7 +261,7 @@ fun SettingPreferencesNetworkPage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_page_preferences_network)) } },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,

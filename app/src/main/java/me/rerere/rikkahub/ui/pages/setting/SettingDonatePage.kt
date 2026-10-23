@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -43,6 +42,7 @@ import me.rerere.rikkahub.utils.onLoading
 import me.rerere.rikkahub.utils.onSuccess
 import me.rerere.rikkahub.utils.openUrl
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -51,7 +51,7 @@ fun SettingDonatePage() {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(text = stringResource(R.string.donate_page_title))

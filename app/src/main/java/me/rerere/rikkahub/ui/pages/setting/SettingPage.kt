@@ -19,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -92,6 +91,7 @@ import me.rerere.ui.icons.DiscordIcon
 import me.rerere.ui.icons.TencentQQIcon
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -131,7 +131,7 @@ fun SettingPage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(text = stringResource(R.string.settings))

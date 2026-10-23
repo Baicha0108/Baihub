@@ -748,3 +748,23 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机验证。未推送。
+
+## 2026-10-23 15:22
+
+任务：修复设置页大标题胶囊在顶栏收起时被裁切的问题。
+
+实现：
+
+- 新增 `SettingsLargeTopAppBar`，改用 `TwoRowsTopAppBar` 的独立 expanded/small title 布局。
+- 展开状态使用无胶囊的大标题，收起状态使用带胶囊的小标题。
+- `SettingsTopBarTitle` 通过 CompositionLocal 区分展开与收起状态。
+- 18 个使用大标题栏的设置页统一切换到新组件。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 3 分 8 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-设置标题双层修复.apk`（16,232,746 字节）。
+- SHA-256：`EBE738145A99E0664BAB80AD87DD882853C537412E0C8F69EE8587A53A7EA8A2`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机滚动和标题动画验证。未提交、未推送。

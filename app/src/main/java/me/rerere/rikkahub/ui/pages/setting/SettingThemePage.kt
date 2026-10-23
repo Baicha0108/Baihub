@@ -28,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -86,6 +85,7 @@ import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 import kotlin.uuid.Uuid
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private val themeJson = Json {
@@ -111,7 +111,7 @@ fun SettingThemePage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_page_theme_setting)) } },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,

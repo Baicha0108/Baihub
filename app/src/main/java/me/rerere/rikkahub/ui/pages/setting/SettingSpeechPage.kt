@@ -27,7 +27,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -79,6 +78,7 @@ import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class SpeechTab(
@@ -102,7 +102,7 @@ fun SettingSpeechPage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(text = stringResource(R.string.speech_page_title))

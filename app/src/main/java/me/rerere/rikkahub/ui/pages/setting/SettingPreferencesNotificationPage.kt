@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,6 +43,7 @@ import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.utils.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private val UPDATE_PAUSE_DAY_OPTIONS = listOf(7, 14, 21)
@@ -74,7 +74,7 @@ fun SettingPreferencesNotificationPage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(stringResource(R.string.setting_page_preferences_notification))

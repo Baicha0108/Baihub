@@ -26,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -85,6 +84,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class MediaTab(
@@ -107,7 +107,7 @@ fun SettingMediaPage(vm: SettingVM = koinViewModel()) {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(stringResource(R.string.setting_page_media))

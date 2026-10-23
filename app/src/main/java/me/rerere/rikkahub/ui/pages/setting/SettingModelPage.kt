@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,6 +47,7 @@ import me.rerere.rikkahub.ui.components.ui.PagerTabs
 import me.rerere.rikkahub.ui.components.ui.switchItem
 import me.rerere.rikkahub.ui.theme.CustomColors
 import org.koin.androidx.compose.koinViewModel
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 private enum class ModelSettingTab(
@@ -70,7 +70,7 @@ fun SettingModelPage(vm: SettingVM = koinViewModel()) {
     Scaffold(
         containerColor = CustomColors.topBarColors.containerColor,
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_model_page_title)) } },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,

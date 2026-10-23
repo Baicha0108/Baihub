@@ -19,7 +19,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProvideTextStyle
@@ -64,6 +63,7 @@ import me.rerere.search.SearchServiceOptions
 import me.rerere.ui.components.FormItem
 import org.koin.androidx.compose.koinViewModel
 import kotlin.uuid.Uuid
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -88,7 +88,7 @@ fun SettingSearchDetailPage(
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(options.displayName)

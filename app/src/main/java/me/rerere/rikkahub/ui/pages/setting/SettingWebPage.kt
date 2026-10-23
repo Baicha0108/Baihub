@@ -22,7 +22,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -67,6 +66,7 @@ import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.web.WebServerManager
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -131,7 +131,7 @@ fun SettingWebPage() {
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_page_web_server)) } },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,

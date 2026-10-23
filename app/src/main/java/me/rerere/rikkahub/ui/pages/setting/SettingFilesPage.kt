@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -89,6 +88,7 @@ import me.rerere.rikkahub.utils.fileSizeToString
 import org.koin.compose.koinInject
 import java.io.File
 import java.util.concurrent.TimeUnit
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,7 +175,7 @@ fun SettingFilesPage(
 
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_files_page_title)) } },
                 navigationIcon = { BackButton() },
                 actions = {

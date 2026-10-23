@@ -27,7 +27,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -86,6 +85,7 @@ import me.rerere.rikkahub.utils.writeClipboardText
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -97,7 +97,7 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         topBar = {
-            LargeFlexibleTopAppBar(
+            SettingsLargeTopAppBar(
                 title = {
                     SettingsTopBarTitle {
                         Text(stringResource(R.string.setting_mcp_page_title))
