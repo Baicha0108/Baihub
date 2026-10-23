@@ -795,6 +795,30 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-10-23 19:16
+
+任务：同步上游 `41ce12f6..e48db7bc`，共 6 个提交。
+
+上游主要内容：
+
+- 后台生成时显示可查看进度、快速回复的聊天悬浮窗。
+- 抽出应用 Logo 的绘制与变形轮廓。
+- Tavily 搜索可关闭生成答案，完善搜索 query 参数说明。
+- 修复记忆文件删除内容后仍超限时无法保存的问题。
+
+合并处理：
+
+- 创建同步前标签 `pre-upstream-20261023-2`。
+- `SettingAboutPage.kt` 唯一冲突为双方各自新增的 import；合并保留上游 Logo 组件与 Baihub 顶部遮罩。
+- 包名继续为 `me.baicha.baihub`，显示名继续为 `Baihub`，仅构建 `arm64-v8a`。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功，耗时 4 分 45 秒。
+- 上游新增的 `GenerationPhaseTest`、`ChatFloatingTrackerTest`、`ConversationSessionTest`、`FloatingChatUiStateTest` 全部通过。
+
+备注：本次仅同步和提交，未推送、未构建 APK。
+
 ## 2026-10-23 15:50
 
 任务：修复大标题向上收起时从下沿开始被裁剪的问题。
