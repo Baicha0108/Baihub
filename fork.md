@@ -725,3 +725,26 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机操作验证。未提交、未推送。
+
+## 2026-10-23 14:45
+
+任务：同步合并上游 `rikkahub/rikkahub` 最新 28 个提交。
+
+合并：
+
+- 上游范围：`e5bb7073..41ce12f6`，最新提交为 models.dev 模型能力识别。
+- 合并提交：`15e616ba`。
+- 同步前创建本地备份标签：`pre-upstream-20261023`。
+- 冲突：`RikkaHubApp.kt` 与 `SettingSearchPage.kt` 的 import 块；保留 `LocalFileUrlRepair` 和 `SettingsTopBarTitle`，其余采用上游结构。
+- 上游新增 github/play 分发渠道；Baihub 包名 `me.baicha.baihub`、显示名和仅 arm64-v8a 配置均保留。
+- 版本继续为 `3.1.0 (193)`。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 4 分 17 秒。
+- 自定义提示词、导出合并、文件路径修复、备份路径改写单元测试通过，耗时 2 分 23 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-同步上游20261023.apk`（16,233,538 字节）。
+- SHA-256：`6A47BD25372638D78C1C2108830E4105487F3A99705809214FAEFCD52C332C26`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机验证。未推送。
