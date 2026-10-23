@@ -816,8 +816,12 @@
 
 - `:app:compileGithubDebugKotlin` 成功，耗时 4 分 45 秒。
 - 上游新增的 `GenerationPhaseTest`、`ChatFloatingTrackerTest`、`ConversationSessionTest`、`FloatingChatUiStateTest` 全部通过。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 38 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-同步上游第二批.apk`（16,281,930 字节）。
+- SHA-256：`CB90069F0A3583CD04C739C11FF469C22C281FDF127D8D9D185662FE345B12DD`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
-备注：本次仅同步和提交，未推送、未构建 APK。
+备注：本次已同步、提交并构建，未推送。
 
 ## 2026-10-23 15:50
 
