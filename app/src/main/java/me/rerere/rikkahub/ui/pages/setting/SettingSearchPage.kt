@@ -63,7 +63,6 @@ import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import kotlin.reflect.full.primaryConstructor
 import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @Composable
@@ -256,7 +255,7 @@ private fun AddProviderDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val instance = selectedType.primaryConstructor!!.callBy(mapOf())
+                    val instance = SearchServiceOptions.FACTORIES.getValue(selectedType)()
                     onConfirm(instance)
                 }
             ) {
