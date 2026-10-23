@@ -768,3 +768,29 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机滚动和标题动画验证。未提交、未推送。
+
+## 2026-10-23 15:42
+
+任务：彻底修复透明设置顶栏的大标题向上移动时被硬裁剪的问题。
+
+原因：
+
+- 透明顶栏改造后，Material3 大标题所在的 `TopAppBarLayout` 仍使用 `clipToBounds`；大标题向上收起时，裁剪边界在透明背景下直接可见。
+- 只拆分标题插槽或调整胶囊高度都不能绕过这条裁剪线。
+
+实现：
+
+- `SettingsLargeTopAppBar` 改为自定义图层，不再使用 `TwoRowsTopAppBar` 的裁剪容器。
+- 小标题固定在 64dp 上行；大标题放在独立、不裁剪的图层中。
+- 大标题按滚动进度向上移动并提前淡出，小标题胶囊按进度淡入。
+- 保留顶部 insets、透明容器、导航按钮和 actions。
+- 18 个设置大标题页继续统一使用新组件。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 3 分 20 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-设置标题自定义图层.apk`（16,237,394 字节）。
+- SHA-256：`2C8DE51C54D7EB5E11ADC5EB5B33BCED0493AE8367B22633C47E8A759EA0C7F3`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
