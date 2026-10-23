@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -111,25 +112,26 @@ internal fun SettingsLargeTopAppBar(
                     }
                 }
             }
+        }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-                    .graphicsLayer {
-                        alpha = largeTitleAlpha
-                        translationY = largeTitleTranslation
-                    },
-                contentAlignment = Alignment.BottomStart,
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .requiredHeight(56.dp)
+                .padding(horizontal = 16.dp)
+                .graphicsLayer {
+                    alpha = largeTitleAlpha
+                    translationY = largeTitleTranslation
+                },
+            contentAlignment = Alignment.BottomStart,
+        ) {
+            CompositionLocalProvider(
+                LocalSettingsTopBarExpanded provides true,
+                LocalTextStyle provides MaterialTheme.typography.displaySmall,
+                LocalContentColor provides titleColor,
             ) {
-                CompositionLocalProvider(
-                    LocalSettingsTopBarExpanded provides true,
-                    LocalTextStyle provides MaterialTheme.typography.displaySmall,
-                    LocalContentColor provides titleColor,
-                ) {
-                    title()
-                }
+                title()
             }
         }
     }

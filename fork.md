@@ -794,3 +794,27 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
+
+## 2026-10-23 15:50
+
+任务：修复大标题向上收起时从下沿开始被裁剪的问题。
+
+原因：
+
+- 大标题放在随滚动缩小的 `Column.weight(1f)` 中，文本在布局阶段就被压缩高度。
+- `graphicsLayer` 只能做平移和淡出，无法恢复已被布局约束裁掉的文字。
+
+实现：
+
+- 大标题移出 `Column.weight`，改为外层 `Box` 的独立覆盖层。
+- 使用 `requiredHeight(56.dp)` 固定大标题测量高度，布局尺寸不再随外层收起高度缩小。
+- 大标题以底边对齐外层，随顶栏高度变化整体上移，再通过 `graphicsLayer` 额外平移和提前淡出。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 3 分 19 秒。
+- 产物：`dist/baihub-3.1.0-arm64-v8a-设置标题固定图层.apk`（16,237,458 字节）。
+- SHA-256：`B36A9C00FD84FC0118C61E0231275AABDA3F2E3B46BBE0D1772E262AFC49141D`。
+- 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
