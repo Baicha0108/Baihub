@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.DropdownMenu
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -61,16 +63,13 @@ import me.rerere.hugeicons.stroke.ChartColumn
 import me.rerere.hugeicons.stroke.Delete01
 import me.rerere.hugeicons.stroke.Folder01
 import me.rerere.hugeicons.stroke.FolderAdd
-import me.rerere.hugeicons.stroke.Image02
 import me.rerere.hugeicons.stroke.ImageToVideo
 import me.rerere.hugeicons.stroke.InLove
 import me.rerere.hugeicons.stroke.LanguageCircle
-import me.rerere.hugeicons.stroke.LookTop
 import me.rerere.hugeicons.stroke.PencilEdit01
 import me.rerere.hugeicons.stroke.Search01
 import me.rerere.hugeicons.stroke.Settings03
 import me.rerere.hugeicons.stroke.Sorting01
-import me.rerere.hugeicons.stroke.Sparkles
 import me.rerere.hugeicons.stroke.Tick01
 import me.rerere.hugeicons.stroke.TransactionHistory
 import me.rerere.rikkahub.BuildConfig
@@ -165,9 +164,6 @@ fun ChatDrawerContent(
     var showCreateFolderDialog by remember { mutableStateOf(false) }
     var folderToRename by remember { mutableStateOf<Folder?>(null) }
     var folderToDelete by remember { mutableStateOf<Folder?>(null) }
-
-    // Menu popup 状态
-    var showMenuPopup by remember { mutableStateOf(false) }
 
     val updateCheckDisabledUntil = settings.displaySetting.updateCheckDisabledUntilEpochMillis
     var updateChecksEnabled by remember(updateCheckDisabledUntil) {
@@ -378,82 +374,86 @@ fun ChatDrawerContent(
             )
 
             Row(
-                horizontalArrangement = Arrangement.SpaceAround,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
             ) {
-                DrawerAction(
-                    icon = {
-                        Icon(
-                            imageVector = HugeIcons.LookTop,
-                            contentDescription = stringResource(R.string.assistant_page_title)
-                        )
-                    },
-                    label = {
-                        Text(stringResource(R.string.assistant_page_title))
-                    },
-                    onClick = {
-                        navController.navigate(Screen.Assistant)
-                    },
-                )
-
-                Box {
-                    DrawerAction(
-                        icon = {
-                            Icon(HugeIcons.Sparkles, "Menu")
-                        },
-                        label = {
-                            Text(stringResource(R.string.menu))
-                        },
-                        onClick = {
-                            showMenuPopup = true
-                        },
-                    )
-                    DropdownMenu(
-                        expanded = showMenuPopup,
-                        onDismissRequest = { showMenuPopup = false },
-                        shape = PopupMenuShape,
+                // 四个快捷入口共用一个胶囊背景，点击区域仍然彼此独立
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(percent = 50),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.chat_page_menu_image_generation)) },
-                            leadingIcon = { Icon(HugeIcons.Image02, null) },
+                        DrawerAction(
+                            containerColor = Color.Transparent,
+                            icon = {
+                                Icon(
+                                    HugeIcons.LanguageCircle,
+                                    stringResource(R.string.chat_page_menu_ai_translator),
+                                )
+                            },
+                            label = {
+                                Text(stringResource(R.string.chat_page_menu_ai_translator))
+                            },
                             onClick = {
-                                showMenuPopup = false
-                                navController.navigate(Screen.ImageGen)
-                            }
+                                navController.navigate(Screen.Translator)
+                            },
+                        )
+
+                        DrawerAction(
+                            containerColor = Color.Transparent,
+                            icon = {
+                                Icon(
+                                    HugeIcons.ImageToVideo,
+                                    stringResource(R.string.media_creation_title),
+                                )
+                            },
+                            label = {
+                                Text(stringResource(R.string.media_creation_title))
+                            },
+                            onClick = {
+                                navController.navigate(Screen.MediaCreationSessions)
+                            },
+                        )
+
+                        DrawerAction(
+                            containerColor = Color.Transparent,
+                            icon = {
+                                Icon(HugeIcons.InLove, stringResource(R.string.favorite_page_title))
+                            },
+                            label = {
+                                Text(stringResource(R.string.favorite_page_title))
+                            },
+                            onClick = {
+                                navController.navigate(Screen.Favorite)
+                            },
+                        )
+
+                        DrawerAction(
+                            containerColor = Color.Transparent,
+                            icon = {
+                                Icon(HugeIcons.ChartColumn, "统计数据")
+                            },
+                            label = {
+                                Text("统计数据")
+                            },
+                            onClick = {
+                                navController.navigate(Screen.Stats)
+                            },
                         )
                     }
                 }
 
-                DrawerAction(
-                    icon = {
-                        Icon(HugeIcons.InLove, stringResource(R.string.favorite_page_title))
-                    },
-                    label = {
-                        Text(stringResource(R.string.favorite_page_title))
-                    },
-                    onClick = {
-                        navController.navigate(Screen.Favorite)
-                    },
-                )
-
-                DrawerAction(
-                    icon = {
-                        Icon(HugeIcons.ChartColumn, "统计数据")
-                    },
-                    label = {
-                        Text("统计数据")
-                    },
-                    onClick = {
-                        navController.navigate(Screen.Stats)
-                    },
-                )
-
                 Spacer(Modifier.weight(1f))
 
                 DrawerAction(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                     icon = {
                         Icon(HugeIcons.Settings03, null)
                     },
@@ -750,20 +750,6 @@ private fun DrawerActions(navController: Navigator) {
             trailingDescription = stringResource(R.string.chat_page_search_chats),
             onTrailingClick = { navController.navigate(Screen.MessageSearch) },
         )
-
-        // 媒体创作入口
-        DrawerEntry(
-            icon = HugeIcons.ImageToVideo,
-            text = stringResource(R.string.media_creation_title),
-            onClick = { navController.navigate(Screen.MediaCreationSessions) },
-        )
-
-        // 翻译入口
-        DrawerEntry(
-            icon = HugeIcons.LanguageCircle,
-            text = stringResource(R.string.chat_page_menu_ai_translator),
-            onClick = { navController.navigate(Screen.Translator) },
-        )
     }
 }
 
@@ -857,14 +843,15 @@ private fun MemoryDreamingEntry(onClick: () -> Unit) {
 @Composable
 private fun DrawerAction(
     modifier: Modifier = Modifier,
+    containerColor: Color,
     icon: @Composable () -> Unit,
     label: @Composable () -> Unit,
     onClick: () -> Unit,
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = modifier.size(48.dp),
+        color = containerColor,
         shape = CircleShape,
         contentColor = MaterialTheme.colorScheme.onSurface,
     ) {
@@ -875,7 +862,7 @@ private fun DrawerAction(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(14.dp)
                     .size(20.dp),
             ) {
                 icon()
