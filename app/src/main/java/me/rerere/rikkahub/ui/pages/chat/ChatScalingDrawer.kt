@@ -1,8 +1,8 @@
 package me.rerere.rikkahub.ui.pages.chat
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,9 +38,11 @@ private object ChatDrawerSpec {
     val SHADOW = 20.dp
     const val SCRIM_ALPHA = 0.12f
     const val SETTLE_THRESHOLD = 0.25f
-    val SettleSpec = spring<Float>(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMediumLow,
+    // 弹簧默认会在距离目标约 1% 时结束，随后直接写入终点；对 300dp 位移会造成约 3dp 的末尾跳动。
+    // 使用固定时长缓动保证最后一帧连续落到准确的 0/1。
+    val SettleSpec = tween<Float>(
+        durationMillis = 340,
+        easing = FastOutSlowInEasing,
     )
 }
 
@@ -124,6 +126,7 @@ internal fun ChatScalingDrawer(
             ScaledHomePanel(
                 drawerWidth = drawerWidth,
                 progress = progressState,
+                blockClicks = open,
                 onTapWhenOpen = {
                     onOpenChange(false)
                 },
@@ -176,13 +179,11 @@ private fun DrawerSlidePanel(
 private fun ScaledHomePanel(
     drawerWidth: Dp,
     progress: State<Float>,
+    blockClicks: Boolean,
     onTapWhenOpen: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val currentOnTapWhenOpen = rememberUpdatedState(onTapWhenOpen)
-    val showTapBlocker = remember(progress) {
-        derivedStateOf { progress.value > 0.01f }
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,7 +200,7 @@ private fun ScaledHomePanel(
             },
     ) {
         content()
-        if (showTapBlocker.value) {
+        if (blockClicks) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
