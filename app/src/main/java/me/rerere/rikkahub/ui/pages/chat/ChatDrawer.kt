@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -391,6 +392,7 @@ fun ChatDrawerContent(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         DrawerAction(
+                            actionSize = 40.dp,
                             containerColor = Color.Transparent,
                             icon = {
                                 Icon(
@@ -407,6 +409,7 @@ fun ChatDrawerContent(
                         )
 
                         DrawerAction(
+                            actionSize = 40.dp,
                             containerColor = Color.Transparent,
                             icon = {
                                 Icon(
@@ -423,6 +426,7 @@ fun ChatDrawerContent(
                         )
 
                         DrawerAction(
+                            actionSize = 40.dp,
                             containerColor = Color.Transparent,
                             icon = {
                                 Icon(HugeIcons.InLove, stringResource(R.string.favorite_page_title))
@@ -436,6 +440,7 @@ fun ChatDrawerContent(
                         )
 
                         DrawerAction(
+                            actionSize = 40.dp,
                             containerColor = Color.Transparent,
                             icon = {
                                 Icon(HugeIcons.ChartColumn, "统计数据")
@@ -843,6 +848,7 @@ private fun MemoryDreamingEntry(onClick: () -> Unit) {
 @Composable
 private fun DrawerAction(
     modifier: Modifier = Modifier,
+    actionSize: Dp = 48.dp,
     containerColor: Color,
     icon: @Composable () -> Unit,
     label: @Composable () -> Unit,
@@ -850,7 +856,7 @@ private fun DrawerAction(
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier.size(48.dp),
+        modifier = modifier.size(actionSize),
         color = containerColor,
         shape = CircleShape,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -862,7 +868,7 @@ private fun DrawerAction(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(14.dp)
+                    .padding((actionSize - 20.dp) / 2f)
                     .size(20.dp),
             ) {
                 icon()
