@@ -3,6 +3,7 @@ package me.rerere.rikkahub.ui.pages.chat
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -109,6 +110,8 @@ fun ChatDrawerContent(
     vm: ChatVM,
     settings: Settings,
     current: Conversation,
+    onProfileAreaClick: () -> Unit = {},
+    onProfileAreaLongClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -201,60 +204,72 @@ fun ChatDrawerContent(
                 onClick = { navController.navigate(Screen.Backup) },
             )
 
-            // 用户头像和昵称自定义区域
-            Row(
+            // 透明的大圆角交互区域；头像和昵称作为前景叠在它上面
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    .clip(RoundedCornerShape(24.dp))
+                    .combinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onProfileAreaClick,
+                        onLongClick = onProfileAreaLongClick,
+                    ),
             ) {
-                UIAvatar(
-                    name = settings.displaySetting.userNickname.ifBlank { stringResource(R.string.user_default_name) },
-                    value = settings.displaySetting.userAvatar,
-                    onUpdate = { newAvatar ->
-                        vm.updateSettings {
-                            it.copy(
-                                displaySetting = it.displaySetting.copy(
-                                    userAvatar = newAvatar
-                                )
-                            )
-                        }
-                    },
-                    modifier = Modifier.size(50.dp),
-                )
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(
-                            text = settings.displaySetting.userNickname.ifBlank { stringResource(R.string.user_default_name) },
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable {
-                                nicknameEditState.open(settings.displaySetting.userNickname)
+                    UIAvatar(
+                        name = settings.displaySetting.userNickname.ifBlank { stringResource(R.string.user_default_name) },
+                        value = settings.displaySetting.userAvatar,
+                        onUpdate = { newAvatar ->
+                            vm.updateSettings {
+                                it.copy(
+                                    displaySetting = it.displaySetting.copy(
+                                        userAvatar = newAvatar
+                                    )
+                                )
                             }
-                        )
+                        },
+                        modifier = Modifier.size(50.dp),
+                    )
 
-                        Icon(
-                            imageVector = HugeIcons.PencilEdit01,
-                            contentDescription = "Edit",
-                            modifier = Modifier
-                                .onClick {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(
+                                text = settings.displaySetting.userNickname.ifBlank { stringResource(R.string.user_default_name) },
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.clickable {
                                     nicknameEditState.open(settings.displaySetting.userNickname)
                                 }
-                                .size(LocalTextStyle.current.fontSize.toDp())
+                            )
+
+                            Icon(
+                                imageVector = HugeIcons.PencilEdit01,
+                                contentDescription = "Edit",
+                                modifier = Modifier
+                                    .onClick {
+                                        nicknameEditState.open(settings.displaySetting.userNickname)
+                                    }
+                                    .size(LocalTextStyle.current.fontSize.toDp())
+                            )
+                        }
+                        Greeting(
+                            style = MaterialTheme.typography.labelMedium,
                         )
                     }
-                    Greeting(
-                        style = MaterialTheme.typography.labelMedium,
-                    )
                 }
             }
 
