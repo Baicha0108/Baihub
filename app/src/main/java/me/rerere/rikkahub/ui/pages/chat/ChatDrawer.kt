@@ -69,6 +69,7 @@ import me.rerere.hugeicons.stroke.FolderAdd
 import me.rerere.hugeicons.stroke.ImageToVideo
 import me.rerere.hugeicons.stroke.InLove
 import me.rerere.hugeicons.stroke.LanguageCircle
+import me.rerere.hugeicons.stroke.MagicWand01
 import me.rerere.hugeicons.stroke.PencilEdit01
 import me.rerere.hugeicons.stroke.Search01
 import me.rerere.hugeicons.stroke.Settings03
@@ -83,6 +84,7 @@ import me.rerere.rikkahub.data.datastore.Settings
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Conversation
 import me.rerere.rikkahub.data.model.Folder
+import me.rerere.rikkahub.data.model.PromptInjection
 import me.rerere.rikkahub.data.repository.ConversationRepository
 import me.rerere.rikkahub.ui.components.ai.AssistantPicker
 import me.rerere.rikkahub.ui.components.ui.BackupReminderCard
@@ -96,14 +98,18 @@ import me.rerere.rikkahub.ui.context.Navigator
 import me.rerere.ui.toast.ToastType
 import me.rerere.rikkahub.ui.hooks.EditStateContent
 import me.rerere.rikkahub.ui.hooks.readBooleanPreference
+import me.rerere.rikkahub.ui.hooks.rememberSharedPreferenceString
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.modifier.onClick
+import me.rerere.rikkahub.ui.pages.extensions.ModeInjectionEditSheet
 import me.rerere.rikkahub.utils.navigateToChatPage
 import me.rerere.rikkahub.utils.toDp
 import me.rerere.ui.components.Tooltip
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.uuid.Uuid
+
+private const val MODE_INJECTION_SHORTCUT_PREF = "sidebar_mode_injection_shortcut_id"
 
 @Composable
 fun ChatDrawerContent(
@@ -118,6 +124,19 @@ fun ChatDrawerContent(
     val context = LocalContext.current
     val toaster = LocalToaster.current
     val repo = koinInject<ConversationRepository>()
+    val modeInjectionShortcutPreference = rememberSharedPreferenceString(
+        MODE_INJECTION_SHORTCUT_PREF
+    )
+    var showModeInjectionPicker by remember { mutableStateOf(false) }
+    var editingModeInjection by remember { mutableStateOf<PromptInjection.ModeInjection?>(null) }
+    val selectedModeInjection = remember(
+        settings.modeInjections,
+        modeInjectionShortcutPreference.value,
+    ) {
+        modeInjectionShortcutPreference.value
+            ?.let { value -> runCatching { Uuid.parse(value) }.getOrNull() }
+            ?.let { id -> settings.modeInjections.firstOrNull { it.id == id } }
+    }
 
     val activity = context as ComponentActivity
     val drawerVm: ChatDrawerVM = koinViewModel(viewModelStoreOwner = activity)
@@ -213,8 +232,21 @@ fun ChatDrawerContent(
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = LocalIndication.current,
-                        onClick = onProfileAreaClick,
-                        onLongClick = onProfileAreaLongClick,
+                        onClick = {
+                            onProfileAreaClick()
+                            selectedModeInjection?.let {
+                                editingModeInjection = it
+                            } ?: run {
+                                if (modeInjectionShortcutPreference.value != null) {
+                                    modeInjectionShortcutPreference.value = null
+                                }
+                                showModeInjectionPicker = true
+                            }
+                        },
+                        onLongClick = {
+                            onProfileAreaLongClick()
+                            showModeInjectionPicker = true
+                        },
                     ),
             ) {
                 Row(
@@ -757,6 +789,156 @@ fun ChatDrawerContent(
             }
         }
     }
+
+    if (showModeInjectionPicker) {
+        ModeInjectionShortcutDialog(
+            modeInjections = settings.modeInjections,
+            selectedId = selectedModeInjection?.id,
+            onSelect = { injection ->
+                modeInjectionShortcutPreference.value = injection.id.toString()
+                showModeInjectionPicker = false
+            },
+            onDismiss = { showModeInjectionPicker = false },
+            onManage = {
+                showModeInjectionPicker = false
+                navController.navigate(Screen.Prompts)
+            },
+        )
+    }
+
+    editingModeInjection?.let { injection ->
+        ModeInjectionEditSheet(
+            injection = injection,
+            onDismiss = { editingModeInjection = null },
+            onEdit = { editingModeInjection = it },
+            onConfirm = {
+                editingModeInjection?.let { edited ->
+                    vm.updateSettings { latest ->
+                        val index = latest.modeInjections.indexOfFirst { it.id == edited.id }
+                        if (index < 0) {
+                            latest
+                        } else {
+                            latest.copy(
+                                modeInjections = latest.modeInjections.toMutableList().apply {
+                                    set(index, edited)
+                                }
+                            )
+                        }
+                    }
+                }
+                editingModeInjection = null
+            },
+        )
+    }
+}
+
+@Composable
+private fun ModeInjectionShortcutDialog(
+    modeInjections: List<PromptInjection.ModeInjection>,
+    selectedId: Uuid?,
+    onSelect: (PromptInjection.ModeInjection) -> Unit,
+    onDismiss: () -> Unit,
+    onManage: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(stringResource(R.string.sidebar_prompt_selector_title))
+                Text(
+                    text = stringResource(R.string.sidebar_prompt_selector_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        text = {
+            if (modeInjections.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.sidebar_prompt_selector_empty),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    TextButton(onClick = onManage) {
+                        Text(stringResource(R.string.sidebar_prompt_selector_manage))
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 480.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(modeInjections, key = { it.id }) { injection ->
+                        val selected = injection.id == selectedId
+                        Surface(
+                            onClick = { onSelect(injection) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (selected) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerLow
+                            },
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = HugeIcons.MagicWand01,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                                ) {
+                                    Text(
+                                        text = injection.name.ifBlank {
+                                            stringResource(R.string.prompt_page_unnamed)
+                                        },
+                                        style = MaterialTheme.typography.titleSmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        text = stringResource(
+                                            if (injection.enabled) {
+                                                R.string.prompt_page_enabled
+                                            } else {
+                                                R.string.prompt_page_disabled
+                                            }
+                                        ),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                if (selected) {
+                                    Icon(
+                                        imageVector = HugeIcons.Tick01,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+    )
 }
 
 @Composable

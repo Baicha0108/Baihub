@@ -534,6 +534,10 @@
   <string name="prompt_page_unnamed">未命名</string>
   <string name="prompt_page_unnamed_entry">未命名条目</string>
   <string name="prompt_page_unnamed_lorebook">未命名世界书</string>
+  <string name="sidebar_prompt_selector_title">选择提示词</string>
+  <string name="sidebar_prompt_selector_description">选择提示词条目，以后可点击该区域快速编辑</string>
+  <string name="sidebar_prompt_selector_empty">暂无可选择的模式注入</string>
+  <string name="sidebar_prompt_selector_manage">前往提示词管理</string>
   <string name="prompt_page_use_regex">使用正则表达式</string>
   <string name="quick_messages_page_add_title">添加快捷消息</string>
   <string name="quick_messages_page_delete_message">确定要删除“%s”吗？此操作无法撤销。</string>
