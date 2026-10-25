@@ -427,7 +427,8 @@ fun ChatDrawerContent(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    // 与上方助手头像所在的抽屉条目保持相同的右侧视觉留白
+                    .padding(start = 8.dp, end = 16.dp)
             ) {
                 // 四个快捷入口共用一个胶囊背景，点击区域仍然彼此独立
                 Surface(
