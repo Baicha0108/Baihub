@@ -823,6 +823,35 @@
 
 备注：本次已同步、提交并构建，未推送。
 
+## 2026-10-25 09:35
+
+任务：同步上游 `e48db7bc..ad2c4430`，共 14 个提交，并构建 Release APK。
+
+上游主要内容：
+
+- 版本提升到 `3.1.1 (194)`。
+- 新增记忆整理模型设置，媒体提供商配置改为独立详情页。
+- 修复 TTS 朗读 HTML 标签、收藏模型拖动抽搐、连续返回导致导航栈弹空、Markdown 公式 `<` 被误判为 HTML。
+- 联网搜索入口移到输入栏加号面板，新增公共 `SwipeToDelete` 组件。
+- 更新依赖，启用 Gradle 并行构建并调整 R8 keep 规则。
+
+合并处理：
+
+- 创建同步前标签 `pre-upstream-20261025`。
+- `ChatInput.kt` 与 `ChatPage.kt` 冲突已解决：采用上游加号面板搜索入口，同时保留自定义提示词快捷按钮。
+- 包名继续为 `me.baicha.baihub`，显示名继续为 `Baihub`，仅构建 `arm64-v8a`。
+
+验证：
+
+- `:app:testGithubDebugUnitTest` 共运行 514 项，507 项通过。
+- 7 项失败均为 Windows 下 DataStore 临时文件原子重命名 `IOException`，串行复跑结果相同，应用编译正常。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 40 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游3.1.1.apk`（16,291,460 字节）。
+- SHA-256：`9B9033163ADA7B0152DBA586B8B074053A6DF185C1D7B4D2902E149528E98728`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，仅 `arm64-v8a`。
+
+备注：未推送。
+
 ## 2026-10-23 15:50
 
 任务：修复大标题向上收起时从下沿开始被裁剪的问题。
