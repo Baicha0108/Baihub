@@ -2,6 +2,7 @@ package me.rerere.rikkahub.ui.pages.chat
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -28,6 +29,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 private object ChatDrawerSpec {
@@ -38,11 +42,16 @@ private object ChatDrawerSpec {
     val SHADOW = 20.dp
     const val SCRIM_ALPHA = 0.12f
     const val SETTLE_THRESHOLD = 0.25f
-    // 弹簧默认会在距离目标约 1% 时结束，随后直接写入终点；对 300dp 位移会造成约 3dp 的末尾跳动。
-    // 使用固定时长缓动保证最后一帧连续落到准确的 0/1。
-    val SettleSpec = tween<Float>(
+    // 按钮、返回键和点击外部触发的开合从静止开始，使用平滑起步并准确落到 0/1。
+    val ProgrammaticSpec = tween<Float>(
         durationMillis = 340,
         easing = FastOutSlowInEasing,
+    )
+
+    // 手指松开时仍有速度，缓动起点必须保留向前速度，避免“刹停后再启动”的停顿。
+    val DragSettleSpec = tween<Float>(
+        durationMillis = 300,
+        easing = LinearOutSlowInEasing,
     )
 }
 
@@ -62,11 +71,19 @@ internal fun ChatScalingDrawer(
     val progress = remember { Animatable(if (open) 1f else 0f) }
     val progressState = remember(progress) { derivedStateOf { progress.value } }
     val scope = rememberCoroutineScope()
+    val latestOnOpenChange = rememberUpdatedState(onOpenChange)
 
     LaunchedEffect(open) {
+        val target = if (open) 1f else 0f
+        if (
+            (progress.targetValue == target && progress.isRunning) ||
+            (!progress.isRunning && progress.value == target)
+        ) {
+            return@LaunchedEffect
+        }
         progress.animateTo(
-            targetValue = if (open) 1f else 0f,
-            animationSpec = ChatDrawerSpec.SettleSpec,
+            targetValue = target,
+            animationSpec = ChatDrawerSpec.ProgrammaticSpec,
         )
     }
 
@@ -81,22 +98,15 @@ internal fun ChatScalingDrawer(
                 delta < -ChatDrawerSpec.SETTLE_THRESHOLD -> false
                 else -> progress.value > 0.5f
             }
-            val openChanged = target != open
-            onOpenChange(target)
-            if (!openChanged) {
-                scope.launch {
-                    progress.animateTo(
-                        targetValue = if (target) 1f else 0f,
-                        animationSpec = ChatDrawerSpec.SettleSpec,
-                    )
-                }
+            // 先同步启动吸附动画，再更新 open 状态；LaunchedEffect 会识别到同一目标正在运行，
+            // 从而避免状态切换时取消动画后重新开始。
+            scope.launch(start = CoroutineStart.UNDISPATCHED) {
+                progress.animateTo(
+                    targetValue = if (target) 1f else 0f,
+                    animationSpec = ChatDrawerSpec.DragSettleSpec,
+                )
             }
-        }
-
-        fun dragBy(fraction: Float) {
-            scope.launch {
-                progress.snapTo((progress.value + fraction).coerceIn(0f, 1f))
-            }
+            latestOnOpenChange.value(target)
         }
 
         Box(
@@ -110,10 +120,9 @@ internal fun ChatScalingDrawer(
                     )
                 }
                 .horizontalDrawerDrag(
-                    gestureKey = open,
                     dragSpan = dragSpanDp,
                     progress = { progress.value },
-                    onDrag = ::dragBy,
+                    onDrag = { progress.snapTo(it) },
                     onSettle = ::settle,
                 ),
         ) {
@@ -137,24 +146,43 @@ internal fun ChatScalingDrawer(
 }
 
 private fun Modifier.horizontalDrawerDrag(
-    gestureKey: Any?,
     dragSpan: Dp,
     progress: () -> Float,
-    onDrag: (Float) -> Unit,
+    onDrag: suspend (Float) -> Unit,
     onSettle: (Float) -> Unit,
-): Modifier = pointerInput(gestureKey, dragSpan) {
+): Modifier = pointerInput(dragSpan) {
     val dragSpanPx = dragSpan.toPx()
-    var startProgress = progress()
-    detectHorizontalDragGestures(
-        onDragStart = {
-            startProgress = progress()
-        },
-        onHorizontalDrag = { _, dragAmount ->
-            onDrag(dragAmount / dragSpanPx)
-        },
-        onDragEnd = { onSettle(startProgress) },
-        onDragCancel = { onSettle(startProgress) },
-    )
+    coroutineScope {
+        // 拖动事件可能高于屏幕帧率。合并成最新值并由一个协程串行 snapTo，
+        // 松手前会等待队列清空，避免迟到更新取消吸附动画。
+        val dragUpdates = Channel<Float>(Channel.CONFLATED)
+        val applyDragUpdates = launch {
+            for (target in dragUpdates) {
+                onDrag(target)
+            }
+        }
+        var startProgress = progress()
+        var dragTarget = startProgress
+        var dragStarted = false
+
+        detectHorizontalDragGestures(
+            onDragStart = {
+                startProgress = progress()
+                dragTarget = startProgress
+                dragStarted = true
+            },
+            onHorizontalDrag = { _, dragAmount ->
+                dragTarget = (dragTarget + dragAmount / dragSpanPx).coerceIn(0f, 1f)
+                dragUpdates.trySend(dragTarget)
+            },
+        )
+
+        dragUpdates.close()
+        applyDragUpdates.join()
+        if (dragStarted) {
+            onSettle(startProgress)
+        }
+    }
 }
 
 @Composable
