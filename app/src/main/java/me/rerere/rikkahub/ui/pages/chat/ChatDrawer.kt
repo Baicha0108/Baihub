@@ -933,11 +933,7 @@ private fun ModeInjectionShortcutDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
+        confirmButton = {},
     )
 }
 
