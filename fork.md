@@ -922,6 +922,31 @@
 
 备注：当前没有连接设备，尚未做真机快速滑动对比。未推送。
 
+## 2026-10-25 20:44
+
+任务：修复侧栏手动滑动松手后停留在当前位置、不执行自动吸附的问题。
+
+原因：
+
+- `detectHorizontalDragGestures` 会持续监听后续手势，第一轮拖动结束后不会返回。
+- 因此位于该调用之后的通道关闭、队列等待和 `onSettle` 永远不会执行。
+
+实现：
+
+- 拖动事件通道改为在整个手势检测期间常驻。
+- 每次松手或取消时发送带最终位置和起始位置的 `Finish` 命令。
+- 单协程先应用最终拖动位置，再执行原有开合判断和吸附动画。
+- 保留拖动事件合并、保留起始速度的 `LinearOutSlowInEasing`，以及程序化开合使用的 `FastOutSlowInEasing`。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 3 分 9 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-侧栏松手吸附修复.apk`（16,294,492 字节）。
+- SHA-256：`3ED84F1DAE461D475E1F2CAF4CAFA9DED40EF410EBEFDCAFDD1AA58E0E2AA5C3`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机松手吸附检查。未推送。
+
 ## 2026-10-25 14:13
 
 任务：调整聊天侧栏快捷入口。

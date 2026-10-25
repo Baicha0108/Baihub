@@ -153,17 +153,29 @@ private fun Modifier.horizontalDrawerDrag(
 ): Modifier = pointerInput(dragSpan) {
     val dragSpanPx = dragSpan.toPx()
     coroutineScope {
-        // 拖动事件可能高于屏幕帧率。合并成最新值并由一个协程串行 snapTo，
-        // 松手前会等待队列清空，避免迟到更新取消吸附动画。
-        val dragUpdates = Channel<Float>(Channel.CONFLATED)
-        val applyDragUpdates = launch {
-            for (target in dragUpdates) {
-                onDrag(target)
+        // 拖动事件可能高于屏幕帧率。合并成最新值并由一个协程串行处理；
+        // Finish 会携带最终位置，保证松手后一定从正确位置开始吸附。
+        val dragUpdates = Channel<DragUpdate>(Channel.CONFLATED)
+        launch {
+            for (update in dragUpdates) {
+                when (update) {
+                    is DragUpdate.Move -> onDrag(update.progress)
+                    is DragUpdate.Finish -> {
+                        onDrag(update.progress)
+                        onSettle(update.startProgress)
+                    }
+                }
             }
         }
         var startProgress = progress()
         var dragTarget = startProgress
         var dragStarted = false
+
+        fun finishDrag() {
+            if (!dragStarted) return
+            dragStarted = false
+            dragUpdates.trySend(DragUpdate.Finish(dragTarget, startProgress))
+        }
 
         detectHorizontalDragGestures(
             onDragStart = {
@@ -173,16 +185,20 @@ private fun Modifier.horizontalDrawerDrag(
             },
             onHorizontalDrag = { _, dragAmount ->
                 dragTarget = (dragTarget + dragAmount / dragSpanPx).coerceIn(0f, 1f)
-                dragUpdates.trySend(dragTarget)
+                dragUpdates.trySend(DragUpdate.Move(dragTarget))
             },
+            onDragEnd = ::finishDrag,
+            onDragCancel = ::finishDrag,
         )
-
-        dragUpdates.close()
-        applyDragUpdates.join()
-        if (dragStarted) {
-            onSettle(startProgress)
-        }
     }
+}
+
+private sealed interface DragUpdate {
+    data class Move(val progress: Float) : DragUpdate
+    data class Finish(
+        val progress: Float,
+        val startProgress: Float,
+    ) : DragUpdate
 }
 
 @Composable
