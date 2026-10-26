@@ -53,6 +53,8 @@ import me.rerere.rikkahub.data.datastore.ChatFontFamily
 import me.rerere.rikkahub.data.datastore.DisplaySetting
 import me.rerere.rikkahub.data.files.FileFolders
 import me.rerere.rikkahub.data.files.FileUtils
+import me.rerere.rikkahub.data.files.deleteEmojiFont
+import me.rerere.rikkahub.data.files.importEmojiFontFromUri
 import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.richtext.MarkdownBlock
 import me.rerere.rikkahub.ui.components.ui.CardGroup
@@ -63,6 +65,7 @@ import me.rerere.rikkahub.ui.components.ui.switchItem
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.rememberChatFontFamily
+import me.rerere.rikkahub.ui.theme.rememberEmojiFontFamily
 import me.rerere.rikkahub.utils.plus
 import org.koin.androidx.compose.koinViewModel
 import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
@@ -76,6 +79,7 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
     val toaster = LocalToaster.current
     val scope = rememberCoroutineScope()
     val chatFontFamily = rememberChatFontFamily(displaySetting)
+    val emojiFontFamily = rememberEmojiFontFamily(displaySetting)
 
     fun updateDisplaySetting(setting: DisplaySetting) {
         displaySetting = setting
@@ -84,6 +88,8 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
 
     val importSuccessMsg = stringResource(R.string.setting_display_page_custom_font_import_success)
     val importFailedMsg = stringResource(R.string.setting_display_page_custom_font_import_failed)
+    val emojiImportSuccessMsg = stringResource(R.string.setting_display_page_emoji_font_import_success)
+    val emojiImportFailedMsg = stringResource(R.string.setting_display_page_emoji_font_import_failed)
     val fontPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -104,6 +110,28 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
                 toaster.show(importSuccessMsg, type = ToastType.Success)
             }.onFailure { error ->
                 toaster.show(importFailedMsg.format(error.message.orEmpty()), type = ToastType.Error)
+            }
+        }
+    }
+    val emojiFontPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        scope.launch {
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    importEmojiFontFromUri(context, uri)
+                }
+            }.onSuccess { importedFont ->
+                updateDisplaySetting(
+                    displaySetting.copy(
+                        emojiFontPath = importedFont.relativePath,
+                        emojiFontName = importedFont.displayName,
+                    )
+                )
+                toaster.show(emojiImportSuccessMsg, type = ToastType.Success)
+            }.onFailure { error ->
+                toaster.show(emojiImportFailedMsg.format(error.message.orEmpty()), type = ToastType.Error)
             }
         }
     }
@@ -302,6 +330,63 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
                                             HugeIcons.Delete02,
                                             contentDescription = stringResource(
                                                 R.string.setting_display_page_custom_font_remove
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    item(
+                        onClick = { emojiFontPickerLauncher.launch(CustomFontMimeTypesUI) },
+                        headlineContent = { Text(stringResource(R.string.setting_display_page_emoji_font_title)) },
+                        supportingContent = {
+                            Column {
+                                Text(
+                                    if (displaySetting.emojiFontName.isNotBlank()) {
+                                        displaySetting.emojiFontName
+                                    } else {
+                                        stringResource(R.string.setting_display_page_emoji_font_system)
+                                    }
+                                )
+                                Text(
+                                    text = "😀 😂 ❤️ 👍 🔥 🇨🇳",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontFamily = emojiFontFamily
+                                    ),
+                                )
+                            }
+                        },
+                        trailingContent = {
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        emojiFontPickerLauncher.launch(CustomFontMimeTypesUI)
+                                    }
+                                ) {
+                                    Icon(
+                                        HugeIcons.FileImport,
+                                        contentDescription = stringResource(
+                                            R.string.setting_display_page_emoji_font_import
+                                        )
+                                    )
+                                }
+                                if (displaySetting.emojiFontPath.isNotBlank()) {
+                                    IconButton(
+                                        onClick = {
+                                            deleteEmojiFont(context, displaySetting.emojiFontPath)
+                                            updateDisplaySetting(
+                                                displaySetting.copy(
+                                                    emojiFontPath = "",
+                                                    emojiFontName = "",
+                                                )
+                                            )
+                                        }
+                                    ) {
+                                        Icon(
+                                            HugeIcons.Delete02,
+                                            contentDescription = stringResource(
+                                                R.string.setting_display_page_emoji_font_remove
                                             )
                                         )
                                     }

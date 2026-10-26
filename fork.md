@@ -795,6 +795,53 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-10-26 16:36
+
+任务：增加导入 Emoji 字体并替换应用内 Emoji 样式的功能，构建 Release arm64-v8a APK。
+
+实现：
+
+- “设置 → 偏好设置 → 界面”新增“Emoji 字体”项，支持导入 `.ttf` / `.otf`、预览常见 Emoji，以及恢复系统 Emoji。
+- 字体文件复制到 `filesDir/fonts/`，上限 40 MB；导入时校验 OpenType 文件头、Android 彩色字体表和常见 Emoji 字形。
+- 只接受包含 `COLR`、`CBDT` 或 `sbix` 彩色字体表的文件；Twemoji 的 SVG-in-OpenType 构建会被明确拒绝。
+- Emoji 字体只应用到 Emoji 字符范围，不改变正文中的数字、中文和英文字体。
+- 应用范围包括聊天 Markdown、聊天输入框、Emoji 选择器、皮肤色调选择器和 Emoji 头像；设置页提供实时预览。
+- 替换字体时使用临时文件和回滚，字体缺失、损坏或加载失败时自动回退系统 Emoji。
+- 字体路径和显示名称保存于 `DisplaySetting`，字体文件跟随应用文件备份。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 52 秒。
+- 使用官方 Noto Color Emoji 临时文件核对彩色字体表和字形表识别逻辑。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-支持导入Emoji字体.apk`（16,303,112 字节）。
+- SHA-256：`FDCF1710C58C70D8F1347463E93EA62F033B19CF98A1F0CA6D7AF6E3E005D83A`。
+- 校验：包名 `me.baicha.baihub`，versionCode `194`，versionName `3.1.1`，仅 `arm64-v8a`。
+
+备注：当前没有连接设备，尚未做真机导入和彩色字体渲染检查。未提交、未推送。
+
+## 2026-10-26 17:31
+
+任务：准备当前官方最新版本的 Noto Color Emoji 和 Twemoji COLR 字体文件。
+
+文件：
+
+- `dist/emoji-fonts/NotoColorEmoji.ttf`：Noto Emoji 官方最新正式版本 `v2026-09-24-unicode18_0` 的 `2D/fonts/NotoColorEmoji.ttf`，10,730,124 字节。
+- SHA-256：`15671215AB769FDC7162A045D56FD7D7E477C51B04E6B3C761D914D8FDD6CC44`。
+- `dist/emoji-fonts/Twemoji-17.0.3-CBDT-FE0F.ttf`：使用 `Nerixyz/twemoji-colr-font v0.0.2` 构建流水线，基于 Twemoji 官方 `v17.0.3` 源素材生成 CBDT 字体，并补齐 Noto 同款 `U+FE0F` 变体选择符表；9,661,916 字节。
+- SHA-256：`32207897634EA90AF8988DC73D7DCDA69A676AAC653694C46C6B02D63B394271`。
+
+验证：
+
+- 两个文件均为合法 TrueType 字体，字体名称分别为 `Noto Color Emoji` 和 `Twemoji CBDT`。
+- 两个文件都使用 Android 兼容性更稳定的 `CBDT` / `CBLC` 位图彩色字体。
+- 均包含 `😀 😂 👍 ❤ 🔥`、中国国旗组件和肤色修饰符的字符映射。
+- Google Fonts 的 Noto `v47` 分发文件使用 `COLRv1 + SVG`，虽然文件更大，但 Android 渲染完整性较差；其有效 Unicode 覆盖与 GitHub 官方 `2D` 版本基本一致，问题来自格式差异而不是字符缺失。
+- 使用 HarfBuzz 验证：`❤️‍🔥` 和 `😶‍🌫️` 均整形为单个字形，并在生成字体中存在对应的 CBDT 彩色位图。
+- Twemoji 原始构建只包含 `cmap format 4/12`，缺少 `U+FE0F` 使用的 `cmap format 14`；补齐 371 条标准 UVS 映射，并同步 Noto 的 `head.flags = 11` 后重新验证，`🙂‍↔️`、`🙂‍↕️`、`😶‍🌫️`、`❤️‍🔥` 都整形为带 CBDT 彩色数据的单个字形。
+
+备注：文件放在被 Git 忽略的本地 `dist/emoji-fonts/` 目录，不会进入仓库提交。未推送。
+
 ## 2026-10-23 19:16
 
 任务：同步上游 `41ce12f6..e48db7bc`，共 6 个提交。

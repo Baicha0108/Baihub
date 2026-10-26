@@ -21,6 +21,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.util.fastForEach
+import me.rerere.ui.text.EmojiTextRanges
 
 internal class MarkdownContext(
     val theme: MarkdownTheme,
@@ -97,6 +98,7 @@ private class InlineTextBuilder(
     private fun appendText(text: String) {
         val offset = builder.length
         builder.append(text)
+        appendEmojiStyles(text, offset)
         val quoteStyle = context.theme.quotedText ?: return
         text.forEachIndexed { index, char ->
             val close = pendingQuoteClose
@@ -110,6 +112,17 @@ private class InlineTextBuilder(
                 builder.addStyle(quoteStyle, pendingQuoteStart, offset + index + 1)
                 pendingQuoteClose = null
             }
+        }
+    }
+
+    private fun appendEmojiStyles(text: String, offset: Int) {
+        val emojiFontFamily = context.theme.emojiFontFamily ?: return
+        EmojiTextRanges.findAll(text).forEach { range ->
+            builder.addStyle(
+                style = SpanStyle(fontFamily = emojiFontFamily),
+                start = offset + range.first,
+                end = offset + range.last + 1,
+            )
         }
     }
 

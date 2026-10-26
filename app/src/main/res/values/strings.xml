@@ -706,6 +706,12 @@
   <string name="setting_display_page_custom_font_not_imported">No custom font imported. Supports .ttf, .otf, and .ttc files.</string>
   <string name="setting_display_page_custom_font_remove">Remove custom font</string>
   <string name="setting_display_page_custom_font_title">Custom Font</string>
+  <string name="setting_display_page_emoji_font_title">Emoji Font</string>
+  <string name="setting_display_page_emoji_font_system">Following system Emoji (supports .ttf and .otf)</string>
+  <string name="setting_display_page_emoji_font_import">Import Emoji font</string>
+  <string name="setting_display_page_emoji_font_import_failed">Failed to import Emoji font: %1$s</string>
+  <string name="setting_display_page_emoji_font_import_success">Emoji font imported</string>
+  <string name="setting_display_page_emoji_font_remove">Restore system Emoji</string>
   <string name="setting_display_page_enable_auto_scroll_desc">Automatically scroll to the bottom when AI is generating content</string>
   <string name="setting_display_page_enable_auto_scroll_title">Auto Scroll</string>
   <string name="setting_display_page_enable_blur_effect_desc">Enable blur effect on chat input bar</string>

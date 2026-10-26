@@ -66,6 +66,7 @@ import me.rerere.rikkahub.ui.context.LocalSettings
 import me.rerere.rikkahub.ui.context.LocalWorkspaceId
 import me.rerere.rikkahub.ui.modifier.onClick
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
+import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
 import me.rerere.ui.markdown.Markdown
 import me.rerere.ui.markdown.MarkdownBlock
 import me.rerere.ui.markdown.MarkdownComponents
@@ -142,8 +143,16 @@ fun MarkdownBlock(
     val fontSize = LocalTextStyle.current.merge(style).fontSize
     val density = LocalDensity.current
     val quoteColor = MaterialTheme.colorScheme.tertiary
+    val emojiFontFamily = LocalEmojiFontFamily.current
     val defaultTheme = MarkdownDefaults.theme(style)
-    val theme = remember(defaultTheme, fontSize, density, enableQuoteHighlight, quoteColor) {
+    val theme = remember(
+        defaultTheme,
+        fontSize,
+        density,
+        enableQuoteHighlight,
+        quoteColor,
+        emojiFontFamily,
+    ) {
         defaultTheme.copy(
             inlineCode = defaultTheme.inlineCode.copy(
                 fontFamily = JetbrainsMono,
@@ -152,6 +161,7 @@ fun MarkdownBlock(
             // 段落间距跟随字号，调整字体大小时保持比例
             blockSpacing = if (fontSize.isSp) with(density) { fontSize.toDp() } else defaultTheme.blockSpacing,
             quotedText = SpanStyle(color = quoteColor).takeIf { enableQuoteHighlight },
+            emojiFontFamily = emojiFontFamily,
         )
     }
 

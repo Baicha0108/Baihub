@@ -54,6 +54,8 @@ data class MarkdownTheme(
     val dividerColor: Color,
     /** 正文里引号（"…"、“…”、「…」、『…』）括起来的文字的样式，为 null 时不高亮 */
     val quotedText: SpanStyle? = null,
+    /** 只应用到 Emoji 字符范围的字体；正文其他字符继续使用原字体 */
+    val emojiFontFamily: FontFamily? = null,
 )
 
 /** 嵌在文本流里的自定义内容，按 [placeholder] 的尺寸占位 */

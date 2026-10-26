@@ -2,7 +2,7 @@
 
 Baihub 是基于 [RikkaHub](https://github.com/rikkahub/rikkahub) 的个人定制分支。
 
-本文件只记录 Baihub 与上游的差异，不重复上游已有的通用功能。当前版本跟随上游：`3.1.0 (193)`。
+本文件只记录 Baihub 与上游的差异，不重复上游已有的通用功能。当前版本跟随上游：`3.1.1 (194)`。
 
 ## 身份与构建
 
@@ -36,6 +36,14 @@ Baihub 是基于 [RikkaHub](https://github.com/rikkahub/rikkahub) 的个人定�
 - Baihub 导出的备份会把路径改写回 `me.rerere.rikkahub`，可以导回原版 RikkaHub
 - 备份默认文件名为 `baihub_backup_<时间>.zip`
 - 导出备份附带 `baihub_export_info.json` 诊断信息
+
+## Emoji 字体
+
+- 偏好设置中支持导入 `.ttf` / `.otf` Emoji 字体并恢复系统字体
+- 支持 Android 彩色字体表兼容的 Noto Color Emoji 与 Twemoji 构建
+- Emoji 字体仅应用于 Emoji 字符范围，不改变普通文字、数字和自定义聊天字体
+- 覆盖聊天 Markdown、聊天输入框、Emoji 选择器、皮肤色调选择器和 Emoji 头像
+- 字体文件保存在 `filesDir/fonts/`，随应用文件备份
 
 ## 界面调整
 

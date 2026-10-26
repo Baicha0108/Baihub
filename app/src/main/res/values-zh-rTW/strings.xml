@@ -1072,6 +1072,12 @@
   <string name="setting_display_page_custom_font_not_imported">尚未匯入自訂字型。支援 .ttf、.otf 與 .ttc 檔案。</string>
   <string name="setting_display_page_custom_font_remove">移除自訂字型</string>
   <string name="setting_display_page_custom_font_title">自訂字型</string>
+  <string name="setting_display_page_emoji_font_title">Emoji 字型</string>
+  <string name="setting_display_page_emoji_font_system">跟隨系統 Emoji（支援 .ttf 與 .otf）</string>
+  <string name="setting_display_page_emoji_font_import">匯入 Emoji 字型</string>
+  <string name="setting_display_page_emoji_font_import_failed">匯入 Emoji 字型失敗：%1$s</string>
+  <string name="setting_display_page_emoji_font_import_success">Emoji 字型已匯入</string>
+  <string name="setting_display_page_emoji_font_remove">恢復系統 Emoji</string>
   <string name="setting_page_preferences">偏好設定</string>
   <string name="setting_page_preferences_desc">主題、通知、介面與一般設定</string>
   <string name="setting_page_preferences_theme">主題</string>

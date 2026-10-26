@@ -59,6 +59,7 @@ import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.Avatar
 import me.rerere.rikkahub.ui.components.ai.useCropLauncher
 import me.rerere.rikkahub.ui.hooks.rememberAvatarShape
+import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
 import org.koin.compose.koinInject
 
 @Composable
@@ -105,6 +106,7 @@ fun UIAvatar(
     var showEmojiPicker by remember { mutableStateOf(false) }
     var showUrlInput by remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
+    val emojiFontFamily = LocalEmojiFontFamily.current
 
     fun saveAvatarImage(uri: Uri) {
         val localUris = filesManager.createChatFilesByContents(listOf(uri))
@@ -161,6 +163,7 @@ fun UIAvatar(
                             ),
                             lineHeight = 0.8.em,
                             textAlign = TextAlign.Center,
+                            fontFamily = emojiFontFamily,
                             modifier = Modifier.padding(5.dp)
                         )
                     }

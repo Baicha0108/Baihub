@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +53,7 @@ import kotlinx.coroutines.launch
 import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Search01
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
 import me.rerere.rikkahub.utils.Emoji
 import me.rerere.rikkahub.utils.EmojiData
 import org.koin.compose.koinInject
@@ -65,6 +67,7 @@ fun EmojiPicker(
     height: Int = 400
 ) {
     val emojiData = koinInject<EmojiData>()
+    val emojiFontFamily = LocalEmojiFontFamily.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
     var showModifierPicker by remember { mutableStateOf(false) }
@@ -160,7 +163,9 @@ fun EmojiPicker(
                                 } else {
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 },
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontFamily = emojiFontFamily
+                                ),
                             )
                         }
                     }
@@ -196,6 +201,7 @@ fun EmojiPicker(
                     items(filteredEmojiVariants.toList(), key = { it.first.emoji }) { (baseEmoji, variants) ->
                         EmojiItem(
                             emoji = baseEmoji,
+                            emojiFontFamily = emojiFontFamily,
                             hasVariants = variants.size > 1,
                             onClick = {
                                 onEmojiSelected(baseEmoji)
@@ -216,6 +222,7 @@ fun EmojiPicker(
             if (showModifierPicker && selectedEmojiForModifier != null) {
                 EmojiModifierPicker(
                     variants = modifierVariants,
+                    emojiFontFamily = emojiFontFamily,
                     onEmojiSelected = { emoji ->
                         onEmojiSelected(emoji)
                         showModifierPicker = false
@@ -234,6 +241,7 @@ fun EmojiPicker(
 @Composable
 private fun EmojiItem(
     emoji: Emoji,
+    emojiFontFamily: FontFamily?,
     hasVariants: Boolean = false,
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null
@@ -256,7 +264,8 @@ private fun EmojiItem(
         Text(
             text = emoji.emoji,
             fontSize = 20.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = emojiFontFamily,
         )
     }
 }
@@ -264,6 +273,7 @@ private fun EmojiItem(
 @Composable
 private fun EmojiModifierPicker(
     variants: List<Emoji>,
+    emojiFontFamily: FontFamily?,
     onEmojiSelected: (Emoji) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -308,7 +318,8 @@ private fun EmojiModifierPicker(
                             Text(
                                 text = variant.emoji,
                                 fontSize = 24.sp,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                fontFamily = emojiFontFamily,
                             )
                         }
                     }

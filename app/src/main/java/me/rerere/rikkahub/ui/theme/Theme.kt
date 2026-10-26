@@ -46,6 +46,7 @@ fun RikkahubTheme(
     content: @Composable () -> Unit
 ) {
     val settings by rememberUserSettingsState()
+    val emojiFontFamily = rememberEmojiFontFamily(settings.displaySetting)
 
     val darkTheme = when (colorMode) {
         ColorMode.SYSTEM -> isSystemInDarkTheme()
@@ -102,6 +103,7 @@ fun RikkahubTheme(
     CompositionLocalProvider(
         LocalDarkMode provides darkTheme,
         LocalExtendColors provides extendColors,
+        LocalEmojiFontFamily provides emojiFontFamily,
         LocalOverscrollFactory provides null,
     ) {
         MaterialExpressiveTheme(

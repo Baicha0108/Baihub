@@ -37,6 +37,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.BasicAlertDialog
@@ -70,6 +71,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -117,6 +119,8 @@ import me.rerere.rikkahub.utils.SoundEffectPlayer
 import org.koin.compose.koinInject
 import me.rerere.rikkahub.ui.pages.chat.VoicePhase
 import me.rerere.rikkahub.ui.pages.chat.VoiceSessionState
+import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
+import me.rerere.ui.text.EmojiTextRanges
 import kotlin.uuid.Uuid
 
 @Composable
@@ -461,6 +465,20 @@ private fun TextInputRow(
     onSendMessage: () -> Unit,
 ) {
     val settings = LocalSettings.current
+    val emojiFontFamily = LocalEmojiFontFamily.current
+    val emojiOutputTransformation = remember(emojiFontFamily) {
+        emojiFontFamily?.let { fontFamily ->
+            OutputTransformation {
+                EmojiTextRanges.findAll(asCharSequence()).forEach { range ->
+                    addStyle(
+                        spanStyle = SpanStyle(fontFamily = fontFamily),
+                        start = range.first,
+                        end = range.last + 1,
+                    )
+                }
+            }
+        }
+    }
     val filesManager: FilesManager = koinInject()
     val quickMessages = remember(settings.quickMessages, assistant.quickMessageIds) {
         settings.getQuickMessagesOfAssistant(assistant)
@@ -598,6 +616,7 @@ private fun TextInputRow(
                     isFocused = it.isFocused
                 },
             shape = MaterialTheme.shapes.largeIncreased,
+            outputTransformation = emojiOutputTransformation,
             placeholder = {
                 Text(stringResource(R.string.chat_input_placeholder))
             },
