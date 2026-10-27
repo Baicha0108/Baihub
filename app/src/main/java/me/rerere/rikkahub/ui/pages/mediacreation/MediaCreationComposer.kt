@@ -113,6 +113,8 @@ import me.rerere.mediagen.provider.MediaGenerationParameter
 import me.rerere.mediagen.provider.MediaGenerationProviderSetting
 import me.rerere.mediagen.provider.capabilities
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiOutputTransformation
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.data.model.MediaCreationAsset
 import me.rerere.rikkahub.data.model.MediaCreationAssetType
 import me.rerere.rikkahub.data.model.MediaCreationDraft
@@ -247,6 +249,7 @@ internal fun MediaCreationComposer(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.media_creation_page_prompt_placeholder)) },
                 lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 1, maxHeightInLines = 5),
+                outputTransformation = rememberEmojiOutputTransformation(),
                 shape = MaterialTheme.shapes.largeIncreased,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 colors = TextFieldDefaults.colors(
@@ -1113,6 +1116,7 @@ private fun TextParam(
             singleLine = true,
             shape = MaterialTheme.shapes.large,
             textStyle = MaterialTheme.typography.bodyMedium,
+            visualTransformation = rememberEmojiVisualTransformation(),
         )
     }
 }

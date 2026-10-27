@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.rerere.asr.ASRProviderSetting
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.ui.components.ui.CardGroup
 import me.rerere.rikkahub.ui.components.ui.CardGroupScope
 import me.rerere.rikkahub.ui.components.ui.CardGroupValue
@@ -54,7 +55,8 @@ fun ASRProviderConfigure(
                     value = setting.name,
                     onValueChange = { onValueChange(setting.copyProvider(name = it)) },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("OpenAI Realtime") }
+                    placeholder = { Text("OpenAI Realtime") },
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
         }
@@ -132,7 +134,8 @@ private fun CardGroupScope.openAIRealtimeASRItems(
             onValueChange = { onValueChange(setting.copy(prompt = it)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
-            placeholder = { Text("Optional") }
+            placeholder = { Text("Optional") },
+            visualTransformation = rememberEmojiVisualTransformation(),
         )
     }
 

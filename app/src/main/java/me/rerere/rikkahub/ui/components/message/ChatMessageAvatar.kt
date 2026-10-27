@@ -16,6 +16,7 @@ import me.rerere.ai.provider.Model
 import me.rerere.ai.ui.UIMessage
 import me.rerere.ai.ui.isEmptyUIMessage
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Avatar
 import me.rerere.rikkahub.ui.components.ui.AutoAIIcon
@@ -84,7 +85,11 @@ fun ChatMessageAssistantAvatar(
                 ) {
                     if (settings.displaySetting.showModelName) {
                         Text(
-                            text = assistant.name.ifEmpty { stringResource(R.string.assistant_page_default_assistant) },
+                            text = rememberEmojiAnnotatedString(
+                                assistant.name.ifEmpty {
+                                    stringResource(R.string.assistant_page_default_assistant)
+                                }
+                            ),
                             style = MaterialTheme.typography.labelLargeEmphasized,
                             maxLines = 1,
                         )

@@ -52,6 +52,7 @@ import me.rerere.rikkahub.ui.components.ui.UIAvatar
 import me.rerere.rikkahub.ui.components.ui.switchItem
 import me.rerere.rikkahub.ui.hooks.heroAnimation
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.toFixed
 import me.rerere.ui.components.Select
 import org.koin.androidx.compose.koinViewModel
@@ -168,6 +169,7 @@ internal fun AssistantBasicContent(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
             formItem(

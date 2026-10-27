@@ -92,6 +92,8 @@ import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.components.ui.longPressReorder
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.JsonInstantPretty
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.utils.writeClipboardText
@@ -552,7 +554,7 @@ private fun SystemPromptEntryCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = entry.title.ifBlank { unnamed },
+                    text = rememberEmojiAnnotatedString(entry.title.ifBlank { unnamed }),
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -654,6 +656,7 @@ private fun SystemPromptEntryEditSheet(
                     label = { Text(stringResource(R.string.assistant_system_prompt_v2_title)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 FormItem(

@@ -50,6 +50,7 @@ import me.rerere.mediagen.model.ImageRole
 import me.rerere.mediagen.model.MediaKind
 import me.rerere.mediagen.provider.MediaGenerationProviderSetting
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.data.files.MediaCreationFiles
 import me.rerere.rikkahub.data.model.MediaCreationParams
 import me.rerere.rikkahub.data.model.MediaCreationStatus
@@ -321,6 +322,7 @@ internal fun RenameSessionDialog(
                 onValueChange = { title = it },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
         },
         confirmButton = {

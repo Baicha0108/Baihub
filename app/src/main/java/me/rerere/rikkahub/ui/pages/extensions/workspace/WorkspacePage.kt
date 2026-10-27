@@ -52,6 +52,7 @@ import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -262,6 +263,7 @@ private fun EditWorkspaceDialog(
                 label = { Text(stringResource(R.string.workspace_page_name)) },
                 singleLine = true,
                 isError = isDuplicate,
+                visualTransformation = rememberEmojiVisualTransformation(),
                 supportingText = if (isDuplicate) {
                     { Text(stringResource(R.string.workspace_page_name_duplicate)) }
                 } else null,

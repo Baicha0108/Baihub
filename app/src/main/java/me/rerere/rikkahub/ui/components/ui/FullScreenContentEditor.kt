@@ -32,6 +32,8 @@ import androidx.compose.ui.window.DialogProperties
 import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Fullscreen
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 
 @Composable
 internal fun FullScreenContentField(
@@ -48,6 +50,7 @@ internal fun FullScreenContentField(
 ) {
     var showFullscreen by remember { mutableStateOf(false) }
     var fullscreenContent by remember { mutableStateOf("") }
+    val emojiVisualTransformation = rememberEmojiVisualTransformation()
 
     Box(modifier = modifier) {
         OutlinedTextField(
@@ -56,6 +59,7 @@ internal fun FullScreenContentField(
             label = { Text(label) },
             modifier = Modifier.fillMaxSize(),
             minLines = minLines,
+            visualTransformation = emojiVisualTransformation,
         )
         IconButton(
             onClick = {
@@ -96,6 +100,8 @@ internal fun FullScreenContentEditor(
     onConfirm: (String) -> Unit,
 ) {
     var text by remember(initial) { mutableStateOf(initial) }
+    val emojiVisualTransformation = rememberEmojiVisualTransformation()
+    val emojiTitle = rememberEmojiAnnotatedString(title)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -125,7 +131,7 @@ internal fun FullScreenContentEditor(
                         Text(stringResource(R.string.cancel))
                     }
                     Text(
-                        text = title,
+                        text = emojiTitle,
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f),
@@ -142,6 +148,7 @@ internal fun FullScreenContentEditor(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     placeholder = { Text(placeholder) },
+                    visualTransformation = emojiVisualTransformation,
                 )
             }
         }

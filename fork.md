@@ -795,6 +795,67 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-10-26 18:24
+
+任务：同步上游更新并构建 Release arm64-v8a APK。
+
+同步：
+
+- 获取并合并上游 `ad2c4430..a7d1e6ef`，共 2 个提交，无冲突。
+- `2c4d1979 fix(quota):` 修复非英文系统下余额查询的数字格式错误。
+- `a7d1e6ef docs:` 将 README 图标提升到 512x512。
+- 合并后修正德语资源中的 `app_name`，由 `RikkaHub` 改为 `Baihub`，确保所有随包语言显示名一致。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 3 分 56 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游更新.apk`（16,303,128 字节）。
+- SHA-256：`BC6188956FC74D2A9E643D3BC98FB5B41BC7D3D09238B7A2123BF73022BDC67D`。
+- 校验：包名 `me.baicha.baihub`，versionCode `194`，versionName `3.1.1`，所有语言显示名均为 `Baihub`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：未推送。
+
+## 2026-10-27 15:32
+
+任务：定位 Noto Color Emoji 出现黑点和单侧脸红，而 Noto `COLRv1` 显示正常的原因。
+
+结论：
+
+- 不是 Baihub 的 Emoji 字体加载或颜色处理问题。应用只对 Emoji 字符范围替换 `FontFamily`，没有额外调色、裁剪或位图处理。
+- 官方通用 `NotoColorEmoji.ttf` 使用 `CBDT/CBLC 3.0` 位图字体，每个 Emoji 是固定 136x128 PNG；`NotoColorEmoji-emojicompat.ttf` 使用 Android EmojiCompat 的 `CBDT/CBLC 2.0`，但两者的嵌入 PNG 数据逐字一致。
+- 从通用版 CBDT 中直接提取 `😊` 和 `🥰` 的嵌入 PNG 后，单侧脸红和黑灰色污点已经存在于原始位图；对应的 Noto SVG 源图左右脸颊是对称的。
+- `Noto-COLRv1.ttf` 使用 `COLR/CPAL` 矢量表，同尺寸渲染时没有上述位图缺陷，并能在不同字号下正常缩放。
+
+建议：
+
+- 当前设备优先使用 `Noto-COLRv1.ttf`。
+- 如果以后需要兼容不支持 `COLRv1` 的设备，CBDT 回退应选择 `NotoColorEmoji-emojicompat.ttf`，不要优先使用通用 `NotoColorEmoji.ttf`；但 EmojiCompat 版本仍保留同一套位图画面，无法修复位图本身的黑点和不对称脸红。
+
+备注：本任务仅诊断，未修改应用代码，未构建、未推送。
+
+## 2026-10-27 16:04
+
+任务：扩大自定义 Emoji 字体在全应用中的覆盖范围，包括此前遗漏的全屏编辑界面。
+
+实现：
+
+- 在 `EmojiFont.kt` 增加统一的 Emoji `AnnotatedString`、`VisualTransformation` 和 `OutputTransformation` 工具，保留原有文字样式、密码转换和高亮区间。
+- 覆盖普通输入框、新式 `TextFieldState` 输入框和全屏编辑：聊天输入及全屏输入、通用 `TextArea`、通用全屏内容编辑器、消息队列编辑、媒体生成提示词、工作区文件编辑。
+- 覆盖聊天标题、助手名称、标签、快捷消息、模式注入、世界书、自定义提示词、记忆文件、搜索结果、翻译输入、图片生成、媒体生成、技能内容编辑、会话导出预览等用户内容。
+- 覆盖用户可命名的主题、MCP、工作区、语音/媒体/TTS 提供方及模型列表展示。
+- Emoji 字体继续只作用于 Emoji 字符范围，不改变普通文字、数字、等宽代码字体和自定义聊天字体。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 6 分 34 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-扩展Emoji字体覆盖范围.apk`（16,307,552 字节）。
+- SHA-256：`C36B6F724925D41D9F8D0611D88FB8AE278A183C47D5A09B22D54556897A9126`。
+- 校验：包名 `me.baicha.baihub`，versionCode `194`，versionName `3.1.1`，所有语言显示名均为 `Baihub`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+- `spotlessCheck` 被上游已有文件 `common/src/main/java/me/rerere/common/http/JsonExpression.kt` 的格式问题阻断；本次没有批量格式化该无关文件。
+
+备注：未提交、未推送。
+
 ## 2026-10-26 16:36
 
 任务：增加导入 Emoji 字体并替换应用内 Emoji 样式的功能，构建 Release arm64-v8a APK。

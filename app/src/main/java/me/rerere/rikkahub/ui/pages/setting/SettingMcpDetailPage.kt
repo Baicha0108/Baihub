@@ -87,6 +87,8 @@ import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.ui.components.FormItem
 import me.rerere.ui.components.RikkaConfirmDialog
 import me.rerere.ui.components.Switch
@@ -184,7 +186,9 @@ fun SettingMcpDetailPage(id: Uuid, vm: SettingVM = koinViewModel()) {
                 title = {
                     SettingsTopBarTitle {
                         Text(
-                            text = config.commonOptions.name.ifBlank { "MCP" },
+                            text = rememberEmojiAnnotatedString(
+                                config.commonOptions.name.ifBlank { "MCP" }
+                            ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -401,6 +405,7 @@ private fun McpCommonOptionsConfigure(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.setting_mcp_page_name_placeholder)) },
                 isError = nameInvalid,
+                visualTransformation = rememberEmojiVisualTransformation(),
                 supportingText = if (nameInvalid) {
                     { Text(stringResource(R.string.setting_mcp_page_name_invalid)) }
                 } else null

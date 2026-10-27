@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Setting07
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 
 @Composable
 fun ConversationSystemPromptButton(
@@ -50,11 +52,13 @@ fun ConversationSystemPromptButton(
             )
             Spacer(Modifier.size(4.dp))
             Text(
-                text = if (!customSystemPrompt.isNullOrBlank()) {
-                    stringResource(R.string.chat_page_conversation_system_prompt) + " ✎"
-                } else {
-                    stringResource(R.string.chat_page_conversation_system_prompt)
-                },
+                text = rememberEmojiAnnotatedString(
+                    if (!customSystemPrompt.isNullOrBlank()) {
+                        stringResource(R.string.chat_page_conversation_system_prompt) + " ✎"
+                    } else {
+                        stringResource(R.string.chat_page_conversation_system_prompt)
+                    }
+                ),
                 style = MaterialTheme.typography.labelSmall,
             )
         }
@@ -73,6 +77,7 @@ fun ConversationSystemPromptButton(
                     label = { Text(stringResource(R.string.chat_page_conversation_system_prompt_hint)) },
                     minLines = 3,
                     maxLines = 8,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

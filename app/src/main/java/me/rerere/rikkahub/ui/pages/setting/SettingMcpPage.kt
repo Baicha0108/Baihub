@@ -80,6 +80,7 @@ import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.components.ui.settingsTopScrim
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.ui.theme.extendColors
 import me.rerere.rikkahub.utils.writeClipboardText
 import me.rerere.ui.components.RikkaConfirmDialog
@@ -296,7 +297,9 @@ private fun McpServerItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = item.commonOptions.name.ifBlank { "MCP" },
+                        text = rememberEmojiAnnotatedString(
+                            item.commonOptions.name.ifBlank { "MCP" }
+                        ),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     val dotColor =

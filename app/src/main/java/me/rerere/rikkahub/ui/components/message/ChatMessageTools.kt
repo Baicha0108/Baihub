@@ -61,6 +61,8 @@ import me.rerere.rikkahub.ui.components.message.tools.ToolUIRegistry
 import me.rerere.rikkahub.ui.components.richtext.ZoomableAsyncImage
 import me.rerere.rikkahub.ui.components.ui.ChainOfThoughtScope
 import me.rerere.rikkahub.ui.modifier.shimmer
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.JsonInstant
 import me.rerere.ui.components.DotLoading
 import kotlin.time.Clock
@@ -405,7 +407,7 @@ private fun ChainOfThoughtScope.AskUserToolStep(
                                             },
                                             label = {
                                                 Text(
-                                                    text = option,
+                                                    text = rememberEmojiAnnotatedString(option),
                                                     style = MaterialTheme.typography.labelSmall,
                                                 )
                                             },
@@ -422,6 +424,7 @@ private fun ChainOfThoughtScope.AskUserToolStep(
                                 singleLine = false,
                                 minLines = 1,
                                 maxLines = 3,
+                                visualTransformation = rememberEmojiVisualTransformation(),
                             )
                         } else if (isAnswered) {
                             // Show the user's answer
@@ -433,7 +436,7 @@ private fun ChainOfThoughtScope.AskUserToolStep(
                                 ?.jsonObject?.get(q.id)?.jsonPrimitive?.contentOrNull
                                 ?: answeredState.answer
                             Text(
-                                text = answerText,
+                                text = rememberEmojiAnnotatedString(answerText),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary,
                             )
@@ -512,7 +515,8 @@ private fun ToolDenyReasonDialog(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = false,
                 minLines = 2,
-                maxLines = 4
+                maxLines = 4,
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
         },
         confirmButton = {

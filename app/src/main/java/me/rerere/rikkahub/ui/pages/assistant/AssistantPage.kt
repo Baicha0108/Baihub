@@ -80,6 +80,8 @@ import me.rerere.rikkahub.ui.hooks.heroAnimation
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.pages.assistant.detail.AssistantImporter
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
@@ -179,6 +181,7 @@ fun AssistantPage(vm: AssistantVM = koinViewModel()) {
                 },
                 singleLine = true,
                 shape = CircleShape,
+                        visualTransformation = rememberEmojiVisualTransformation(),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
@@ -379,7 +382,8 @@ private fun AssistantCreationSheet(
                     },
                     label = { Text(stringResource(R.string.assistant_page_name)) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 AssistantImporter(
@@ -451,7 +455,9 @@ private fun AssistantItem(
             ) {
 
                 Text(
-                    text = assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) },
+                    text = rememberEmojiAnnotatedString(
+                        assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) }
+                    ),
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

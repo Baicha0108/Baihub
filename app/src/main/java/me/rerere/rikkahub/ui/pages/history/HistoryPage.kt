@@ -45,6 +45,7 @@ import me.rerere.rikkahub.data.model.Conversation
 import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.ui.SwipeToDelete
 import me.rerere.rikkahub.ui.context.LocalNavController
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.navigateToChatPage
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.utils.toLocalDateTime
@@ -204,8 +205,11 @@ private fun ConversationItem(
                         )
                     }
                     Text(
-                        text = conversation.title.ifBlank { stringResource(R.string.history_page_new_conversation) }
-                            .trim(),
+                        text = rememberEmojiAnnotatedString(
+                            conversation.title.ifBlank {
+                                stringResource(R.string.history_page_new_conversation)
+                            }.trim()
+                        ),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleMedium,

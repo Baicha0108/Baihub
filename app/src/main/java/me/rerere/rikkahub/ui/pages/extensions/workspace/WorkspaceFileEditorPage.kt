@@ -35,6 +35,7 @@ import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
+import me.rerere.rikkahub.ui.theme.rememberEmojiOutputTransformation
 import me.rerere.ui.webview.WebView
 import me.rerere.ui.webview.rememberWebViewState
 import me.rerere.workspace.WorkspaceStorageArea
@@ -166,6 +167,7 @@ fun WorkspaceFileEditorPage(
                     .imePadding(),
                 readOnly = !editable,
                 lineLimits = TextFieldLineLimits.MultiLine(),
+                outputTransformation = rememberEmojiOutputTransformation(),
                 textStyle = LocalTextStyle.current.copy(
                     fontFamily = JetbrainsMono,
                     fontSize = 13.sp,

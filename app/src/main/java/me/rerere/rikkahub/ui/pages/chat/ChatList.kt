@@ -100,6 +100,7 @@ import me.rerere.rikkahub.ui.components.ui.ErrorCardsDisplay
 import me.rerere.rikkahub.ui.components.ui.topFadingEdge
 import me.rerere.rikkahub.ui.hooks.ImeLazyListAutoScroller
 import me.rerere.rikkahub.ui.theme.ChatFontProvider
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.ListSelectableItem
 import me.rerere.ui.components.Tooltip
@@ -653,6 +654,7 @@ private fun ChatListPreview(
             singleLine = true,
             shape = CircleShape,
             maxLines = 1,
+            visualTransformation = rememberEmojiVisualTransformation(),
         )
 
         // 消息预览

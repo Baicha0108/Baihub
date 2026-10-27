@@ -102,6 +102,8 @@ import me.rerere.rikkahub.ui.hooks.rememberSharedPreferenceString
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.modifier.onClick
 import me.rerere.rikkahub.ui.pages.extensions.ModeInjectionEditSheet
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.navigateToChatPage
 import me.rerere.rikkahub.utils.toDp
 import me.rerere.ui.components.Tooltip
@@ -535,7 +537,8 @@ fun ChatDrawerContent(
                     onValueChange = onUpdate,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text(stringResource(R.string.chat_page_nickname_placeholder)) }
+                    placeholder = { Text(stringResource(R.string.chat_page_nickname_placeholder)) },
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             },
             confirmButton = {
@@ -643,7 +646,7 @@ fun ChatDrawerContent(
                             ) {
                                 Icon(HugeIcons.Folder01, null)
                                 Text(
-                                    text = folder.name,
+                                    text = rememberEmojiAnnotatedString(folder.name),
                                     style = MaterialTheme.typography.titleMedium,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -668,7 +671,8 @@ fun ChatDrawerContent(
                     onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text(stringResource(R.string.chat_page_folder_name)) }
+                    placeholder = { Text(stringResource(R.string.chat_page_folder_name)) },
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             },
             confirmButton = {
@@ -700,6 +704,7 @@ fun ChatDrawerContent(
                     onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             },
             confirmButton = {
@@ -1271,7 +1276,9 @@ private fun AssistantItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) },
+                    text = rememberEmojiAnnotatedString(
+                        assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) }
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

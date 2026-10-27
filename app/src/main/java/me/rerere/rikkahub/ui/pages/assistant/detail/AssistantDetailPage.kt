@@ -60,6 +60,7 @@ import me.rerere.rikkahub.ui.components.ui.UIAvatar
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.hooks.heroAnimation
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.plus
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -91,7 +92,7 @@ fun AssistantDetailPage(id: String) {
                         exit = fadeOut() + slideOutVertically { it / 2 },
                     ) {
                         Text(
-                            text = name,
+                            text = rememberEmojiAnnotatedString(name),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -215,7 +216,7 @@ private fun AssistantHeader(
         )
 
         Text(
-            text = name,
+            text = rememberEmojiAnnotatedString(name),
             // 名字长短不一，放不下两行时自动缩小字号
             autoSize = TextAutoSize.StepBased(minFontSize = 22.sp, maxFontSize = 32.sp),
             maxLines = 2,
@@ -241,7 +242,7 @@ private fun AssistantHeader(
 
         if (assistant.systemPrompt.isNotBlank()) {
             Text(
-                text = assistant.systemPrompt.take(100),
+                text = rememberEmojiAnnotatedString(assistant.systemPrompt.take(100)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -259,7 +260,7 @@ private fun HeaderChip(text: String) {
         color = MaterialTheme.colorScheme.surfaceBright,
     ) {
         Text(
-            text = text,
+            text = rememberEmojiAnnotatedString(text),
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             style = MaterialTheme.typography.labelLarge,
             maxLines = 1,

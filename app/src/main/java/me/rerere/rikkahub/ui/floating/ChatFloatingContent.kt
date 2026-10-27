@@ -81,6 +81,8 @@ import me.rerere.rikkahub.service.ChatError
 import me.rerere.rikkahub.ui.components.ui.drawAppLogo
 import me.rerere.rikkahub.ui.components.ui.logoMorphShape
 import me.rerere.rikkahub.ui.components.ui.rememberAppLogoLayers
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.ui.markdown.Markdown
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -288,7 +290,9 @@ private fun PanelHeader(
         }
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = state.title.ifBlank { stringResource(R.string.chat_page_new_chat) },
+                text = rememberEmojiAnnotatedString(
+                    state.title.ifBlank { stringResource(R.string.chat_page_new_chat) }
+                ),
                 style = MaterialTheme.typography.titleSmallEmphasized,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -453,6 +457,7 @@ private fun ReplyBar(
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { send() }),
+            visualTransformation = rememberEmojiVisualTransformation(),
         )
         if (generating) {
             FilledTonalIconButton(onClick = onStop) {

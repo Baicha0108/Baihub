@@ -54,6 +54,7 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Search01
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.Emoji
 import me.rerere.rikkahub.utils.EmojiData
 import org.koin.compose.koinInject
@@ -76,6 +77,7 @@ fun EmojiPicker(
 
     val lazyListState: LazyGridState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
+    val emojiSearchVisualTransformation = rememberEmojiVisualTransformation()
 
     emojiData.let { data ->
         Box(modifier = modifier) {
@@ -110,6 +112,7 @@ fun EmojiPicker(
                         keyboardActions = KeyboardActions(
                             onSearch = { /* Handle search */ }
                         ),
+                        visualTransformation = emojiSearchVisualTransformation,
                         singleLine = true,
                         shape = RoundedCornerShape(50)
                     )

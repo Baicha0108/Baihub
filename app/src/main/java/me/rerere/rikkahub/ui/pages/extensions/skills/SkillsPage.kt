@@ -79,6 +79,8 @@ import me.rerere.rikkahub.ui.components.ui.Tag
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -180,6 +182,7 @@ fun SkillsPage() {
                         },
                         singleLine = true,
                         shape = CircleShape,
+                        visualTransformation = rememberEmojiVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
@@ -399,7 +402,7 @@ private fun SkillCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = skill.name,
+                        text = rememberEmojiAnnotatedString(skill.name),
                         modifier = Modifier.weight(1f, fill = false),
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
@@ -410,7 +413,7 @@ private fun SkillCard(
                     }
                 }
                 Text(
-                    text = skill.description,
+                    text = rememberEmojiAnnotatedString(skill.description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
@@ -524,6 +527,7 @@ private fun AddSkillDialog(
                 maxLines = 14,
                 textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
         },
         confirmButton = {

@@ -23,6 +23,7 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.View
 import me.rerere.hugeicons.stroke.ViewOff
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.ui.components.ui.CardGroup
 import me.rerere.rikkahub.ui.components.ui.CardGroupScope
 import me.rerere.tts.provider.TTSProviderSetting
@@ -156,7 +157,8 @@ fun TTSProviderConfigure(
                         onValueChange(setting.copyProvider(name = newName))
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(R.string.setting_tts_page_name_placeholder)) }
+                    placeholder = { Text(stringResource(R.string.setting_tts_page_name_placeholder)) },
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
         }

@@ -92,6 +92,7 @@ import me.rerere.rikkahub.ui.components.ui.switchItem
 import me.rerere.rikkahub.ui.theme.ChatFontProvider
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.UiState
 import me.rerere.rikkahub.utils.insertAtCursor
 import me.rerere.rikkahub.utils.onError
@@ -293,7 +294,8 @@ private fun AssistantPromptContent(
                         fontSize = 12.sp,
                         fontFamily = JetbrainsMono,
                         lineHeight = 16.sp
-                    )
+                    ),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 Column(
@@ -439,7 +441,8 @@ private fun AssistantPromptContent(
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 6
+                        maxLines = 6,
+                        visualTransformation = rememberEmojiVisualTransformation(),
                     )
                 }
             }
@@ -597,7 +600,8 @@ private fun AssistantRegexCard(
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.assistant_page_regex_name)) }
+                        label = { Text(stringResource(R.string.assistant_page_regex_name)) },
+                        visualTransformation = rememberEmojiVisualTransformation(),
                     )
 
                     OutlinedTextField(
@@ -637,7 +641,8 @@ private fun AssistantRegexCard(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(stringResource(R.string.assistant_page_regex_replace_string)) },
-                        placeholder = { Text("e.g., [EMAIL]") }
+                        placeholder = { Text("e.g., [EMAIL]") },
+                        visualTransformation = rememberEmojiVisualTransformation(),
                     )
 
                     Text(

@@ -25,6 +25,7 @@ import me.rerere.mediagen.model.MediaGenerationModel
 import me.rerere.mediagen.model.MediaKind
 import me.rerere.mediagen.provider.MediaGenerationProviderSetting
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.ui.components.ui.CardGroup
 import me.rerere.rikkahub.ui.components.ui.CardGroupIcon
 import me.rerere.rikkahub.ui.components.ui.CardGroupValue
@@ -83,7 +84,8 @@ fun MediaGenerationProviderBasicConfigure(
                     value = setting.name,
                     onValueChange = { onValueChange(setting.copyProvider(name = it)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
 

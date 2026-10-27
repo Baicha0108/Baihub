@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.utils.base64Encode
 import me.rerere.rikkahub.utils.navigateToChatPage
@@ -98,9 +99,11 @@ fun ShareHandlerPage(text: String, image: String?) {
                     ListItem(
                         headlineContent = {
                             Text(
-                                text = assistant.name.ifEmpty {
-                                    stringResource(R.string.assistant_page_default_assistant)
-                                },
+                                text = rememberEmojiAnnotatedString(
+                                    assistant.name.ifEmpty {
+                                        stringResource(R.string.assistant_page_default_assistant)
+                                    }
+                                ),
                                 maxLines = 1
                             )
                         },

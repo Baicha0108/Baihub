@@ -79,6 +79,8 @@ import me.rerere.rikkahub.ui.context.Navigator
 import me.rerere.rikkahub.ui.hooks.ChatInputState
 import me.rerere.rikkahub.ui.hooks.EditStateContent
 import me.rerere.rikkahub.ui.hooks.useEditState
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.base64Decode
 import me.rerere.rikkahub.utils.navigateToChatPage
 import org.koin.androidx.compose.koinViewModel
@@ -601,14 +603,19 @@ private fun TopBar(
                 Column {
                     val provider = chatModel?.findProvider(providers = settings.providers, checkOverwrite = false)
                     Text(
-                        text = conversation.title.ifBlank { stringResource(R.string.chat_page_new_chat) },
+                        text = rememberEmojiAnnotatedString(
+                            conversation.title.ifBlank { stringResource(R.string.chat_page_new_chat) }
+                        ),
                         maxLines = 1,
                         style = MaterialTheme.typography.bodyMedium,
                         overflow = TextOverflow.Ellipsis,
                     )
                     if (chatModel != null && provider != null) {
                         Text(
-                            text = "${assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) }} / ${chatModel.displayName} (${provider.name})",
+                            text = rememberEmojiAnnotatedString(
+                                "${assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) }} / " +
+                                    "${chatModel.displayName} (${provider.name})"
+                            ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             color = LocalContentColor.current.copy(0.65f),
@@ -652,6 +659,7 @@ private fun TopBar(
                     onValueChange = onUpdate,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             },
             confirmButton = {

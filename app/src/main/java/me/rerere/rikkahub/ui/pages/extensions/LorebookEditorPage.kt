@@ -72,6 +72,8 @@ import me.rerere.rikkahub.ui.components.ui.cardGroupItemShape
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.ui.components.FormItem
 import org.koin.androidx.compose.koinViewModel
 
@@ -180,6 +182,7 @@ fun LorebookEditorPage(id: String?) {
                 onValueChange = { book = book?.copy(name = it) },
                 label = { Text(stringResource(R.string.prompt_page_name)) },
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
 
             OutlinedTextField(
@@ -187,6 +190,7 @@ fun LorebookEditorPage(id: String?) {
                 onValueChange = { book = book?.copy(description = it) },
                 label = { Text(stringResource(R.string.prompt_page_description)) },
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
 
             FormItem(
@@ -273,18 +277,22 @@ private fun RegexInjectionEntryCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = entry.name.ifEmpty {
-                        stringResource(R.string.prompt_page_unnamed_entry)
-                    },
+                    text = rememberEmojiAnnotatedString(
+                        entry.name.ifEmpty {
+                            stringResource(R.string.prompt_page_unnamed_entry)
+                        }
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (entry.keywords.isNotEmpty()) {
                     Text(
-                        text = stringResource(
-                            R.string.prompt_page_keywords_format,
-                            entry.keywords.joinToString(", "),
+                        text = rememberEmojiAnnotatedString(
+                            stringResource(
+                                R.string.prompt_page_keywords_format,
+                                entry.keywords.joinToString(", "),
+                            )
                         ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -367,6 +375,7 @@ private fun RegexInjectionEditSheet(
                     onValueChange = { onEdit(entry.copy(name = it)) },
                     label = { Text(stringResource(R.string.prompt_page_name)) },
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 FormItem(
@@ -428,7 +437,7 @@ private fun RegexInjectionEditSheet(
                         InputChip(
                             selected = false,
                             onClick = {},
-                            label = { Text(keyword) },
+                            label = { Text(rememberEmojiAnnotatedString(keyword)) },
                             trailingIcon = {
                                 IconButton(
                                     onClick = {
@@ -457,6 +466,7 @@ private fun RegexInjectionEditSheet(
                         label = { Text(stringResource(R.string.prompt_page_new_keyword)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
+                        visualTransformation = rememberEmojiVisualTransformation(),
                     )
                     IconButton(onClick = {
                         if (newKeyword.isNotBlank()) {

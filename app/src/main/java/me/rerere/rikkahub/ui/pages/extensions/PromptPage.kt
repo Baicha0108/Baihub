@@ -98,6 +98,8 @@ import me.rerere.rikkahub.ui.components.ui.Tag
 import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.components.ui.longPressReorder
 import me.rerere.rikkahub.ui.context.LocalNavController
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.theme.CustomColors
@@ -328,7 +330,9 @@ private fun ModeInjectionCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = injection.name.ifEmpty { stringResource(R.string.prompt_page_unnamed) },
+                    text = rememberEmojiAnnotatedString(
+                        injection.name.ifEmpty { stringResource(R.string.prompt_page_unnamed) }
+                    ),
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -437,7 +441,8 @@ internal fun ModeInjectionEditSheet(
                     value = injection.name,
                     onValueChange = { onEdit(injection.copy(name = it)) },
                     label = { Text(stringResource(R.string.prompt_page_name)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 FormItem(
@@ -725,14 +730,16 @@ private fun LorebookCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = book.name.ifEmpty { stringResource(R.string.prompt_page_unnamed_lorebook) },
+                    text = rememberEmojiAnnotatedString(
+                        book.name.ifEmpty { stringResource(R.string.prompt_page_unnamed_lorebook) }
+                    ),
                     style = MaterialTheme.typography.titleMediumEmphasized,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (book.description.isNotEmpty()) {
                     Text(
-                        text = book.description,
+                        text = rememberEmojiAnnotatedString(book.description),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,

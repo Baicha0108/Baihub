@@ -65,6 +65,8 @@ import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.fileSizeToString
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.RikkaConfirmDialog
@@ -98,7 +100,7 @@ fun SkillDetailPage(skillName: String) {
     Scaffold(
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text(skillName) },
+                title = { Text(rememberEmojiAnnotatedString(skillName)) },
                 navigationIcon = { BackButton() },
                 scrollBehavior = scrollBehavior,
                 colors = CustomColors.topBarColors,
@@ -249,7 +251,7 @@ private fun FileItem(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = skillFile.name,
+                text = rememberEmojiAnnotatedString(skillFile.name),
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = FontFamily.Monospace,
                 maxLines = 1,
@@ -305,7 +307,7 @@ private fun DirItem(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = node.name,
+                text = rememberEmojiAnnotatedString(node.name),
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = FontFamily.Monospace,
                 maxLines = 1,
@@ -360,6 +362,7 @@ private fun EditFileDialog(
                 maxLines = 20,
                 textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
         },
         confirmButton = {
@@ -407,6 +410,7 @@ private fun AddFileDialog(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
                 OutlinedTextField(
                     value = content,

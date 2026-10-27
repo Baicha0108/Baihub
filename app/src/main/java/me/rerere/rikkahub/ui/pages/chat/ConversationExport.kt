@@ -95,6 +95,7 @@ import me.rerere.rikkahub.ui.context.LocalSettings
 import me.rerere.ui.toast.rememberToasterState
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.RikkahubTheme
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.exportImage
 import me.rerere.rikkahub.utils.getActivity
 import me.rerere.rikkahub.utils.JsonInstantPretty
@@ -489,7 +490,7 @@ private fun ExportedChatImage(
                     ) {
                         Column(modifier = Modifier.weight(1f, fill = false)) {
                             Text(
-                                text = conversation.title,
+                                text = rememberEmojiAnnotatedString(conversation.title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                             )

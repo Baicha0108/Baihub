@@ -31,6 +31,7 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Tick01
 import me.rerere.rikkahub.ui.theme.CustomTheme
 import me.rerere.rikkahub.ui.theme.LocalDarkMode
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 
 @Composable
 fun CustomThemeButtonGroup(
@@ -115,7 +116,7 @@ private fun CustomThemeButton(
             }
         }
         Text(
-            text = theme.name.ifEmpty { "?" },
+            text = rememberEmojiAnnotatedString(theme.name.ifEmpty { "?" }),
             style = MaterialTheme.typography.labelMedium.copy(color = scheme.primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

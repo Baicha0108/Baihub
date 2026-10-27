@@ -55,6 +55,7 @@ import me.rerere.rikkahub.data.datastore.ConversationSortOrder
 import me.rerere.rikkahub.data.model.Conversation
 import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.theme.extendColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.mirrorForRtl
 import me.rerere.rikkahub.utils.toLocalString
 import java.time.LocalDate
@@ -281,7 +282,9 @@ private fun ConversationItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = conversation.title.ifBlank { stringResource(id = R.string.chat_page_new_message) },
+                text = rememberEmojiAnnotatedString(
+                    conversation.title.ifBlank { stringResource(id = R.string.chat_page_new_message) }
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

@@ -39,6 +39,7 @@ import me.rerere.hugeicons.stroke.Idea01
 import me.rerere.hugeicons.stroke.ScanText
 import me.rerere.hugeicons.stroke.Translate
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.data.ai.prompts.DEFAULT_OCR_PROMPT
 import me.rerere.rikkahub.data.ai.prompts.DEFAULT_SUGGESTION_PROMPT
 import me.rerere.rikkahub.data.ai.prompts.DEFAULT_TITLE_PROMPT
@@ -234,6 +235,7 @@ private fun PromptEditSheet(
                     .fillMaxWidth()
                     .weight(1f, fill = false),
                 maxLines = 15,
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
             TextButton(
                 onClick = onReset,

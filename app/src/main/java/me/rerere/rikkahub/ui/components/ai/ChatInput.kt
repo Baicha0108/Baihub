@@ -120,6 +120,7 @@ import org.koin.compose.koinInject
 import me.rerere.rikkahub.ui.pages.chat.VoicePhase
 import me.rerere.rikkahub.ui.pages.chat.VoiceSessionState
 import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
+import me.rerere.rikkahub.ui.theme.rememberEmojiOutputTransformation
 import me.rerere.ui.text.EmojiTextRanges
 import kotlin.uuid.Uuid
 
@@ -810,6 +811,8 @@ private fun FullScreenEditor(
     placeholder: String,
     onDone: () -> Unit
 ) {
+    val emojiOutputTransformation = rememberEmojiOutputTransformation()
+
     BasicAlertDialog(
         onDismissRequest = {
             onDone()
@@ -855,6 +858,7 @@ private fun FullScreenEditor(
                         placeholder = {
                             Text(placeholder)
                         },
+                        outputTransformation = emojiOutputTransformation,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences,
                         ),

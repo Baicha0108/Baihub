@@ -42,7 +42,8 @@ Baihub 是基于 [RikkaHub](https://github.com/rikkahub/rikkahub) 的个人定�
 - 偏好设置中支持导入 `.ttf` / `.otf` Emoji 字体并恢复系统字体
 - 支持 Android 彩色字体表兼容的 Noto Color Emoji 与 Twemoji 构建
 - Emoji 字体仅应用于 Emoji 字符范围，不改变普通文字、数字和自定义聊天字体
-- 覆盖聊天 Markdown、聊天输入框、Emoji 选择器、皮肤色调选择器和 Emoji 头像
+- 覆盖聊天 Markdown、聊天输入与全屏编辑、通用内容编辑器、提示词/世界书/记忆/技能/媒体生成等可编辑内容，以及助手名、标签、会话标题和主要用户数据展示
+- 覆盖 Emoji 选择器、皮肤色调选择器和 Emoji 头像
 - 字体文件保存在 `filesDir/fonts/`，随应用文件备份
 
 ## 界面调整

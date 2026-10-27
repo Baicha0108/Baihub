@@ -46,6 +46,8 @@ import me.rerere.rikkahub.ui.components.ui.CardGroupIcon
 import me.rerere.rikkahub.ui.components.ui.ItemAction
 import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -170,13 +172,17 @@ private fun QuickMessageCard(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
-                    text = quickMessage.title.ifBlank { stringResource(R.string.quick_messages_page_untitled) },
+                    text = rememberEmojiAnnotatedString(
+                        quickMessage.title.ifBlank { stringResource(R.string.quick_messages_page_untitled) }
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = quickMessage.content.ifBlank { stringResource(R.string.quick_messages_page_empty_content) },
+                    text = rememberEmojiAnnotatedString(
+                        quickMessage.content.ifBlank { stringResource(R.string.quick_messages_page_empty_content) }
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
@@ -222,6 +228,7 @@ private fun EditQuickMessageDialog(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.assistant_page_quick_message_title)) },
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
                 OutlinedTextField(
                     value = quickMessageContent,
@@ -230,6 +237,7 @@ private fun EditQuickMessageDialog(
                     label = { Text(stringResource(R.string.assistant_page_quick_message_content)) },
                     minLines = 4,
                     maxLines = 8,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
         },

@@ -88,6 +88,7 @@ import me.rerere.rikkahub.ui.components.richtext.MarkdownBlock
 import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.getText
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
@@ -273,6 +274,7 @@ private fun InputCard(
                 placeholder = { Text(stringResource(R.string.translator_page_input_placeholder)) },
                 textStyle = adaptiveTextStyle(text),
                 minLines = 3,
+                visualTransformation = rememberEmojiVisualTransformation(),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,

@@ -100,6 +100,7 @@ import me.rerere.hugeicons.stroke.FloppyDisk
 import me.rerere.hugeicons.stroke.Image03
 import me.rerere.hugeicons.stroke.Tools
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.Screen
 import me.rerere.rikkahub.data.datastore.Settings
 import me.rerere.rikkahub.data.files.FileUtils
@@ -407,6 +408,7 @@ private fun InputBar(
             maxLines = 5,
             shape = MaterialTheme.shapes.large,
             textStyle = MaterialTheme.typography.bodySmall,
+            visualTransformation = rememberEmojiVisualTransformation(),
         )
 
         Row(

@@ -61,6 +61,8 @@ import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.JetbrainsMono
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.toLocalDateTime
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -142,8 +144,10 @@ fun MemoryFilePage(memoryId: String, path: String?) {
             LargeFlexibleTopAppBar(
                 title = {
                     Text(
-                        text = (file?.title ?: MemoryFile(path = path ?: draftPath, content = "", updatedAt = 0).title)
-                            .ifEmpty { stringResource(R.string.memory_file_page_new) },
+                        text = rememberEmojiAnnotatedString(
+                            (file?.title ?: MemoryFile(path = path ?: draftPath, content = "", updatedAt = 0).title)
+                                .ifEmpty { stringResource(R.string.memory_file_page_new) }
+                        ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -291,13 +295,13 @@ private fun MemoryFileDetail(
             if (file.description.isNotEmpty()) {
                 item(
                     overlineContent = { Text(stringResource(R.string.memory_file_page_summary)) },
-                    headlineContent = { Text(file.description) },
+                    headlineContent = { Text(rememberEmojiAnnotatedString(file.description)) },
                 )
             }
             if (file.aliases.isNotEmpty()) {
                 item(
                     overlineContent = { Text(stringResource(R.string.memory_file_page_aliases)) },
-                    headlineContent = { Text(file.aliases.joinToString(", ")) },
+                    headlineContent = { Text(rememberEmojiAnnotatedString(file.aliases.joinToString(", "))) },
                 )
             }
             if (file.body.isNotBlank()) {
@@ -390,6 +394,7 @@ private fun MemoryFileEditor(
                     placeholder = { Text(titlePlaceholder) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
             formItem(
@@ -399,6 +404,7 @@ private fun MemoryFileEditor(
                     value = description,
                     onValueChange = onDescriptionChange,
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
             formItem(
@@ -414,7 +420,13 @@ private fun MemoryFileEditor(
                             InputChip(
                                 selected = false,
                                 onClick = { onAliasesChange(aliases - alias) },
-                                label = { Text(text = alias, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                label = {
+                                    Text(
+                                        text = rememberEmojiAnnotatedString(alias),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                },
                                 trailingIcon = {
                                     Icon(
                                         imageVector = HugeIcons.Cancel01,
@@ -441,6 +453,7 @@ private fun MemoryFileEditor(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
         }
@@ -455,6 +468,7 @@ private fun MemoryFileEditor(
                     textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = JetbrainsMono),
                     minLines = 8,
                     modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
             }
         }

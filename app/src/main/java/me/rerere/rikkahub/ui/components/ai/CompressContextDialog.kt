@@ -33,6 +33,7 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Add01
 import me.rerere.hugeicons.stroke.Remove01
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 
 @Composable
 fun CompressContextDialog(
@@ -95,6 +96,7 @@ fun CompressContextDialog(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 4,
+                        visualTransformation = rememberEmojiVisualTransformation(),
                     )
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

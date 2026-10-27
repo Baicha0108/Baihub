@@ -54,6 +54,7 @@ import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.hooks.heroContainer
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.utils.toMessageTimeString
 import me.rerere.ui.components.RikkaConfirmDialog
@@ -299,7 +300,9 @@ private fun SessionItem(
         },
     ) {
         Text(
-            text = session.title.ifBlank { stringResource(R.string.media_creation_page_new_session) },
+            text = rememberEmojiAnnotatedString(
+                session.title.ifBlank { stringResource(R.string.media_creation_page_new_session) }
+            ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

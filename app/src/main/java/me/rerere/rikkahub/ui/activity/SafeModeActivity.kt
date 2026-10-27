@@ -55,6 +55,7 @@ import me.rerere.rikkahub.data.datastore.SettingsStore
 import me.rerere.rikkahub.data.datastore.getCurrentAssistant
 import me.rerere.rikkahub.ui.hooks.writeStringPreference
 import me.rerere.rikkahub.ui.theme.RikkahubTheme
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.RouteActivity
 import me.rerere.rikkahub.utils.CrashHandler
 import org.koin.android.ext.android.inject
@@ -254,7 +255,11 @@ private fun AssistantPickerSheet(
                         ),
                     ) {
                         Text(
-                            text = assistant.name.ifEmpty { stringResource(R.string.safe_mode_default_assistant) },
+                            text = rememberEmojiAnnotatedString(
+                                assistant.name.ifEmpty {
+                                    stringResource(R.string.safe_mode_default_assistant)
+                                }
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),

@@ -49,6 +49,8 @@ import me.rerere.hugeicons.stroke.Fullscreen
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.modifier.onClick
+import me.rerere.rikkahub.ui.theme.rememberEmojiOutputTransformation
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 
 /**
  * A multi-line text input component with a header and file import functionality.
@@ -82,6 +84,7 @@ fun TextArea(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val toaster = LocalToaster.current
+    val emojiOutputTransformation = rememberEmojiOutputTransformation()
     var isFullScreen by remember { mutableStateOf(false) }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -167,6 +170,7 @@ fun TextArea(
                     minHeightInLines = minLines,
                     maxHeightInLines = maxLines
                 ),
+                outputTransformation = emojiOutputTransformation,
                 enabled = enabled,
                 readOnly = readOnly
             )
@@ -194,6 +198,7 @@ private fun FullScreenTextEditor(
     var editingText by remember(state.text.toString()) {
         mutableStateOf(state.text.toString())
     }
+    val emojiVisualTransformation = rememberEmojiVisualTransformation()
 
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -235,6 +240,7 @@ private fun FullScreenTextEditor(
                             .imePadding()
                             .fillMaxSize(),
                         shape = RoundedCornerShape(16.dp),
+                        visualTransformation = emojiVisualTransformation,
                         placeholder = if (placeholder.isNotEmpty()) {
                             { Text(placeholder) }
                         } else if (label.isNotEmpty()) {

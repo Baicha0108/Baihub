@@ -91,6 +91,7 @@ import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.hooks.rememberSharedPreferenceString
 import me.rerere.rikkahub.ui.theme.extendColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.utils.toDp
 import me.rerere.ui.icons.HeartIcon
 import org.koin.compose.koinInject
@@ -647,7 +648,7 @@ private fun ColumnScope.ModelList(
                     )
 
                     Text(
-                        text = providerSetting.name,
+                        text = rememberEmojiAnnotatedString(providerSetting.name),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -755,7 +756,7 @@ private fun ColumnScope.ModelList(
                         }
                     },
                     label = {
-                        Text(provider.name)
+                        Text(rememberEmojiAnnotatedString(provider.name))
                     },
                     leadingIcon = {
                         AutoAIIcon(name = provider.name, modifier = Modifier.size(16.dp))

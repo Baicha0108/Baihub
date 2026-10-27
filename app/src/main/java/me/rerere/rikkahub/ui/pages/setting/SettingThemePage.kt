@@ -80,6 +80,7 @@ import me.rerere.rikkahub.ui.pages.setting.components.PresetThemeButtonGroup
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.ui.theme.CustomTheme
 import me.rerere.rikkahub.ui.theme.LocalDarkMode
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.plus
 import me.rerere.ui.components.RikkaConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -432,6 +433,7 @@ private fun CustomThemeEditSheet(
                     label = { Text(stringResource(R.string.setting_theme_page_theme_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 Text(

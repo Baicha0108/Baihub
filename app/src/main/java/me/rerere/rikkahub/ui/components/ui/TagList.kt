@@ -35,6 +35,8 @@ import me.rerere.hugeicons.stroke.Add01
 import me.rerere.hugeicons.stroke.Cancel01
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.model.Tag
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import kotlin.uuid.Uuid
 
 @Composable
@@ -58,7 +60,7 @@ fun TagsInput(
         // 显示已选择的tags
         selectedTags.fastForEach { tag ->
             InputChip(onClick = {}, label = {
-                Text(tag.name)
+                Text(rememberEmojiAnnotatedString(tag.name))
             }, selected = false, trailingIcon = {
                 Icon(
                     imageVector = HugeIcons.Cancel01,
@@ -131,7 +133,7 @@ fun TagsInput(
                                     showAddDialog = false
                                     tagName = ""
                                     showError = false
-                                }, label = { Text(tag.name) }, selected = false
+                                }, label = { Text(rememberEmojiAnnotatedString(tag.name)) }, selected = false
                             )
                         }
                     }
@@ -158,7 +160,8 @@ fun TagsInput(
                     placeholder = { Text(stringResource(R.string.tag_input_dialog_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    isError = showError
+                    isError = showError,
+                    visualTransformation = rememberEmojiVisualTransformation(),
                 )
 
                 // 显示错误信息

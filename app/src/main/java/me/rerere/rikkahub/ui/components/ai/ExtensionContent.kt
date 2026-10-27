@@ -43,6 +43,7 @@ import me.rerere.rikkahub.data.skills.SkillMetadata
 import me.rerere.rikkahub.data.model.Lorebook
 import me.rerere.rikkahub.data.model.PromptInjection
 import me.rerere.rikkahub.data.model.QuickMessage
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 
 @Composable
 fun ModeInjectionsContent(
@@ -200,7 +201,7 @@ private fun ExtensionListItem(
         supportingContent = if (description.isNotBlank()) {
             {
                 Text(
-                    text = description,
+                    text = rememberEmojiAnnotatedString(description),
                     maxLines = descriptionMaxLines,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -211,7 +212,7 @@ private fun ExtensionListItem(
             Switch(checked = checked, onCheckedChange = null)
         },
     ) {
-        Text(title)
+        Text(rememberEmojiAnnotatedString(title))
     }
 }
 

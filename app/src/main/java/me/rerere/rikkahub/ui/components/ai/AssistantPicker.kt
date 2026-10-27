@@ -44,6 +44,7 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Edit03
 import me.rerere.hugeicons.stroke.LookTop
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.Screen
 import me.rerere.rikkahub.data.datastore.Settings
 import me.rerere.rikkahub.data.model.Assistant
@@ -72,7 +73,9 @@ fun AssistantPicker(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = state.currentAssistant.name.ifEmpty { defaultAssistantName },
+                    text = rememberEmojiAnnotatedString(
+                        state.currentAssistant.name.ifEmpty { defaultAssistantName }
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -165,7 +168,7 @@ private fun AssistantPickerSheet(
                                     selectedTagIds + tag.id
                                 }
                             },
-                            label = { Text(tag.name) },
+                            label = { Text(rememberEmojiAnnotatedString(tag.name)) },
                             selected = tag.id in selectedTagIds,
                             shape = RoundedCornerShape(50),
                         )
@@ -218,7 +221,9 @@ private fun AssistantItem(
     ListItem(
         headlineContent = {
             Text(
-                text = assistant.name.ifEmpty { defaultAssistantName },
+                text = rememberEmojiAnnotatedString(
+                    assistant.name.ifEmpty { defaultAssistantName }
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

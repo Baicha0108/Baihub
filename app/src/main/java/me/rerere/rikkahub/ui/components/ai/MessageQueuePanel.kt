@@ -34,6 +34,8 @@ import me.rerere.rikkahub.R
 import me.rerere.rikkahub.service.MessageQueueState
 import me.rerere.rikkahub.service.QueuedMessage
 import me.rerere.rikkahub.ui.hooks.ChatInputState
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiOutputTransformation
 
 @Composable
 internal fun MessageQueuePanel(
@@ -85,16 +87,18 @@ internal fun MessageQueuePanel(
                                 stringResource(R.string.chat_page_queue_video),
                             )
                             Text(
-                                text = "${index + 1}. " + message.parts.joinToString(" ") {
-                                    when (it) {
-                                        is UIMessagePart.Text -> it.text
-                                        is UIMessagePart.Image -> attachmentLabels[0]
-                                        is UIMessagePart.Document -> attachmentLabels[1]
-                                        is UIMessagePart.Audio -> attachmentLabels[2]
-                                        is UIMessagePart.Video -> attachmentLabels[3]
-                                        else -> ""
+                                text = rememberEmojiAnnotatedString(
+                                    "${index + 1}. " + message.parts.joinToString(" ") {
+                                        when (it) {
+                                            is UIMessagePart.Text -> it.text
+                                            is UIMessagePart.Image -> attachmentLabels[0]
+                                            is UIMessagePart.Document -> attachmentLabels[1]
+                                            is UIMessagePart.Audio -> attachmentLabels[2]
+                                            is UIMessagePart.Video -> attachmentLabels[3]
+                                            else -> ""
+                                        }
                                     }
-                                },
+                                ),
                                 modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.bodySmall,
                                 maxLines = 2,
@@ -142,6 +146,7 @@ internal fun MessageQueuePanel(
                             minHeightInLines = 3,
                             maxHeightInLines = 8
                         ),
+                        outputTransformation = rememberEmojiOutputTransformation(),
                     )
                 }
             },

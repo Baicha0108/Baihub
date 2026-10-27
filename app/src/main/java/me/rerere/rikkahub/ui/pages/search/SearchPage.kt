@@ -58,6 +58,8 @@ import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.ui.PopupMenuShape
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.theme.CustomColors
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
+import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.rikkahub.utils.navigateToChatPage
 import me.rerere.rikkahub.utils.plus
 import me.rerere.rikkahub.utils.toLocalDateTime
@@ -146,6 +148,7 @@ fun SearchPage(vm: SearchVM = koinViewModel()) {
                 keyboardActions = KeyboardActions(
                     onSearch = { vm.search() }
                 ),
+                visualTransformation = rememberEmojiVisualTransformation(),
             )
 
             SingleChoiceSegmentedButtonRow(
@@ -344,12 +347,12 @@ private fun SearchResultItem(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = result.title.ifBlank { untitled },
+                text = rememberEmojiAnnotatedString(result.title.ifBlank { untitled }),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = snippetText,
+                text = rememberEmojiAnnotatedString(snippetText),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )

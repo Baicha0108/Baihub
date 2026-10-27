@@ -48,6 +48,7 @@ import me.rerere.hugeicons.stroke.ArrowLeft01
 import me.rerere.hugeicons.stroke.Icon1stBracket
 import me.rerere.hugeicons.stroke.McpServer
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.data.ai.mcp.McpManager
 import me.rerere.rikkahub.data.ai.mcp.McpServerConfig
 import me.rerere.rikkahub.data.ai.mcp.McpStatus
@@ -330,7 +331,7 @@ fun McpPicker(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = server.commonOptions.name,
+                        text = rememberEmojiAnnotatedString(server.commonOptions.name),
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     if (status == McpStatus.Connected) {
