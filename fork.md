@@ -813,6 +813,29 @@
 
 备注：仅执行 `git fetch upstream`，未合并、未构建、未推送；当前项目文件没有同步上游。
 
+## 2026-10-28 23:30
+
+任务：同步上游 `a7d1e6ef..a046505a` 的 7 个新提交，并保持 Baihub 自定义功能兼容。
+
+同步与兼容：
+
+- 合并上游 Markdown 到 BetterText 的重构、颜色代码色块、导出 SAF 修复、OpenAI 空 role 兼容、待审批工具可见和加号面板滚动修复。
+- 解决 Markdown、悬浮聊天窗和翻译页的文本冲突，保留 Baihub 的 Emoji 字体、圆角菜单、可选择翻译结果等定制。
+- 删除上游已移除的旧 `ui` Markdown 实现；新增 `EmojiMarkdown.kt`，在 BetterText 解析后的段落、标题、列表、表格、折叠块和链接节点中只标注 Emoji 字符。
+- 普通文字、代码、代码块和自定义聊天字体保持原字体。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- 新增 `EmojiMarkdownTest`，覆盖嵌套样式、链接、列表、表格、折叠块和代码排除，测试成功。
+- 完整 `:app:testGithubDebugUnitTest` 共 516 项，新增测试及其中 509 项通过；7 个既有 DataStore 文件测试因 Windows 临时目录原子重命名失败，与本次合并功能无关。
+- `:app:assembleGithubRelease` 成功，耗时 7 分 31 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游BetterText并兼容功能.apk`（16,002,544 字节）。
+- SHA-256：`B438308B2AC9E3BD2D312F411DA559E262489818D342246552EC8BDF4440ECB5`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本地合并提交为 `71da5319`，未推送。上游实验分支 `feat/background-shell` 未同步。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
