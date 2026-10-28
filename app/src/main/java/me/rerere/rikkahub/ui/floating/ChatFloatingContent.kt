@@ -74,6 +74,7 @@ import me.rerere.hugeicons.stroke.Sparkles
 import me.rerere.hugeicons.stroke.Stop
 import me.rerere.hugeicons.stroke.Tick01
 import me.rerere.hugeicons.stroke.Wrench01
+import me.rerere.bettertext.markdown.rememberMarkdownDocument
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.ai.tools.local.ASK_USER_TOOL_NAME
 import me.rerere.rikkahub.data.model.GenerationPhase
@@ -81,9 +82,11 @@ import me.rerere.rikkahub.service.ChatError
 import me.rerere.rikkahub.ui.components.ui.drawAppLogo
 import me.rerere.rikkahub.ui.components.ui.logoMorphShape
 import me.rerere.rikkahub.ui.components.ui.rememberAppLogoLayers
+import me.rerere.rikkahub.ui.components.richtext.MaterialMarkdown
+import me.rerere.rikkahub.ui.components.richtext.withEmojiFont
+import me.rerere.rikkahub.ui.theme.LocalEmojiFontFamily
 import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
-import me.rerere.ui.markdown.Markdown
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
@@ -317,10 +320,16 @@ private fun PanelHeader(
     }
 }
 
-// 用 ui 模块的通用 Markdown：应用里的 MarkdownBlock 依赖导航、Activity 等悬浮窗里没有的东西
+// 用不带应用功能的 MaterialMarkdown：应用里的 MarkdownBlock 依赖导航、Activity 等悬浮窗里没有的东西
 @Composable
 private fun MessagePreview(text: String, isReasoning: Boolean, generating: Boolean) {
     val scrollState = rememberScrollState()
+    val style = MaterialTheme.typography.bodyMedium
+    val emojiFontFamily = LocalEmojiFontFamily.current
+    val document = rememberMarkdownDocument(text, streaming = generating)
+    val emojiDocument = remember(document, emojiFontFamily) {
+        emojiFontFamily?.let(document::withEmojiFont) ?: document
+    }
     // 生成中跟随最新内容。Markdown 在后台解析，内容变高晚于文本变化，按可滚动距离跟随
     LaunchedEffect(generating) {
         if (generating) snapshotFlow { scrollState.maxValue }.collect { scrollState.scrollTo(it) }
@@ -334,9 +343,9 @@ private fun MessagePreview(text: String, isReasoning: Boolean, generating: Boole
             MaterialTheme.colorScheme.onSurface
         },
     ) {
-        Markdown(
-            content = text,
-            style = MaterialTheme.typography.bodyMedium,
+        MaterialMarkdown(
+            document = emojiDocument,
+            style = style,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 200.dp)
