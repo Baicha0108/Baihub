@@ -836,6 +836,20 @@
 
 备注：本地合并提交为 `71da5319`，未推送。上游实验分支 `feat/background-shell` 未同步。
 
+## 2026-10-28 23:34
+
+任务：审查现有 516 项单元测试中是否存在无意义或可以去除的测试。
+
+结论：
+
+- 明确可删除：`ExampleUnitTest` 只验证 `2 + 2 = 4`，属于 Android 项目模板残留，对 Baihub 没有回归保护价值。
+- 不建议删除：Windows 下失败的 7 个 `SettingsStoreTest`、`ProviderAccountManagerTest` 测试覆盖真实并发写入、加载时序和持久化行为；应修复跨平台测试环境或按平台跳过，而不是移除测试。
+- 不建议删除：备份路径、自定义提示词、世界书注入、Emoji Markdown、记忆、会话队列、设置迁移等定制功能测试均有实际行为覆盖。
+- 可后续优化但不必删除：`ModelsDevAssetTest` 和 `DefaultProvidersTest` 对具体模型或默认服务配置有硬编码，存在随上游数据更新而失配的可能；可改用更稳定的代表性样本或参数化测试。
+- `FakeMemoryDAO.kt`、`FakeConversationStore.kt` 是测试辅助代码，不计为独立测试。
+
+备注：本任务仅审查，未删除或修改任何测试文件。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
