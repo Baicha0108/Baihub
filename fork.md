@@ -795,6 +795,24 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-10-28 23:01
+
+任务：检查上游是否有新提交，不执行同步合并。
+
+结果：
+
+- 获取到上游 `a7d1e6ef..a046505a` 的 7 个新提交。
+- `24a74227 refactor(markdown): 迁移至 BetterText 并保留文本选择与折叠交互`
+- `e0914b20 feat(markdown): 颜色代码前显示色块`
+- `a1c61c3c chore(baselineprofile): 移除 Markdown 性能对比用的基准测试`
+- `79f4b6fb fix(export): 修复部分设备通过 SAF 导出文件时闪退`
+- `1575d179 fix(openai): 兼容中转接口返回空 role 导致解析崩溃`
+- `50bb5785 fix(message): 折叠思考链时保持待审批工具可见`
+- `a046505a fix(chat): 加号面板主页面支持滚动，避免矮屏上压缩对话入口被挤出`
+- 上游另有实验分支 `feat/background-shell`，比 `master` 多 2 个提交：后台运行 Shell 命令，以及命令结束后通过会话收件箱通知模型。该分支未合入上游 `master`。
+
+备注：仅执行 `git fetch upstream`，未合并、未构建、未推送；当前项目文件没有同步上游。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
