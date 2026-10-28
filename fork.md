@@ -850,6 +850,23 @@
 
 备注：本任务仅审查，未删除或修改任何测试文件。
 
+## 2026-10-28 23:37
+
+任务：删除明确无意义的 Android 模板单元测试。
+
+实现：
+
+- 删除 `app/src/test/java/me/rerere/rikkahub/ExampleUnitTest.kt`。
+- 该测试只验证 `2 + 2 = 4`，与 Baihub 功能无关；其他业务、并发、持久化、备份和定制功能测试全部保留。
+- 删除后应用单元测试总数为 515 项。
+
+验证：
+
+- `EmojiMarkdownTest`、`SystemPromptV2CompositionTest`、`CustomPromptExportTest` 共 9 项代表性测试通过。
+- 未构建 APK，因为本次只删除测试模板，不改变应用产物。
+
+备注：未推送。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
