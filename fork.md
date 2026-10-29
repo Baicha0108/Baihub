@@ -867,6 +867,20 @@
 
 备注：未推送。
 
+## 2026-10-29 17:47
+
+任务：复核全屏编辑时中文一键输入引号、括号后光标跳位是否由代码或上游 Bug 导致。
+
+结论：
+
+- 撤回此前“属于上游 Bug”的判断；当前没有可复现证据证明 Baihub 或上游代码存在该功能缺陷。
+- Compose 的 `BasicTextField(value: String)` 重载内部仍保存完整 `TextFieldValue`，会保留 selection 和 IME composition，只向外暴露 String；本地 `mutableStateOf` 也在输入回调中立即更新，满足 Compose 的即时回写要求。
+- `EmojiVisualTransformation` 只增加字体 SpanStyle，不改变字符数量，并继续使用原 `OffsetMapping`，没有造成光标索引偏移。
+- 重启手机后恢复正常，符合输入法或系统输入服务临时异常，而不是稳定的应用代码问题。
+- String 重载在新版 Compose 中已标记为旧式 API，未来可迁移到 `TextFieldState + OutputTransformation` 以保持现代写法，但这不是当前已知 Bug，本次不修改。
+
+备注：本任务仅复核，未修改代码。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
