@@ -881,6 +881,27 @@
 
 备注：本任务仅复核，未修改代码。
 
+## 2026-10-29 18:00
+
+任务：同步上游新提交，保持 Baihub 功能兼容，构建并推送最新仓库。
+
+同步：
+
+- 获取并合并上游 `a046505a..a5db9c9b` 的 1 个提交：Tinyfish 搜索支持可选 `purpose` 参数以提升结果质量。
+- 上游改动只涉及 `search/src/main/java/me/rerere/search/TinyfishSearchService.kt`，与 Baihub 定制文件无重叠，无冲突。
+- 版本继续跟随上游：`3.1.1 (194)`。
+
+验证：
+
+- `:search:testDebugUnitTest` 成功。
+- `:app:compileGithubDebugKotlin` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 4 分 12 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游Tinyfish搜索更新.apk`（16,002,604 字节）。
+- SHA-256：`E2654177B717C2D6FC1D5EA45F91D4AFFE296F8DF7F5040825AAD9804B364140`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：合并提交为 `b93a7878`；本次任务完成后按用户要求推送到 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
