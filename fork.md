@@ -902,6 +902,27 @@
 
 备注：合并提交为 `b93a7878`；本次任务完成后按用户要求推送到 GitHub。
 
+## 2026-11-01 18:46
+
+任务：同步上游新提交，保持 Baihub 功能兼容并构建 Release arm64 APK。
+
+同步：
+
+- 获取并合并上游 `a5db9c9b..5ad19405` 的 1 个提交：模型选择面板支持多关键词搜索。
+- 上游重构了 `ModelList.kt` 和 `SettingProviderDetailPage.kt` 的筛选逻辑；合并后保留 Baihub 在提供方和模型名称上的 Emoji 字体覆盖。
+- 版本继续跟随上游：`3.1.1 (194)`。
+
+验证：
+
+- `:ai:testDebugUnitTest` 成功，包括上游新增的 `ModelFilterTest`。
+- `:app:compileGithubDebugKotlin` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 6 分 58 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游模型多关键词搜索.apk`（15,997,456 字节）。
+- SHA-256：`228F5096EEAEF4E086411D40AA50603A98AFE18187068A00373D04EF6265BCC6`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：合并提交为 `31143284`。本次用户没有要求推送，因此仅保留在本地。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
