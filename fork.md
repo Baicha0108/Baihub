@@ -923,6 +923,29 @@
 
 备注：合并提交为 `31143284`。本次用户没有要求推送，因此仅保留在本地。
 
+## 2026-11-02 19:09
+
+任务：同步上游新提交，保持功能兼容，构建 Release arm64 APK 并推送。
+
+同步：
+
+- 获取并合并上游 `5ad19405..903e058b` 的 2 个提交。
+- `20e9ddcc` 移除 Material Color Utilities Git 子模块，改为内置所需 Kotlin 源码。
+- `903e058b` 在设置页顶部增加本地网络权限提示卡片，并补充各语言资源。
+- 合并设置页时同时保留 Baihub 透明顶栏遮罩和上游权限提示；所有语言的应用名仍为 `Baihub`。
+- 旧子模块工作目录在合并前完整移动到 `D:\0AI\BaiCha\Rikkahub\Baihub-material-color-utilities-backup-20261102`，避免未跟踪文件覆盖，未删除备份。
+- 版本继续跟随上游：`3.1.1 (194)`。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 36 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游Material源码与网络权限提示.apk`（15,999,144 字节）。
+- SHA-256：`37E103F68532ABBBFA19B3554973ADBA14B801BE49037A1D0BD81F6854B8DFBD`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：合并提交为 `13f1c10b`；本次任务完成后按用户要求推送到 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
