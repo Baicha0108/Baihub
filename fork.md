@@ -946,6 +946,27 @@
 
 备注：合并提交为 `13f1c10b`；本次任务完成后按用户要求推送到 GitHub。
 
+## 2026-11-06 03:19
+
+任务：同步合并上游新提交，保持 Baihub 自定义功能兼容，构建 Release arm64-v8a APK 并推送。
+
+同步：
+
+- 获取并合并上游 `903e058b..f958af6a` 的 4 个提交。
+- 对话压缩弹窗的保留消息数量改为可直接输入，并继续保留 Baihub 的 Emoji 输入转换。
+- 推荐提供商新增 STA1N API 及图标匹配，更新相关 README 和赞助商资源。
+- 合并由 Git 自动完成，没有文本或语义冲突；Baihub 的包名、显示名、透明顶栏、Emoji 字体和侧栏定制均保持。
+- 版本继续跟随上游：`3.1.1 (194)`。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 5 分 45 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游压缩参数与STA1N提供商.apk`（16,079,484 字节）。
+- SHA-256：`C20026B6C694328F99344CCF7ADF7A0F6573AF0C40333618EDCEA53AC3D00853`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：同步前保留本地标签 `pre-upstream-20261106`；合并提交为 `4d5d1bd2`。本次任务完成后按用户要求推送到 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
