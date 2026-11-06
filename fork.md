@@ -967,6 +967,28 @@
 
 备注：同步前保留本地标签 `pre-upstream-20261106`；合并提交为 `4d5d1bd2`。本次任务完成后按用户要求推送到 GitHub。
 
+## 2026-11-06 20:19
+
+任务：同步合并上游新提交，保持 Baihub 二开功能兼容，构建 Release arm64-v8a APK 并推送。
+
+同步：
+
+- 获取并合并上游 `f958af6a..1ad51511` 的 2 个提交。
+- 自定义余额查询新增 GET / POST 选择和 JSON 请求体，请求体支持模板变量。
+- README 中 STA1N API 和 NaAPI 的赞助商说明改为中文。
+- 合并由 Git 自动完成，没有文本或语义冲突；新增字段带默认值，旧设置和备份仍可读取。
+- Baihub 的包名、显示名、透明顶栏、Emoji 字体和侧栏定制均保持，版本继续跟随上游 `3.1.1 (194)`。
+
+验证：
+
+- `:ai:testDebugUnitTest` 成功，包括上游新增的 POST JSON 请求体测试。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 16 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游余额POST查询.apk`（16,079,568 字节）。
+- SHA-256：`85DBF6FBC8821B9550E5029D78439975D3A362B136AED8F2F7D5C3DCAA3406DE`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：同步前保留本地标签 `pre-upstream-20261106-2`；合并提交为 `cf7b0d29`。本次任务完成后按用户要求推送到 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
