@@ -1016,6 +1016,20 @@
 
 备注：同步前保留本地标签 `pre-upstream-20261107`；合并提交为 `862f55df`。本次未构建 APK，未推送 GitHub。
 
+## 2026-11-07 02:16
+
+任务：构建同步后的 Release arm64-v8a APK，并推送最新提交到 GitHub。
+
+构建：
+
+- 基于已完成的 Baihub 二开兼容合并版本构建，版本继续跟随上游 `3.1.1 (194)`。
+- `:app:assembleGithubRelease` 成功，耗时 7 分 17 秒。
+- 产物：`dist/baihub-3.1.1-arm64-v8a-同步上游后台Shell与聊天顶栏.apk`（16,293,030 字节）。
+- SHA-256：`9D4ED34463317728E26DD64945E445B80FEBE8912418E8AFEEF78B90296F6904`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `194`，versionName `3.1.1`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次任务完成后按用户要求推送到 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
