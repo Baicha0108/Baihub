@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,7 +51,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import me.rerere.hugeicons.HugeIcons
@@ -69,6 +69,7 @@ import me.rerere.rikkahub.ui.components.ui.ItemActionMenu
 import me.rerere.rikkahub.ui.components.ui.Tag
 import me.rerere.rikkahub.ui.components.ui.TagType
 import me.rerere.rikkahub.ui.components.ui.cardGroupItemShape
+import me.rerere.rikkahub.ui.components.ui.longPressReorder
 import me.rerere.rikkahub.ui.context.LocalNavController
 import me.rerere.rikkahub.ui.hooks.useEditState
 import me.rerere.rikkahub.ui.theme.CustomColors
@@ -76,6 +77,8 @@ import me.rerere.rikkahub.ui.theme.rememberEmojiAnnotatedString
 import me.rerere.rikkahub.ui.theme.rememberEmojiVisualTransformation
 import me.rerere.ui.components.FormItem
 import org.koin.androidx.compose.koinViewModel
+import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableItem
 
 @Composable
 fun LorebookEditorPage(id: String?) {
@@ -225,16 +228,33 @@ fun LorebookEditorPage(id: String?) {
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                currentBook.entries.fastForEachIndexed { index, entry ->
-                    RegexInjectionEntryCard(
-                        entry = entry,
-                        shape = cardGroupItemShape(index, currentBook.entries.size),
-                        onEdit = { entryEditState.open(entry) },
-                        onDelete = {
-                            book = book?.let { it.copy(entries = it.entries - entry) }
-                        },
-                    )
+            ReorderableColumn(
+                list = currentBook.entries,
+                onSettle = { fromIndex, toIndex ->
+                    book = book?.let { latest ->
+                        val entries = latest.entries.toMutableList().apply {
+                            add(toIndex, removeAt(fromIndex))
+                        }
+                        latest.copy(entries = entries)
+                    }
+                },
+                verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
+            ) { index, entry, isDragging ->
+                key(entry.id) {
+                    ReorderableItem {
+                        RegexInjectionEntryCard(
+                            entry = entry,
+                            shape = cardGroupItemShape(index, currentBook.entries.size),
+                            modifier = longPressReorder(
+                                isDragging = isDragging,
+                                enabled = currentBook.entries.size > 1,
+                            ),
+                            onEdit = { entryEditState.open(entry) },
+                            onDelete = {
+                                book = book?.let { it.copy(entries = it.entries - entry) }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -256,12 +276,13 @@ fun LorebookEditorPage(id: String?) {
 private fun RegexInjectionEntryCard(
     entry: PromptInjection.RegexInjection,
     shape: Shape,
+    modifier: Modifier = Modifier,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
     Surface(
         onClick = onEdit,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
