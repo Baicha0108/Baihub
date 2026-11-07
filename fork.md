@@ -1030,6 +1030,37 @@
 
 备注：本次任务完成后按用户要求推送到 GitHub。
 
+## 2026-11-07 21:33
+
+任务：同步合并上游 `3.1.2` 更新，兼容 Baihub 二开功能并构建 Release arm64-v8a APK。
+
+同步：
+
+- 获取并合并上游 `dfbe9a08..fe5a28f9` 的 11 个提交，版本升级为 `3.1.2 (195)`。
+- 新增聊天左滑消息概览、会话菜单、Markdown/图片另存为与分享、世界书条目拖拽排序。
+- 新增 SSH 跳板机、历史图片压缩缓存、收藏模型去重和删除对话时同步删除收藏。
+- 更新 baseline profile、Markdown 依赖、微软兔子欢迎页图标及多语言资源。
+
+冲突处理：
+
+- `ChatList.kt`：采用上游的滑动概览与多选架构，继续使用共享的顶部渐隐实现；在 `ChatListPreview.kt` 补回搜索框 Emoji 输入转换。
+- `ChatPage.kt`：保留 Baihub 的缩放式侧栏、透明顶栏、标题 Emoji 和自定义提示词入口，同时接入上游概览、导出和删除会话菜单。
+- `ConversationExport.kt`：采用上游 Markdown/图片保存与分享流程，保留导出图片标题的 Emoji 字体。
+- `PromptPage.kt`：继续使用 Baihub 的独立世界书编辑页，不恢复旧弹窗；把上游拖拽排序迁移到 `LorebookEditorPage.kt`，并保留全屏输入和 Emoji 支持。
+- `BAIHUB.md` 的当前版本更新为 `3.1.2 (195)`。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `:ai:testDebugUnitTest` 成功。
+- 后台任务、会话收件箱、会话管理、记忆整理、浮动窗口和语音会话定向测试成功。
+- `:app:assembleGithubRelease` 成功，耗时 6 分 27 秒。
+- 产物：`dist/baihub-3.1.2-arm64-v8a-同步上游聊天概览与世界书排序.apk`（16,314,314 字节）。
+- SHA-256：`A73074DC12E4C107DA993E83B58CC397545BC0A0593466FDEE97A3FB29FC48E8`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `195`，versionName `3.1.2`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：同步前保留本地标签 `pre-upstream-20261107-2`；合并提交为 `e2de22ab`。本次未推送 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。
