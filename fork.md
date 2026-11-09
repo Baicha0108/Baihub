@@ -1126,6 +1126,28 @@
 
 备注：本次未推送 GitHub。
 
+## 2026-11-10 05:22
+
+任务：调整背景删除按钮、增加删除确认，并扩大自适应预览区域后构建 APK。
+
+实现：
+
+- 删除按钮视觉尺寸改为 28dp，图标改为 16dp，与图片上边和右边各保留 4dp；外层点击区域保持 44dp。
+- 点击删除按钮后先显示二次确认弹窗，确认后才移除对应背景图。
+- 最大背景预览区域由 220×140dp 调整为 330×210dp，继续按原图宽高比等比缩放且不裁剪。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `AssistantBackgroundTest` 和 `LocalFileUrlRepairTest` 定向测试成功。
+- `spotlessApply` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 4 分 13 秒。
+- 产物：`dist/baihub-3.1.2-arm64-v8a-背景删除确认与放大预览.apk`（16,328,230 字节）。
+- SHA-256：`7CA6A7EF92FBE39916D2FB1651F4F52BFB7CDADF834177FA5F1AAA0DADD8732D`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `195`，versionName `3.1.2`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次未推送 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。

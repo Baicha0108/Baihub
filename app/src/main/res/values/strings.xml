@@ -55,6 +55,8 @@
   <string name="assistant_page_add_background_images">Add Background Images</string>
   <string name="assistant_page_background_image_number">Background image %1$d</string>
   <string name="assistant_page_remove_background_image">Remove this background image</string>
+  <string name="assistant_page_delete_background_title">Delete Background Image?</string>
+  <string name="assistant_page_delete_background_message">Delete background image %1$d?</string>
   <string name="assistant_page_clear_background_images">Clear All</string>
   <string name="assistant_page_background_rotation">Auto Rotate</string>
   <string name="assistant_page_background_rotation_desc">Rotate through the selected backgrounds while the chat is visible</string>

@@ -70,6 +70,7 @@ fun BackgroundPicker(
     var showPickOption by remember { mutableStateOf(false) }
     var showUrlInput by remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
+    var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
     val imageAspectRatios = remember { mutableStateMapOf<String, Float>() }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -125,17 +126,17 @@ fun BackgroundPicker(
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(4.dp)
-                                .size(40.dp)
+                                .size(44.dp)
                                 .clip(CircleShape)
                                 .clickable {
-                                    onBackgroundsUpdate(backgrounds.filterIndexed { i, _ -> i != index })
+                                    pendingDeleteIndex = index
                                 },
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.TopEnd,
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(22.dp)
+                                    .padding(top = 4.dp, end = 4.dp)
+                                    .size(28.dp)
                                     .clip(CircleShape)
                                     .background(Color.Black.copy(alpha = 0.55f)),
                                 contentAlignment = Alignment.Center,
@@ -146,7 +147,7 @@ fun BackgroundPicker(
                                         R.string.assistant_page_remove_background_image
                                     ),
                                     tint = Color.White,
-                                    modifier = Modifier.size(14.dp),
+                                    modifier = Modifier.size(16.dp),
                                 )
                             }
                         }
@@ -331,6 +332,44 @@ fun BackgroundPicker(
             },
         )
     }
+
+    pendingDeleteIndex?.let { index ->
+        AlertDialog(
+            onDismissRequest = {
+                pendingDeleteIndex = null
+            },
+            title = {
+                Text(stringResource(R.string.assistant_page_delete_background_title))
+            },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.assistant_page_delete_background_message,
+                        index + 1,
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (index in backgrounds.indices) {
+                            onBackgroundsUpdate(
+                                backgrounds.filterIndexed { i, _ -> i != index }
+                            )
+                        }
+                        pendingDeleteIndex = null
+                    }
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDeleteIndex = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -342,8 +381,8 @@ private fun rotationIntervalLabel(seconds: Int): String =
     }
 
 private val DEFAULT_BACKGROUND_ASPECT_RATIO = 16f / 9f
-private val MAX_BACKGROUND_PREVIEW_WIDTH = 220.dp
-private val MAX_BACKGROUND_PREVIEW_HEIGHT = 140.dp
+private val MAX_BACKGROUND_PREVIEW_WIDTH = 330.dp
+private val MAX_BACKGROUND_PREVIEW_HEIGHT = 210.dp
 
 private fun backgroundPreviewSize(aspectRatio: Float): DpSize {
     val ratio = aspectRatio.takeIf { it.isFinite() && it > 0f }
