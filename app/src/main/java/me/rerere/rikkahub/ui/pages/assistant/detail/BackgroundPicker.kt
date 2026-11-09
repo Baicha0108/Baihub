@@ -3,13 +3,14 @@ package me.rerere.rikkahub.ui.pages.assistant.detail
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import me.rerere.hugeicons.HugeIcons
@@ -51,6 +53,7 @@ import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.BACKGROUND_ROTATION_INTERVALS
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
+import kotlin.math.min
 
 @Composable
 fun BackgroundPicker(
@@ -67,6 +70,7 @@ fun BackgroundPicker(
     var showPickOption by remember { mutableStateOf(false) }
     var showUrlInput by remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
+    val imageAspectRatios = remember { mutableStateMapOf<String, Float>() }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
@@ -86,15 +90,19 @@ fun BackgroundPicker(
         if (backgrounds.isNotEmpty()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 itemsIndexed(
                     items = backgrounds,
                     key = { _, url -> url },
                 ) { index, background ->
+                    val previewSize = backgroundPreviewSize(
+                        imageAspectRatios[background] ?: DEFAULT_BACKGROUND_ASPECT_RATIO
+                    )
                     Box(
                         modifier = Modifier
-                            .width(160.dp)
-                            .aspectRatio(16f / 9f)
+                            .size(previewSize)
+                            .animateContentSize()
                             .clip(MaterialTheme.shapes.large)
                             .alpha(previewOpacity),
                     ) {
@@ -104,28 +112,43 @@ fun BackgroundPicker(
                                 R.string.assistant_page_background_image_number,
                                 index + 1,
                             ),
-                            contentScale = ContentScale.Crop,
+                            contentScale = ContentScale.Fit,
                             modifier = Modifier.matchParentSize(),
-                        )
-                        IconButton(
-                            onClick = {
-                                onBackgroundsUpdate(backgrounds.filterIndexed { i, _ -> i != index })
+                            onSuccess = { result ->
+                                val width = result.result.image.width
+                                val height = result.result.image.height
+                                if (width > 0 && height > 0) {
+                                    imageAspectRatios[background] = width.toFloat() / height
+                                }
                             },
+                        )
+                        Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(6.dp)
-                                .size(32.dp)
+                                .padding(4.dp)
+                                .size(40.dp)
                                 .clip(CircleShape)
-                                .background(Color.Black.copy(alpha = 0.55f)),
+                                .clickable {
+                                    onBackgroundsUpdate(backgrounds.filterIndexed { i, _ -> i != index })
+                                },
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = HugeIcons.Cancel01,
-                                contentDescription = stringResource(
-                                    R.string.assistant_page_remove_background_image
-                                ),
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp),
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.55f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    imageVector = HugeIcons.Cancel01,
+                                    contentDescription = stringResource(
+                                        R.string.assistant_page_remove_background_image
+                                    ),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp),
+                                )
+                            }
                         }
                     }
                 }
@@ -317,3 +340,19 @@ private fun rotationIntervalLabel(seconds: Int): String =
     } else {
         stringResource(R.string.assistant_page_background_rotation_minutes, seconds / 60)
     }
+
+private val DEFAULT_BACKGROUND_ASPECT_RATIO = 16f / 9f
+private val MAX_BACKGROUND_PREVIEW_WIDTH = 220.dp
+private val MAX_BACKGROUND_PREVIEW_HEIGHT = 140.dp
+
+private fun backgroundPreviewSize(aspectRatio: Float): DpSize {
+    val ratio = aspectRatio.takeIf { it.isFinite() && it > 0f }
+        ?: DEFAULT_BACKGROUND_ASPECT_RATIO
+    val widthScale = MAX_BACKGROUND_PREVIEW_WIDTH.value
+    val heightScale = MAX_BACKGROUND_PREVIEW_HEIGHT.value
+    val scale = min(widthScale / ratio, heightScale)
+    return DpSize(
+        width = (ratio * scale).dp,
+        height = scale.dp,
+    )
+}

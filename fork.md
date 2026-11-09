@@ -1103,6 +1103,29 @@
 
 备注：本次未推送 GitHub。
 
+## 2026-11-10 05:04
+
+任务：优化助手背景轮换与预览，并构建 Release arm64-v8a APK。
+
+实现：
+
+- 背景轮换淡入淡出时长由 700ms 调整为 1000ms。
+- 背景选择器按原图宽高比计算预览尺寸，最大展示区域为 220×140dp，保持比例且不裁剪。
+- 图片加载前暂用 16:9 比例，加载成功后平滑切换到真实比例。
+- 每张图片的删除按钮视觉尺寸缩小为 22dp、图标 14dp，同时保留 40dp 点击区域和边缘留白。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `AssistantBackgroundTest` 和 `LocalFileUrlRepairTest` 定向测试成功。
+- `spotlessApply` 成功。
+- `:app:assembleGithubRelease` 成功，耗时 4 分 17 秒。
+- 产物：`dist/baihub-3.1.2-arm64-v8a-自适应背景预览与1000ms轮换.apk`（16,326,578 字节）。
+- SHA-256：`F53EB97B17A16E796541326FCC3CF37D2DCFB3CD0E78DA0ED757D9F9C53A9AA8`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `195`，versionName `3.1.2`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次未推送 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。

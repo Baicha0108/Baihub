@@ -96,7 +96,7 @@ private fun RotatingBackgroundImage(
 
     Crossfade(
         targetState = backgrounds[index],
-        animationSpec = tween(durationMillis = 700),
+        animationSpec = tween(durationMillis = 1000),
         modifier = modifier,
         label = "AssistantBackground",
     ) { background ->
