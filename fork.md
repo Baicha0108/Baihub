@@ -6,7 +6,7 @@
 - 不主动向 GitHub 推送，只有用户明确要求时才推送。
 - 不主动同步上游更新，只有用户明确要求时才同步。
 - 不向上游提交 PR（上游不接受 PR）。
-- 只构建 Release arm64-v8a；versionName / versionCode 与上游保持一致。
+- 每次做完后都要构建apk 只构建 Release arm64-v8a；versionName / versionCode 与上游保持一致。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>.apk`。
 
 ## 2026-10-19 05:43
@@ -1089,6 +1089,19 @@
 - `spotlessCheck` 成功。
 
 备注：本次未构建 APK，未推送 GitHub。
+
+## 2026-11-10 04:34
+
+任务：构建助手多图背景轮换 Release arm64-v8a APK。
+
+验证：
+
+- `:app:assembleGithubRelease` 成功，耗时 6 分 8 秒。
+- 产物：`dist/baihub-3.1.2-arm64-v8a-助手多图背景轮换.apk`（16,326,074 字节）。
+- SHA-256：`9AD603DCE99508077D072DBB8E7728E0413BBDE66DFCC3460D4F06C62247B95B`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `195`，versionName `3.1.2`，native-code 仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次未推送 GitHub。
 
 ## 2026-10-26 18:24
 
