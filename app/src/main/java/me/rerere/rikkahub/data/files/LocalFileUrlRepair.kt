@@ -3,8 +3,6 @@ package me.rerere.rikkahub.data.files
 import android.content.Context
 import android.util.Log
 import androidx.room.withTransaction
-import java.io.File
-import java.net.URI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.rerere.ai.ui.UIMessage
@@ -14,8 +12,11 @@ import me.rerere.rikkahub.data.db.AppDatabase
 import me.rerere.rikkahub.data.db.entity.MessageNodeEntity
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Avatar
+import me.rerere.rikkahub.data.model.backgroundImagesInUse
 import me.rerere.rikkahub.data.model.mapLocalFileUrls
 import me.rerere.rikkahub.utils.JsonInstant
+import java.io.File
+import java.net.URI
 
 private const val TAG = "LocalFileUrlRepair"
 
@@ -177,16 +178,20 @@ internal fun mapMessageNodeLocalFiles(
     return node.copy(messages = JsonInstant.encodeToString(mapped))
 }
 
-internal fun mapAssistantLocalFiles(assistant: Assistant, transform: (String) -> String): Assistant =
-    assistant.copy(
+internal fun mapAssistantLocalFiles(assistant: Assistant, transform: (String) -> String): Assistant {
+    val backgrounds = assistant.backgroundImagesInUse.map(transform)
+    return assistant.copy(
         avatar = mapAvatar(assistant.avatar, transform),
-        background = assistant.background?.let(transform),
+        // 旧版字段始终镜像第一张，确保备份导入原版后仍有可见背景。
+        background = backgrounds.firstOrNull(),
+        backgroundImages = backgrounds,
         presetMessages = assistant.presetMessages.map { message ->
             message.copy(
                 parts = message.parts.map { part -> part.mapLocalFileUrls(transform) }
             )
         },
     )
+}
 
 internal fun mapSettingsLocalFiles(settings: Settings, transform: (String) -> String): Settings =
     settings.copy(

@@ -41,6 +41,7 @@ import me.rerere.ai.provider.ModelType
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.db.entity.WorkspaceEntity
 import me.rerere.rikkahub.data.model.Assistant
+import me.rerere.rikkahub.data.model.backgroundImagesInUse
 import me.rerere.rikkahub.ui.components.ai.ModelField
 import me.rerere.rikkahub.ui.components.ai.ModelListSheet
 import me.rerere.rikkahub.ui.components.ai.ReasoningButton
@@ -464,20 +465,29 @@ internal fun AssistantBasicContent(
                     supportingContent = { Text(stringResource(R.string.assistant_page_chat_background_desc)) },
                 ) {
                     BackgroundPicker(
-                        background = assistant.background,
+                        backgrounds = assistant.backgroundImagesInUse,
                         backgroundOpacity = assistant.backgroundOpacity,
-                        onUpdate = { background ->
+                        rotationEnabled = assistant.backgroundRotationEnabled,
+                        rotationIntervalSeconds = assistant.backgroundRotationIntervalSeconds,
+                        onBackgroundsUpdate = { backgrounds ->
                             onUpdate(
                                 assistant.copy(
-                                    background = background
+                                    background = backgrounds.firstOrNull(),
+                                    backgroundImages = backgrounds,
                                 )
                             )
-                        }
+                        },
+                        onRotationEnabledChange = { enabled ->
+                            onUpdate(assistant.copy(backgroundRotationEnabled = enabled))
+                        },
+                        onRotationIntervalChange = { interval ->
+                            onUpdate(assistant.copy(backgroundRotationIntervalSeconds = interval))
+                        },
                     )
                 }
             }
 
-            if (!assistant.useGradientBackground && assistant.background != null) {
+            if (!assistant.useGradientBackground && assistant.backgroundImagesInUse.isNotEmpty()) {
                 val backgroundOpacity = assistant.backgroundOpacity.coerceIn(0f, 1f)
                 formItem(
                     headlineContent = { Text(stringResource(R.string.assistant_page_background_opacity)) },

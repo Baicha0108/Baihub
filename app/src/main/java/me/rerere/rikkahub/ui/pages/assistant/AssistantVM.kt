@@ -12,6 +12,7 @@ import me.rerere.rikkahub.data.datastore.SettingsStore
 import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.Assistant
 import me.rerere.rikkahub.data.model.Avatar
+import me.rerere.rikkahub.data.model.backgroundImagesInUse
 import me.rerere.rikkahub.data.repository.MemoryRepository
 import me.rerere.rikkahub.data.repository.SystemPromptV2Repository
 import me.rerere.rikkahub.data.repository.memoryId
@@ -41,21 +42,26 @@ class AssistantVM(
 
     fun removeAssistant(assistant: Assistant) {
         viewModelScope.launch {
-            cleanupAssistantFiles(assistant)
             systemPromptV2Repository.delete(assistant.id)
 
             settingsStore.update { settings ->
                 settings.copy(assistants = settings.assistants.filter { it.id != assistant.id })
             }
+            cleanupAssistantFiles(assistant, settingsStore.settingsFlow.value)
             memoryRepository.deleteFilesOfAssistant(assistant.id.toString())
             chatService.deleteConversationsOfAssistant(assistant.id)
         }
     }
 
-    private fun cleanupAssistantFiles(assistant: Assistant) {
+    private fun cleanupAssistantFiles(assistant: Assistant, remainingSettings: Settings) {
+        val retainedBackgrounds = remainingSettings.assistants
+            .flatMap { it.backgroundImagesInUse }
+            .toSet()
         val uris = buildList {
             (assistant.avatar as? Avatar.Image)?.let { add(it.url.toUri()) }
-            assistant.background?.let { add(it.toUri()) }
+            assistant.backgroundImagesInUse
+                .filterNot { it in retainedBackgrounds }
+                .forEach { add(it.toUri()) }
         }
 
         if (uris.isNotEmpty()) {
@@ -68,7 +74,7 @@ class AssistantVM(
             val copiedAssistant = assistant.copy(
                 id = kotlin.uuid.Uuid.random(),
                 name = "${assistant.name} (Clone)",
-                avatar = if(assistant.avatar is Avatar.Image) Avatar.Dummy else assistant.avatar,
+                avatar = if (assistant.avatar is Avatar.Image) Avatar.Dummy else assistant.avatar,
             )
             settingsStore.update { it.copy(assistants = it.assistants.plus(copiedAssistant)) }
             systemPromptV2Repository.copy(assistant.id, copiedAssistant.id)

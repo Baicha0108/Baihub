@@ -1067,6 +1067,29 @@
 
 备注：只推送 `origin/master`，不向上游提交 PR，也不修改上游仓库。
 
+## 2026-11-10 04:22
+
+任务：为每个助手增加多图背景和自动轮换，不设置图片数量上限。
+
+实现：
+
+- `Assistant` 新增 `backgroundImages`、`backgroundRotationEnabled` 和 `backgroundRotationIntervalSeconds`，保留旧 `background` 字段作为兼容回退。
+- 背景选择器支持图库批量添加、URL 添加、逐张删除、清空全部，并使用横向缩略图列表管理任意数量背景。
+- 多图时可开启自动轮换，间隔滑块固定为 3、5、8、10、15、30 秒以及 1、5、15、30 分钟。
+- 聊天页按列表顺序轮换，使用 700ms 淡入淡出；离开聊天页或应用进入后台时暂停计时。
+- 动态渐变背景开启时忽略图片轮换；背景透明度和全局遮罩继续作用于所有图片。
+- 旧设置和备份缺少新字段时自动使用单图；导出时旧字段同步为第一张图，保持原版 RikkaHub 兼容。
+- 删除或替换背景时只清理不再被任何助手引用的本地文件。
+- `BAIHUB.md` 已补充多图背景差异说明。
+
+验证：
+
+- `:app:compileGithubDebugKotlin` 成功。
+- `AssistantBackgroundTest` 和 `LocalFileUrlRepairTest` 定向测试成功，覆盖旧 JSON、轮换档位、序列化往返、备份路径修复和多图映射。
+- `spotlessCheck` 成功。
+
+备注：本次未构建 APK，未推送 GitHub。
+
 ## 2026-10-26 18:24
 
 任务：同步上游更新并构建 Release arm64-v8a APK。

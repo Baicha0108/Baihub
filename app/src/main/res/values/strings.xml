@@ -52,6 +52,15 @@
   <string name="assistant_page_chaotic">Chaotic (Dangerous)</string>
   <string name="assistant_page_chat_background">Chat Background</string>
   <string name="assistant_page_chat_background_desc">Set background image for assistant chat page</string>
+  <string name="assistant_page_add_background_images">Add Background Images</string>
+  <string name="assistant_page_background_image_number">Background image %1$d</string>
+  <string name="assistant_page_remove_background_image">Remove this background image</string>
+  <string name="assistant_page_clear_background_images">Clear All</string>
+  <string name="assistant_page_background_rotation">Auto Rotate</string>
+  <string name="assistant_page_background_rotation_desc">Rotate through the selected backgrounds while the chat is visible</string>
+  <string name="assistant_page_background_rotation_interval">Rotation Interval</string>
+  <string name="assistant_page_background_rotation_seconds">%1$d seconds</string>
+  <string name="assistant_page_background_rotation_minutes">%1$d minutes</string>
   <string name="assistant_page_chat_model">Chat Model</string>
   <string name="assistant_page_chat_model_desc">Set the default chat model for the assistant. If not set, the global default chat model will be used</string>
   <string name="assistant_page_clone">Clone</string>

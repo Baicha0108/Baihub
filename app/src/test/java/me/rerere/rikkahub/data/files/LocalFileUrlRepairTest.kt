@@ -1,7 +1,5 @@
 package me.rerere.rikkahub.data.files
 
-import java.io.File
-import java.net.URI
 import me.rerere.ai.core.MessageRole
 import me.rerere.ai.ui.UIMessage
 import me.rerere.ai.ui.UIMessagePart
@@ -16,6 +14,8 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
+import java.net.URI
 
 class LocalFileUrlRepairTest {
     @get:Rule
@@ -107,9 +107,16 @@ class LocalFileUrlRepairTest {
             parentFile?.mkdirs()
             writeText("background")
         }
+        val secondBackground = File(filesDir, "upload/background-2.png").apply {
+            writeText("background-2")
+        }
         val preset = File(filesDir, "upload/preset.png").apply { writeText("preset") }
         val assistant = Assistant(
             background = "file:///data/user/0/me.rerere.rikkahub/files/upload/background.png",
+            backgroundImages = listOf(
+                "file:///data/user/0/me.rerere.rikkahub/files/upload/background.png",
+                "file:///data/user/0/me.rerere.rikkahub/files/upload/background-2.png",
+            ),
             presetMessages = listOf(
                 UIMessage(
                     role = MessageRole.ASSISTANT,
@@ -125,6 +132,10 @@ class LocalFileUrlRepairTest {
         val repaired = repairAssistantLocalFiles(assistant, filesDir)
 
         assertEquals(fileUrl(background), repaired.background)
+        assertEquals(
+            listOf(fileUrl(background), fileUrl(secondBackground)),
+            repaired.backgroundImages,
+        )
         val image = repaired.presetMessages.single().parts.single() as UIMessagePart.Image
         assertEquals(fileUrl(preset), image.url)
     }
@@ -198,6 +209,10 @@ class LocalFileUrlRepairTest {
         val assistant = Assistant(
             avatar = Avatar.Image(sourceUrl("upload/avatar.png")),
             background = sourceUrl("upload/background.png"),
+            backgroundImages = listOf(
+                sourceUrl("upload/background.png"),
+                sourceUrl("upload/background-2.png"),
+            ),
             presetMessages = listOf(
                 UIMessage(
                     role = MessageRole.ASSISTANT,
@@ -229,6 +244,8 @@ class LocalFileUrlRepairTest {
         val mappedAssistant = mapped.assistants.single()
         assertMapped((mappedAssistant.avatar as Avatar.Image).url, "upload/avatar.png")
         assertMapped(mappedAssistant.background, "upload/background.png")
+        assertMapped(mappedAssistant.backgroundImages[0], "upload/background.png")
+        assertMapped(mappedAssistant.backgroundImages[1], "upload/background-2.png")
         val presetImage = mappedAssistant.presetMessages.single().parts.single() as UIMessagePart.Image
         assertMapped(presetImage.url, "upload/preset.png")
         assertMapped(
