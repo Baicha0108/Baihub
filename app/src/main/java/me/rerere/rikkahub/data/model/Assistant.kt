@@ -47,6 +47,7 @@ data class Assistant(
     val backgroundImages: List<String> = emptyList(), // 聊天页背景图列表，非空时优先于 background
     val backgroundRotationEnabled: Boolean = false, // 是否自动轮换多张背景图
     val backgroundRotationIntervalSeconds: Int = 30, // 背景图轮换间隔（秒）
+    val backgroundRotationFadeMillis: Int = 1000, // 背景图轮换淡入淡出时长（毫秒）
     val backgroundOpacity: Float = 1.0f, // 背景图不透明度(0~1)
     val useGradientBackground: Boolean = false, // 开启后聊天页使用动态渐变背景
     val modeInjectionIds: Set<Uuid> = emptySet(), // 关联的模式注入 ID
@@ -58,6 +59,7 @@ data class Assistant(
 )
 
 val BACKGROUND_ROTATION_INTERVALS = listOf(3, 5, 8, 10, 15, 30, 60, 300, 900, 1800)
+val BACKGROUND_ROTATION_FADE_MILLIS = (300..2000 step 100).toList()
 
 /** 新字段为空时继续使用旧版单图字段，保证旧设置和备份可直接读取。 */
 val Assistant.backgroundImagesInUse: List<String>
@@ -65,6 +67,9 @@ val Assistant.backgroundImagesInUse: List<String>
 
 val Assistant.normalizedBackgroundRotationIntervalSeconds: Int
     get() = backgroundRotationIntervalSeconds.takeIf { it in BACKGROUND_ROTATION_INTERVALS } ?: 30
+
+val Assistant.normalizedBackgroundRotationFadeMillis: Int
+    get() = backgroundRotationFadeMillis.takeIf { it in BACKGROUND_ROTATION_FADE_MILLIS } ?: 1000
 
 @Serializable
 data class QuickMessage(

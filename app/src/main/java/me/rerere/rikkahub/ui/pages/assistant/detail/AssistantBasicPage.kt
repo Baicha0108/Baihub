@@ -469,6 +469,7 @@ internal fun AssistantBasicContent(
                         backgroundOpacity = assistant.backgroundOpacity,
                         rotationEnabled = assistant.backgroundRotationEnabled,
                         rotationIntervalSeconds = assistant.backgroundRotationIntervalSeconds,
+                        rotationFadeMillis = assistant.backgroundRotationFadeMillis,
                         onBackgroundsUpdate = { backgrounds ->
                             onUpdate(
                                 assistant.copy(
@@ -482,6 +483,9 @@ internal fun AssistantBasicContent(
                         },
                         onRotationIntervalChange = { interval ->
                             onUpdate(assistant.copy(backgroundRotationIntervalSeconds = interval))
+                        },
+                        onRotationFadeChange = { fadeMillis ->
+                            onUpdate(assistant.copy(backgroundRotationFadeMillis = fadeMillis))
                         },
                     )
                 }

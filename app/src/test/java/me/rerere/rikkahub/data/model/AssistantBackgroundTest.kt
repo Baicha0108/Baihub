@@ -35,6 +35,7 @@ class AssistantBackgroundTest {
         assertEquals(listOf("file:///legacy.png"), assistant.backgroundImagesInUse)
         assertTrue(!assistant.backgroundRotationEnabled)
         assertEquals(30, assistant.normalizedBackgroundRotationIntervalSeconds)
+        assertEquals(1000, assistant.normalizedBackgroundRotationFadeMillis)
     }
 
     @Test
@@ -53,12 +54,28 @@ class AssistantBackgroundTest {
     }
 
     @Test
+    fun `unsupported rotation fade falls back to one thousand milliseconds`() {
+        val assistant = Assistant(backgroundRotationFadeMillis = 250)
+
+        assertEquals(1000, assistant.normalizedBackgroundRotationFadeMillis)
+    }
+
+    @Test
+    fun `rotation fade durations match the configured slider positions`() {
+        assertEquals(
+            listOf(300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000),
+            BACKGROUND_ROTATION_FADE_MILLIS,
+        )
+    }
+
+    @Test
     fun `multi-image rotation settings survive json round trip`() {
         val assistant = Assistant(
             background = "file:///one.png",
             backgroundImages = listOf("file:///one.png", "file:///two.png"),
             backgroundRotationEnabled = true,
             backgroundRotationIntervalSeconds = 900,
+            backgroundRotationFadeMillis = 1400,
         )
 
         val decoded = JsonInstant.decodeFromString<Assistant>(
@@ -68,5 +85,6 @@ class AssistantBackgroundTest {
         assertEquals(assistant.backgroundImages, decoded.backgroundImages)
         assertTrue(decoded.backgroundRotationEnabled)
         assertEquals(900, decoded.backgroundRotationIntervalSeconds)
+        assertEquals(1400, decoded.backgroundRotationFadeMillis)
     }
 }

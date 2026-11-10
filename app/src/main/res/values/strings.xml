@@ -62,8 +62,12 @@
   <string name="assistant_page_background_rotation">Auto Rotate</string>
   <string name="assistant_page_background_rotation_desc">Rotate through the selected backgrounds while the chat is visible</string>
   <string name="assistant_page_background_rotation_interval">Rotation Interval</string>
+  <string name="assistant_page_background_rotation_interval_desc">Time between automatic background changes</string>
   <string name="assistant_page_background_rotation_seconds">%1$d seconds</string>
   <string name="assistant_page_background_rotation_minutes">%1$d minutes</string>
+  <string name="assistant_page_background_rotation_fade">Fade</string>
+  <string name="assistant_page_background_rotation_fade_desc">Duration of the crossfade between background images</string>
+  <string name="assistant_page_background_rotation_fade_value">%1$d ms</string>
   <string name="assistant_page_chat_model">Chat Model</string>
   <string name="assistant_page_chat_model_desc">Set the default chat model for the assistant. If not set, the global default chat model will be used</string>
   <string name="assistant_page_clone">Clone</string>

@@ -54,6 +54,7 @@ import me.rerere.hugeicons.stroke.Cancel01
 import me.rerere.hugeicons.stroke.Image02
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.files.FilesManager
+import me.rerere.rikkahub.data.model.BACKGROUND_ROTATION_FADE_MILLIS
 import me.rerere.rikkahub.data.model.BACKGROUND_ROTATION_INTERVALS
 import me.rerere.rikkahub.ui.components.ui.longPressReorder
 import org.koin.compose.koinInject
@@ -69,9 +70,11 @@ fun BackgroundPicker(
     backgroundOpacity: Float = 1.0f,
     rotationEnabled: Boolean = false,
     rotationIntervalSeconds: Int = 30,
+    rotationFadeMillis: Int = 1000,
     onBackgroundsUpdate: (List<String>) -> Unit,
     onRotationEnabledChange: (Boolean) -> Unit,
     onRotationIntervalChange: (Int) -> Unit,
+    onRotationFadeChange: (Int) -> Unit,
 ) {
     val filesManager: FilesManager = koinInject()
     var showPickOption by remember { mutableStateOf(false) }
@@ -290,35 +293,95 @@ fun BackgroundPicker(
                 .takeIf { it in BACKGROUND_ROTATION_INTERVALS }
                 ?: 30
             val selectedIndex = BACKGROUND_ROTATION_INTERVALS.indexOf(normalizedInterval)
+            val normalizedFadeMillis = rotationFadeMillis
+                .takeIf { it in BACKGROUND_ROTATION_FADE_MILLIS }
+                ?: 1000
+            val selectedFadeIndex = BACKGROUND_ROTATION_FADE_MILLIS.indexOf(normalizedFadeMillis)
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Text(
-                        text = stringResource(R.string.assistant_page_background_rotation_interval),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Text(
-                        text = rotationIntervalLabel(normalizedInterval),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.assistant_page_background_rotation_interval),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.assistant_page_background_rotation_interval_desc
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Text(
+                            text = rotationIntervalLabel(normalizedInterval),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    Slider(
+                        value = selectedIndex.toFloat(),
+                        onValueChange = { value ->
+                            onRotationIntervalChange(
+                                BACKGROUND_ROTATION_INTERVALS[value.roundToInt()]
+                            )
+                        },
+                        valueRange = 0f..BACKGROUND_ROTATION_INTERVALS.lastIndex.toFloat(),
+                        steps = BACKGROUND_ROTATION_INTERVALS.size - 2,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                Slider(
-                    value = selectedIndex.toFloat(),
-                    onValueChange = { value ->
-                        onRotationIntervalChange(
-                            BACKGROUND_ROTATION_INTERVALS[value.roundToInt()]
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.assistant_page_background_rotation_fade),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.assistant_page_background_rotation_fade_desc
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Text(
+                            text = stringResource(
+                                R.string.assistant_page_background_rotation_fade_value,
+                                normalizedFadeMillis,
+                            ),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
                         )
-                    },
-                    valueRange = 0f..BACKGROUND_ROTATION_INTERVALS.lastIndex.toFloat(),
-                    steps = BACKGROUND_ROTATION_INTERVALS.size - 2,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    }
+                    Slider(
+                        value = selectedFadeIndex.toFloat(),
+                        onValueChange = { value ->
+                            onRotationFadeChange(
+                                BACKGROUND_ROTATION_FADE_MILLIS[value.roundToInt()]
+                            )
+                        },
+                        valueRange = 0f..BACKGROUND_ROTATION_FADE_MILLIS.lastIndex.toFloat(),
+                        steps = BACKGROUND_ROTATION_FADE_MILLIS.size - 2,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }
