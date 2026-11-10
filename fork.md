@@ -3,11 +3,12 @@
 ## 固定约定
 
 - 每次任务时都总结内容写入本文件，并在每条记录开头写明任务完成时间（Asia/Shanghai）。
-- 不主动向 GitHub 推送，只有用户明确要求时才推送。
+- 每次开始前都应当规划一个方案出来，这是一个好习惯。
+- 默认每次改完都提交本地，但不主动向 GitHub 推送，只有用户明确要求时才推送。
 - 不主动同步上游更新，只有用户明确要求时才同步。
 - 不向上游提交 PR（上游不接受 PR）。
 - 每次做完后都要构建apk 只构建 Release arm64-v8a；versionName / versionCode 与上游保持一致。
-- APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>.apk`。
+- APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<本次提交ID>.apk`。
 
 ## 2026-10-19 05:43
 
@@ -794,6 +795,134 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
+
+## 2026-11-11 01:39
+
+任务：将 Baihub 固定开发约定写入仓库级规则，并按新规则整理、提交和构建当前背景动画改动。
+
+规则：
+
+- 在 `AGENTS.md` 新增 `Baihub Fork Rules`，固定方案、记录、本地提交、禁止主动推送和同步上游、禁止上游 PR、仅 Release arm64-v8a、版本跟随上游、构建和 APK 命名等要求。
+- 明确 APK 名称中的提交 ID 是包含实际代码的功能提交 ID，构建记录和文档更新使用单独提交。
+
+本地提交：
+
+- `f54d9cf2 docs:建立Baihub固定开发规则`
+- `0bc3eb75 feat:完善背景轮换动画与预加载`
+- 功能提交包含淡入淡出 300–2000ms 档位、布局说明、背景下一张预加载，以及匹配 `Scale.FILL`、`Precision.INEXACT` 的 Coil 缓存键修复。
+
+验证：
+
+- `AssistantBackgroundTest` 通过。
+- `:app:assembleGithubRelease` 成功，耗时 3 分 48 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-背景轮换与预加载-0bc3eb75.apk`（16,410,595 字节）。
+- SHA-256：`F94FF18118815B75335D913142129B46508970E76E7E14B1A128B7F0C7C388AD`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，真机动画表现以用户后续测试为准。未推送。
+
+## 2026-11-11 01:21
+
+任务：修复背景预加载在 300ms 淡入淡出下仍重复黑屏的问题。
+
+原因：
+
+- 预加载请求虽与显示请求使用相同 URL 和像素尺寸，但未显式设置缩放与精度参数。
+- `AsyncImage` 显示时会为 `ContentScale.Crop` 自动补充 `Scale.FILL`，并补充 `Precision.INEXACT`，导致预加载和实际显示的 Coil 内存缓存键不一致。
+- 预加载结果因此无法被轮换显示直接命中；300ms 淡出结束后新图仍在重新加载，便出现稳定可见的黑屏。
+
+修复：
+
+- 预加载请求显式设置 `Scale.FILL` 和 `Precision.INEXACT`，与 `AsyncImage` 的实际显示请求保持一致。
+- 继续复用相同 URL、背景区域像素尺寸和请求参数，不修改图片裁剪或显示逻辑。
+
+验证：
+
+- `spotlessApply` 成功。
+- `AssistantBackgroundTest` 通过。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 56 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-背景预加载缓存命中修复.apk`（16,410,595 字节）。
+- SHA-256：`9D62385F9ED2DF3613891D535338DB12AFAFCBA76BB7A06EAB2C993D1B8346C2`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机 300ms 连续轮换验证。未提交、未推送。
+
+## 2026-11-11 01:05
+
+任务：为多图聊天背景增加下一张预加载机制。
+
+实现：
+
+- 当前背景图片成功加载后，立即通过 Coil 在后台预加载下一张，不等待淡入淡出结束。
+- 预加载和正式显示共用同一图片请求构造器，并使用相同的背景区域像素尺寸，确保能够复用 Coil 内存缓存。
+- 同一时间只预加载下一张，不会一次性加载全部图片。
+- 只有多图且开启轮换、应用位于前台时才预加载；单图、关闭轮换或离开聊天页时不执行。
+- 图片列表、顺序、当前索引或背景区域尺寸变化时会自动重新计算并预加载正确的下一张。
+- 预加载失败会被忽略，不阻塞当前背景；实际轮换时仍按正常流程加载。
+- 显示继续使用原版的 `ContentScale.Crop` 等比缩放与裁剪，不改变图片比例和最终画面。
+
+验证：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugKotlin` 成功，耗时 2 分 37 秒。
+- `AssistantBackgroundTest` 通过。
+- `:app:assembleGithubRelease` 成功，耗时 4 分 15 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-背景预加载.apk`（16,410,199 字节）。
+- SHA-256：`36F41D64FA0621962FCE1D5FABD5A4B2BF388440029A8882461D7BA142CFA935`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机本地图片、慢速网络图片和快速切页验证。未提交、未推送。
+
+## 2026-11-11 00:40
+
+任务：将背景轮换“淡入淡出”档位调整为 300–2000ms，并确认当前多图背景的图片加载策略。
+
+实现：
+
+- 淡入淡出滑块改为 300–2000ms，每 100ms 一档，共 18 档。
+- 默认值继续为 1000ms；旧存档或超出范围的值自动回退到 1000ms。
+- 其余轮换、备份和原版兼容逻辑不变。
+
+加载策略结论：
+
+- 当前不会一次性组合并加载全部背景图。
+- 静止时通常只组合当前显示图片；轮换发生时才同时保留旧图并创建新图，新图在该时刻开始加载。
+- 没有主动预加载下一张图片；之前显示过的图片可能由 Coil 内存或磁盘缓存直接复用。
+
+验证：
+
+- `spotlessApply` 成功。
+- `AssistantBackgroundTest` 通过，档位与非法值回退测试已更新。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 8 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-淡入淡出300至2000ms.apk`（16,408,775 字节）。
+- SHA-256：`109EF30FE56DC92F9F9CF472F6A6043398132CB92AB5EEB900462BB5F3C15C87`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机滑块操作和动画验证。未提交、未推送。
+
+## 2026-11-11 00:21
+
+任务：为助手背景轮换增加“淡入淡出”时长档位，并调整“轮换间隔”的标题与说明布局。
+
+实现：
+
+- 每个助手新增 `backgroundRotationFadeMillis`，默认 1000ms。
+- 淡入淡出滑块范围为 100–1400ms，每 100ms 一个档位，共 14 档。
+- “轮换间隔”和“淡入淡出”均使用大标题、下方小字说明，右上角显示当前值。
+- 聊天页背景轮换动画直接使用所选淡入淡出时长。
+- 旧设置和旧备份没有该字段时自动使用 1000ms；新字段随现有设置备份，原版会忽略该字段，不影响双方导入。
+
+验证：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugKotlin` 成功，耗时 2 分 21 秒。
+- `AssistantBackgroundTest` 通过，覆盖默认值、14 个档位、非法值回退和 JSON 序列化。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 45 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-背景淡入淡出档位.apk`（16,408,779 字节）。
+- SHA-256：`34672ABB6882B2376B2A8F117765B8596ECC36B0350FAA35AC3D02DDAB636FB7`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机滑块操作和动画时长切换验证。未提交、未推送。
 
 ## 2026-11-10 23:52
 
