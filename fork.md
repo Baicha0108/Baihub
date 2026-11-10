@@ -795,6 +795,38 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-11-10 23:52
+
+任务：同步上游 `3.2.0` 新提交，兼容 Baihub 二开功能，构建 Release arm64-v8a APK 并提交到 GitHub。
+
+上游同步：
+
+- 已合并上游 `055faeb3..90269e39` 的 5 个提交。
+- 上游版本更新为 `3.2.0 (196)`。
+- 新增可用模型面板手动刷新。
+- 修复 Mistral 推理模型多轮对话返回 422 的问题。
+- 同步 OpenAI/Mistral 消息转换、流式解析、提供商详情页和 README 更新。
+
+兼容处理：
+
+- 本次 Git 自动合并成功，没有文本冲突。
+- `app/build.gradle.kts` 保留 Baihub 的 `me.baicha.baihub` 包名和仅 `arm64-v8a` 配置，同时采用上游 `3.2.0 (196)` 版本号。
+- 提供商详情页自动合并后，Baihub 原有界面调整与上游模型手动刷新入口同时保留。
+- 自定义提示词、多图背景、Emoji 字体、文件路径修复和备份兼容代码未被此次合并且未删除。
+
+验证：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugKotlin` 成功，耗时 1 分 28 秒。
+- 上游 `ChatCompletionsMistralContentTest`、`ChatCompletionsRequestMessageTest` 通过。
+- 二开 `AssistantBackgroundTest`、`LocalFileUrlRepairTest`、`BackupPathRewriterTest`、`ContinuationHintTest` 全部通过。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 6 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-同步上游3.2.0与提供商刷新.apk`（16,407,263 字节）。
+- SHA-256：`57944C763A4B0E616E9F87E75BA98B77D231371E44C88916E5AEFF42EC2BD5BB`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机验证。本次完成后提交并推送到 `origin/master`。
+
 ## 2026-11-10 21:02
 
 任务：为助手多图聊天背景增加长按拖动排序，同步上游新提交并保持二开功能兼容，构建 Release arm64-v8a APK 后提交本地仓库。
