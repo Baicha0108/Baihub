@@ -795,6 +795,37 @@
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
 
+## 2026-11-10 21:02
+
+任务：为助手多图聊天背景增加长按拖动排序，同步上游新提交并保持二开功能兼容，构建 Release arm64-v8a APK 后提交本地仓库。
+
+实现：
+
+- 多图聊天背景使用现有 `reorderable` 组件支持长按拖动排序；普通快速横向滑动仍用于浏览列表，只有长按图片主体后才进入拖动状态。
+- 拖动过程中使用临时顺序，松手时才一次性写入助手设置，避免每次经过其他图片都触发保存。
+- 拖动时提供触感和轻微缩放反馈，列表靠近边缘时支持自动滚动；只有一张背景图时不启用排序。
+- 右上角删除按钮继续保持独立点击区域和二次确认，不参与拖动。
+- 新顺序直接保存到现有有序字段 `backgroundImages`，无需修改数据库或备份格式；第一张图继续同步到旧字段 `background`，保证导回原版时仍显示首图。
+- 增加中英文“长按背景图可调整顺序”提示。
+
+上游同步：
+
+- 已合并上游 `055faeb3`，新增上游 Phone Use、按上下文占用比例自动压缩、回合中途续接提示、Claude 思考块签名修复、用户 CA 信任和快捷消息更新等功能。
+- `ChatRequestFactory.kt` 冲突按保留双方处理：二开自定义提示词追加逻辑与上游上下文续接提示同时保留。
+- `AppModule.kt` 冲突按保留双方处理：二开本地文件路径修复、自定义提示词仓库与上游 Phone Use 管理器同时保留；`LocalTools` 使用上游新增的 6 个依赖参数。
+
+验证：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugKotlin` 成功，耗时 4 分 8 秒。
+- `AssistantBackgroundTest`、`LocalFileUrlRepairTest`、`BackupPathRewriterTest`、`ContinuationHintTest`、`SettingsFieldsTest` 全部通过。
+- `:app:assembleGithubRelease` 成功，耗时 7 分 54 秒。
+- 产物：`dist/baihub-3.1.2-arm64-v8a-多图背景长按排序与同步上游.apk`（16,402,283 字节）。
+- SHA-256：`78FEC6AC82DF7E09B7D8429E80AB40D16E6F70595F7633739508383C79A74B6D`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `195`，versionName `3.1.2`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未做真机长按、拖动、边缘自动滚动和列表顺序持久化检查。未推送。
+
 ## 2026-10-28 23:01
 
 任务：检查上游是否有新提交，不执行同步合并。

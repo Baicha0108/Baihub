@@ -3,6 +3,7 @@ package me.rerere.rikkahub.ui.pages.assistant.detail
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,6 +32,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
@@ -51,9 +55,12 @@ import me.rerere.hugeicons.stroke.Image02
 import me.rerere.rikkahub.R
 import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.BACKGROUND_ROTATION_INTERVALS
+import me.rerere.rikkahub.ui.components.ui.longPressReorder
 import org.koin.compose.koinInject
-import kotlin.math.roundToInt
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 @Composable
 fun BackgroundPicker(
@@ -71,14 +78,35 @@ fun BackgroundPicker(
     var showUrlInput by remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
     var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
+    var orderedBackgrounds by remember { mutableStateOf(backgrounds) }
+    var draggingBackground by remember { mutableStateOf<String?>(null) }
     val imageAspectRatios = remember { mutableStateMapOf<String, Float>() }
+    val lazyListState = rememberLazyListState()
+    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        if (from.index in orderedBackgrounds.indices && to.index in orderedBackgrounds.indices) {
+            orderedBackgrounds = orderedBackgrounds.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+        }
+    }
+
+    LaunchedEffect(backgrounds) {
+        if (draggingBackground == null) {
+            orderedBackgrounds = backgrounds
+        }
+    }
+
+    val updateBackgrounds: (List<String>) -> Unit = { updated ->
+        orderedBackgrounds = updated
+        onBackgroundsUpdate(updated)
+    }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             val imported = filesManager.createChatFilesByContents(uris).map(Uri::toString)
-            onBackgroundsUpdate((backgrounds + imported).distinct())
+            updateBackgrounds((orderedBackgrounds + imported).distinct())
         }
     }
 
@@ -88,71 +116,122 @@ fun BackgroundPicker(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        if (backgrounds.isNotEmpty()) {
+        if (orderedBackgrounds.isNotEmpty()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                state = lazyListState,
             ) {
                 itemsIndexed(
-                    items = backgrounds,
+                    items = orderedBackgrounds,
                     key = { _, url -> url },
                 ) { index, background ->
-                    val previewSize = backgroundPreviewSize(
-                        imageAspectRatios[background] ?: DEFAULT_BACKGROUND_ASPECT_RATIO
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(previewSize)
-                            .animateContentSize()
-                            .clip(MaterialTheme.shapes.large)
-                            .alpha(previewOpacity),
-                    ) {
-                        AsyncImage(
-                            model = background,
-                            contentDescription = stringResource(
-                                R.string.assistant_page_background_image_number,
-                                index + 1,
-                            ),
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.matchParentSize(),
-                            onSuccess = { result ->
-                                val width = result.result.image.width
-                                val height = result.result.image.height
-                                if (width > 0 && height > 0) {
-                                    imageAspectRatios[background] = width.toFloat() / height
+                    ReorderableItem(
+                        state = reorderableState,
+                        key = background,
+                    ) { isDragging ->
+                        LaunchedEffect(isDragging, background) {
+                            if (isDragging) {
+                                if (draggingBackground == null) {
+                                    orderedBackgrounds = backgrounds
                                 }
-                            },
+                                draggingBackground = background
+                            } else if (draggingBackground == background) {
+                                draggingBackground = null
+                                if (orderedBackgrounds != backgrounds) {
+                                    onBackgroundsUpdate(orderedBackgrounds)
+                                }
+                            }
+                        }
+                        val previewSize = backgroundPreviewSize(
+                            imageAspectRatios[background] ?: DEFAULT_BACKGROUND_ASPECT_RATIO
+                        )
+                        val dragScale by animateFloatAsState(
+                            targetValue = if (isDragging) 1.03f else 1f,
+                            label = "BackgroundImageDragScale",
                         )
                         Box(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .clickable {
-                                    pendingDeleteIndex = index
-                                },
-                            contentAlignment = Alignment.TopEnd,
+                                .size(previewSize)
+                                .then(
+                                    if (isDragging) {
+                                        Modifier
+                                    } else {
+                                        Modifier.animateContentSize()
+                                    }
+                                )
+                                .graphicsLayer {
+                                    scaleX = dragScale
+                                    scaleY = dragScale
+                                }
+                                .clip(MaterialTheme.shapes.large)
+                                .alpha(previewOpacity),
                         ) {
+                            AsyncImage(
+                                model = background,
+                                contentDescription = stringResource(
+                                    R.string.assistant_page_background_image_number,
+                                    index + 1,
+                                ),
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.matchParentSize(),
+                                onSuccess = { result ->
+                                    val width = result.result.image.width
+                                    val height = result.result.image.height
+                                    if (width > 0 && height > 0) {
+                                        imageAspectRatios[background] = width.toFloat() / height
+                                    }
+                                },
+                            )
                             Box(
                                 modifier = Modifier
-                                    .padding(top = 4.dp, end = 4.dp)
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.Black.copy(alpha = 0.55f)),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    imageVector = HugeIcons.Cancel01,
-                                    contentDescription = stringResource(
-                                        R.string.assistant_page_remove_background_image
+                                    .matchParentSize()
+                                    .then(
+                                        longPressReorder(
+                                            isDragging = isDragging,
+                                            enabled = orderedBackgrounds.size > 1,
+                                        )
                                     ),
-                                    tint = Color.White,
-                                    modifier = Modifier.size(16.dp),
-                                )
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        pendingDeleteIndex = index
+                                    },
+                                contentAlignment = Alignment.TopEnd,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp, end = 4.dp)
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.55f)),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(
+                                        imageVector = HugeIcons.Cancel01,
+                                        contentDescription = stringResource(
+                                            R.string.assistant_page_remove_background_image
+                                        ),
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp),
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            if (orderedBackgrounds.size > 1) {
+                Text(
+                    text = stringResource(R.string.assistant_page_background_reorder_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
 
@@ -169,7 +248,7 @@ fun BackgroundPicker(
                 Spacer(Modifier.width(ButtonDefaults.IconSpacing))
                 Text(
                     text = stringResource(
-                        if (backgrounds.isEmpty()) {
+                        if (orderedBackgrounds.isEmpty()) {
                             R.string.assistant_page_select_background
                         } else {
                             R.string.assistant_page_add_background_images
@@ -177,14 +256,14 @@ fun BackgroundPicker(
                     )
                 )
             }
-            if (backgrounds.isNotEmpty()) {
-                TextButton(onClick = { onBackgroundsUpdate(emptyList()) }) {
+            if (orderedBackgrounds.isNotEmpty()) {
+                TextButton(onClick = { updateBackgrounds(emptyList()) }) {
                     Text(stringResource(R.string.assistant_page_clear_background_images))
                 }
             }
         }
 
-        if (backgrounds.size > 1) {
+        if (orderedBackgrounds.size > 1) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -273,11 +352,11 @@ fun BackgroundPicker(
                     ) {
                         Text(stringResource(R.string.assistant_page_enter_image_url))
                     }
-                    if (backgrounds.isNotEmpty()) {
+                    if (orderedBackgrounds.isNotEmpty()) {
                         Button(
                             onClick = {
                                 showPickOption = false
-                                onBackgroundsUpdate(emptyList())
+                                updateBackgrounds(emptyList())
                             },
                             modifier = Modifier.fillMaxWidth(),
                         ) {
@@ -317,7 +396,7 @@ fun BackgroundPicker(
                     onClick = {
                         val url = urlInput.trim()
                         if (url.isNotEmpty()) {
-                            onBackgroundsUpdate((backgrounds + url).distinct())
+                            updateBackgrounds((orderedBackgrounds + url).distinct())
                             showUrlInput = false
                         }
                     }
@@ -352,9 +431,9 @@ fun BackgroundPicker(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (index in backgrounds.indices) {
-                            onBackgroundsUpdate(
-                                backgrounds.filterIndexed { i, _ -> i != index }
+                        if (index in orderedBackgrounds.indices) {
+                            updateBackgrounds(
+                                orderedBackgrounds.filterIndexed { i, _ -> i != index }
                             )
                         }
                         pendingDeleteIndex = null

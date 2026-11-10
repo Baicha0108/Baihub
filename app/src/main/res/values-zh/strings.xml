@@ -57,6 +57,7 @@
   <string name="assistant_page_remove_background_image">删除这张背景图</string>
   <string name="assistant_page_delete_background_title">删除背景图？</string>
   <string name="assistant_page_delete_background_message">确定要删除背景图 %1$d 吗？</string>
+  <string name="assistant_page_background_reorder_hint">长按背景图可调整顺序</string>
   <string name="assistant_page_clear_background_images">清空全部</string>
   <string name="assistant_page_background_rotation">自动轮换</string>
   <string name="assistant_page_background_rotation_desc">聊天页面显示时在所选背景图之间自动轮换</string>
