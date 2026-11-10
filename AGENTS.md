@@ -1,5 +1,17 @@
 # Repository Guidelines
 
+## Baihub Fork Rules
+
+- Before changing code, read `fork.md` and provide a concise implementation plan.
+- Record each completed task in `fork.md` with a completion timestamp in Asia/Shanghai.
+- Create a local commit after each completed change. Do not push to GitHub unless the user explicitly requests it.
+- Do not synchronize with upstream unless the user explicitly requests it.
+- Never open a pull request against the upstream repository.
+- Build only the Release `arm64-v8a` APK. Keep `versionName` and `versionCode` aligned with upstream.
+- Build an APK for each completed implementation task and update `fork.md` with its build result.
+- Name APKs as `baihub-<versionName>-arm64-v8a-<change-summary>-<feature-commit-id>.apk`.
+- "Feature commit ID" means the local implementation commit containing the code used for the build. Build-record/documentation commits are separate and do not replace that ID.
+
 ## Project Overview
 
 RikkaHub is a native Android LLM chat client that supports switching between different AI providers
