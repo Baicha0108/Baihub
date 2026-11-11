@@ -8,7 +8,7 @@
 - 不主动同步上游更新，只有用户明确要求时才同步。
 - 不向上游提交 PR（上游不接受 PR）。
 - 每次做完后都要构建apk 只构建 Release arm64-v8a；versionName / versionCode 与上游保持一致。
-- APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<本次提交ID>.apk`。
+- APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
 ## 2026-10-19 05:43
 
@@ -795,6 +795,31 @@
 - 校验：包名 `me.baicha.baihub`，versionCode `193`，versionName `3.1.0`，仅 `arm64-v8a`。
 
 备注：当前没有连接设备，尚未做真机滚动和动画验证。未提交、未推送。
+
+## 2026-11-11 23:32
+
+任务：将文件管理页面顶栏改为跟随输入栏背景效果的 32dp 圆角悬浮卡片。
+
+实现：
+
+- 工具栏、大小标题、“上传”文件夹筛选行合并到同一张悬浮卡片。
+- 卡片使用 `32dp` 圆角、8dp 外边距和 6dp 阴影，不添加明确描边。
+- 顶栏卡片直接复用输入栏的 `chatInputHaze`：开启“模糊”时使用相同模糊，开启“玻璃”时使用相同 Material 3 玻璃样式；关闭背景效果时使用主题自适应实色背景。
+- 文件网格可在滚动时经过卡片下方，并通过 Haze source 为卡片提供真实模糊背景。
+- 保留现有大标题展开、收起、淡出和“上传”筛选行固定位置逻辑。
+- 内部顶栏关闭自身状态栏 inset，由外层卡片容器统一处理状态栏和悬浮边距。
+
+验证：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugKotlin` 成功，耗时 2 分 58 秒。
+- `:app:assembleGithubRelease` 成功，耗时 5 分 43 秒。
+- 功能提交：`e9d8e2e9 feat:文件管理顶栏改为悬浮卡片`。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-文件管理悬浮顶栏-e9d8e2e9.apk`（16,411,783 字节）。
+- SHA-256：`3FE1FA5FC05DE3786C2CDAEFD3D7C77DAE9DEFF1E6CC302E1FF9FC2B6FF58120`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：当前没有连接设备，尚未真机验证展开/收起、模糊/玻璃切换和大量图片滚动流畅度。未推送。
 
 ## 2026-11-11 01:39
 
