@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -56,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -66,7 +69,10 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.launch
 import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Clean
@@ -76,28 +82,32 @@ import me.rerere.hugeicons.stroke.FileAudio
 import me.rerere.hugeicons.stroke.FileVideo
 import me.rerere.hugeicons.stroke.FolderOpen
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.data.datastore.SettingsStore
 import me.rerere.rikkahub.data.db.entity.ManagedFileEntity
 import me.rerere.rikkahub.data.files.FileFolders
 import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.ui.components.ai.ExtensionEmptyState
+import me.rerere.rikkahub.ui.components.ai.chatInputHaze
 import me.rerere.rikkahub.ui.components.nav.BackButton
 import me.rerere.rikkahub.ui.components.ui.CardGroup
+import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
+import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 import me.rerere.rikkahub.ui.context.LocalToaster
 import me.rerere.rikkahub.ui.theme.CustomColors
 import me.rerere.rikkahub.utils.fileSizeToString
 import org.koin.compose.koinInject
 import java.io.File
 import java.util.concurrent.TimeUnit
-import me.rerere.rikkahub.ui.components.ui.SettingsLargeTopAppBar
-import me.rerere.rikkahub.ui.components.ui.SettingsTopBarTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingFilesPage(
     filesManager: FilesManager = koinInject(),
+    settingsStore: SettingsStore = koinInject(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val gridState = rememberLazyStaggeredGridState()
+    val hazeState = rememberHazeState()
     val scope = rememberCoroutineScope()
     val toaster = LocalToaster.current
     val folders = remember { listOf(FileFolders.UPLOAD) }
@@ -113,6 +123,10 @@ fun SettingFilesPage(
     var showCleanSheet by remember { mutableStateOf(false) }
     var selectedCleanRange by remember { mutableStateOf(CleanRange.DAYS_7) }
     val files by filesManager.observe(selectedFolder).collectAsState(initial = emptyList())
+    val settings by settingsStore.settingsFlow.collectAsStateWithLifecycle()
+    val displaySetting = settings.displaySetting
+    val cardShape = RoundedCornerShape(32.dp)
+    val cardColor = MaterialTheme.colorScheme.surfaceContainerHigh
 
     if (pendingDelete != null) {
         val target = pendingDelete!!
@@ -175,55 +189,103 @@ fun SettingFilesPage(
 
     Scaffold(
         topBar = {
-            SettingsLargeTopAppBar(
-                title = { SettingsTopBarTitle { Text(stringResource(R.string.setting_files_page_title)) } },
-                navigationIcon = { BackButton() },
-                actions = {
-                    IconButton(
-                        onClick = { showCleanSheet = true },
-                        enabled = files.isNotEmpty(),
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(cardShape)
+                        .chatInputHaze(
+                            hazeState = hazeState,
+                            displaySetting = displaySetting,
+                            containerColor = cardColor,
+                            shape = cardShape,
+                        ),
+                    shape = cardShape,
+                    color = if (displaySetting.enableBlurEffect) {
+                        Color.Transparent
+                    } else {
+                        cardColor
+                    },
+                    tonalElevation = 0.dp,
+                    shadowElevation = 6.dp,
+                ) {
+                    Column(
+                        modifier = Modifier.padding(bottom = 8.dp),
                     ) {
-                        Icon(
-                            imageVector = HugeIcons.Clean,
-                            contentDescription = stringResource(R.string.setting_files_page_clean_content_description),
+                        SettingsLargeTopAppBar(
+                            title = {
+                                SettingsTopBarTitle {
+                                    Text(stringResource(R.string.setting_files_page_title))
+                                }
+                            },
+                            navigationIcon = { BackButton() },
+                            actions = {
+                                IconButton(
+                                    onClick = { showCleanSheet = true },
+                                    enabled = files.isNotEmpty(),
+                                ) {
+                                    Icon(
+                                        imageVector = HugeIcons.Clean,
+                                        contentDescription = stringResource(
+                                            R.string.setting_files_page_clean_content_description
+                                        ),
+                                    )
+                                }
+                            },
+                            windowInsets = WindowInsets(0, 0, 0, 0),
+                            scrollBehavior = scrollBehavior,
+                            colors = CustomColors.transparentTopBarColors,
+                        )
+                        FolderRow(
+                            folders = folders,
+                            selectedFolder = selectedFolder,
+                            onFolderSelected = { selectedFolder = it }
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior,
-                colors = CustomColors.transparentTopBarColors
-            )
+                }
+            }
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = CustomColors.topBarColors.containerColor
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
-        Column(
+        val hazeSourceModifier = if (displaySetting.enableBlurEffect) {
+            Modifier.hazeSource(hazeState)
+        } else {
+            Modifier
+        }
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(layoutDirection),
-                    end = innerPadding.calculateEndPadding(layoutDirection),
-                )
+                .then(hazeSourceModifier)
         ) {
-            FolderRow(
-                folders = folders,
-                selectedFolder = selectedFolder,
-                onFolderSelected = { selectedFolder = it }
-            )
-
             if (files.isEmpty()) {
-                ExtensionEmptyState(
-                    message = stringResource(R.string.setting_files_page_no_files),
-                    icon = HugeIcons.FolderOpen,
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            start = innerPadding.calculateStartPadding(layoutDirection),
+                            end = innerPadding.calculateEndPadding(layoutDirection),
+                        )
+                ) {
+                    ExtensionEmptyState(
+                        message = stringResource(R.string.setting_files_page_no_files),
+                        icon = HugeIcons.FolderOpen,
+                    )
+                }
             } else {
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = 16.dp,
-                        top = 8.dp,
-                        end = 16.dp,
+                        start = innerPadding.calculateStartPadding(layoutDirection) + 16.dp,
+                        top = innerPadding.calculateTopPadding(),
+                        end = innerPadding.calculateEndPadding(layoutDirection) + 16.dp,
                         bottom = innerPadding.calculateBottomPadding() + 16.dp,
                     ),
                     verticalItemSpacing = 8.dp,
