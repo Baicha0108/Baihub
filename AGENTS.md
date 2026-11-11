@@ -2,7 +2,7 @@
 
 ## Baihub Fork Rules
 
-- Before changing code, read `fork.md` and provide a concise implementation plan.
+- Before changing code, read `fork.md` and provide a concise implementation plan. Wait for explicit user confirmation, and do not begin implementation until the requirement, visual target, and root cause (when debugging) are completely understood and confirmed.
 - Record each completed task in `fork.md` with a completion timestamp in Asia/Shanghai.
 - Create a local commit after each completed change. Do not push to GitHub unless the user explicitly requests it.
 - Do not synchronize with upstream unless the user explicitly requests it.
