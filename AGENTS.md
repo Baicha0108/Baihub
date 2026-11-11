@@ -4,11 +4,12 @@
 
 - Before changing code, read `fork.md` and provide a concise implementation plan. Wait for explicit user confirmation, and do not begin implementation until the requirement, visual target, and root cause (when debugging) are completely understood and confirmed.
 - Record each completed task in `fork.md` with a completion timestamp in Asia/Shanghai.
-- Create a local commit after each completed change. Do not push to GitHub unless the user explicitly requests it.
+- After changing application source code, resources, or functional behavior, create a local commit by default. Do not push to GitHub unless the user explicitly requests it.
+- After completing an application feature change, build only the Release `arm64-v8a` APK. Keep `versionName` and `versionCode` aligned with upstream.
+- Pure documentation, rule, analysis, code-inspection, and investigation tasks do not automatically create commits or builds.
 - Do not synchronize with upstream unless the user explicitly requests it.
 - Never open a pull request against the upstream repository.
-- Build only the Release `arm64-v8a` APK. Keep `versionName` and `versionCode` aligned with upstream.
-- Build an APK for each completed implementation task and update `fork.md` with its build result.
+- Update `fork.md` with build results for application feature changes.
 - Name APKs as `baihub-<versionName>-arm64-v8a-<change-summary>-<feature-commit-id>.apk`.
 - "Feature commit ID" means the local implementation commit containing the code used for the build. Build-record/documentation commits are separate and do not replace that ID.
 
