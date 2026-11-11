@@ -1,6 +1,7 @@
 package me.rerere.rikkahub.ui.pages.setting
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -195,27 +196,35 @@ fun SettingFilesPage(
                     .statusBarsPadding()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
             ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(cardShape)
-                        .chatInputHaze(
-                            hazeState = hazeState,
-                            displaySetting = displaySetting,
-                            containerColor = cardColor,
-                            shape = cardShape,
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Surface(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(cardShape)
+                            .chatInputHaze(
+                                hazeState = hazeState,
+                                displaySetting = displaySetting,
+                                containerColor = cardColor,
+                                shape = cardShape,
+                            ),
+                        shape = cardShape,
+                        color = if (displaySetting.enableBlurEffect) {
+                            Color.Transparent
+                        } else {
+                            cardColor
+                        },
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                         ),
-                    shape = cardShape,
-                    color = if (displaySetting.enableBlurEffect) {
-                        Color.Transparent
-                    } else {
-                        cardColor
-                    },
-                    tonalElevation = 0.dp,
-                    shadowElevation = 6.dp,
-                ) {
+                        tonalElevation = 0.dp,
+                        shadowElevation = 6.dp,
+                    ) {}
+
                     Column(
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
                     ) {
                         SettingsLargeTopAppBar(
                             title = {
