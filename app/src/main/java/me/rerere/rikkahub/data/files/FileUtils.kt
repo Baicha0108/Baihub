@@ -42,6 +42,16 @@ object FileUtils {
         return canonicalFile.relativeTo(canonicalFilesDir).path.replace(File.separatorChar, '/')
     }
 
+    fun getRelativePathForLocalUrl(filesDir: File, url: String): String? {
+        val uri = runCatching { Uri.parse(url) }.getOrNull() ?: return null
+        val path = when (uri.scheme) {
+            null -> url
+            "file" -> uri.path
+            else -> null
+        } ?: return null
+        return getRelativePathInFilesDir(filesDir, File(path))
+    }
+
     fun getFileNameFromUri(context: Context, uri: Uri): String? {
         return runCatching {
             var fileName: String? = null
@@ -122,7 +132,7 @@ object FileUtils {
                 "heic", "heix", "heim", "heis",
                 "hevc", "hevx", "hevm", "hevs",
                 "mif1", "msf1", "heif",
-                    -> return "image/heic"
+                -> return "image/heic"
 
                 "avif", "avis" -> return "image/avif"
             }

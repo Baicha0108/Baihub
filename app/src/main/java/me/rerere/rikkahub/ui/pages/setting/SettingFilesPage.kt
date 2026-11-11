@@ -2,7 +2,6 @@ package me.rerere.rikkahub.ui.pages.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +20,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items as lazyRowItems
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -50,6 +50,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,6 +88,9 @@ import me.rerere.rikkahub.data.datastore.SettingsStore
 import me.rerere.rikkahub.data.db.entity.ManagedFileEntity
 import me.rerere.rikkahub.data.files.FileFolders
 import me.rerere.rikkahub.data.files.FilesManager
+import me.rerere.rikkahub.data.model.Assistant
+import me.rerere.rikkahub.data.model.Avatar
+import me.rerere.rikkahub.data.model.backgroundImagesInUse
 import me.rerere.rikkahub.ui.components.ai.ExtensionEmptyState
 import me.rerere.rikkahub.ui.components.ai.chatInputHaze
 import me.rerere.rikkahub.ui.components.nav.BackButton
@@ -99,6 +103,7 @@ import me.rerere.rikkahub.utils.fileSizeToString
 import org.koin.compose.koinInject
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +116,6 @@ fun SettingFilesPage(
     val hazeState = rememberHazeState()
     val scope = rememberCoroutineScope()
     val toaster = LocalToaster.current
-    val folders = remember { listOf(FileFolders.UPLOAD) }
 
     // 预先获取字符串资源
     val deletedToast = stringResource(R.string.setting_files_page_deleted_toast)
@@ -119,15 +123,65 @@ fun SettingFilesPage(
     val cleanedToast = stringResource(R.string.setting_files_page_cleaned_toast)
     val cleanFailedToast = stringResource(R.string.setting_files_page_clean_failed_toast)
 
-    var selectedFolder by remember { mutableStateOf(FileFolders.UPLOAD) }
+    var selectedCategory by remember { mutableStateOf<FileCategory>(FileCategory.Upload) }
     var pendingDelete by remember { mutableStateOf<ManagedFileEntity?>(null) }
     var showCleanSheet by remember { mutableStateOf(false) }
     var selectedCleanRange by remember { mutableStateOf(CleanRange.DAYS_7) }
-    val files by filesManager.observe(selectedFolder).collectAsState(initial = emptyList())
+    val files by filesManager.observe(FileFolders.UPLOAD).collectAsState(initial = emptyList())
     val settings by settingsStore.settingsFlow.collectAsStateWithLifecycle()
     val displaySetting = settings.displaySetting
+    val userName = displaySetting.userNickname.ifBlank { "user" }
+    val userAvatarPath = remember(displaySetting.userAvatar, filesManager) {
+        (displaySetting.userAvatar as? Avatar.Image)?.url
+            ?.let(filesManager::getRelativePathForLocalUrl)
+    }
+    val assistantReferencePaths = remember(settings.assistants, filesManager) {
+        settings.assistants.associate { assistant ->
+            assistant.id to buildSet {
+                (assistant.avatar as? Avatar.Image)?.url
+                    ?.let(filesManager::getRelativePathForLocalUrl)
+                    ?.let(::add)
+                assistant.backgroundImagesInUse.forEach { background ->
+                    filesManager.getRelativePathForLocalUrl(background)?.let(::add)
+                }
+            }
+        }
+    }
+    val categorizedPaths = remember(userAvatarPath, assistantReferencePaths) {
+        buildSet {
+            userAvatarPath?.let(::add)
+            assistantReferencePaths.values.forEach(::addAll)
+        }
+    }
+    val visibleFiles = remember(
+        files,
+        selectedCategory,
+        userAvatarPath,
+        assistantReferencePaths,
+        categorizedPaths,
+    ) {
+        when (val category = selectedCategory) {
+            FileCategory.Upload -> files
+            FileCategory.User -> files.filter { it.relativePath == userAvatarPath }
+            FileCategory.Uncategorized -> files.filterNot { it.relativePath in categorizedPaths }
+            is FileCategory.Assistant -> {
+                val paths = assistantReferencePaths[category.id].orEmpty()
+                files.filter { it.relativePath in paths }
+            }
+        }
+    }
     val cardShape = RoundedCornerShape(32.dp)
     val cardColor = MaterialTheme.colorScheme.surfaceContainerHigh
+
+    LaunchedEffect(settings.assistants, selectedCategory) {
+        val category = selectedCategory
+        if (
+            category is FileCategory.Assistant &&
+            settings.assistants.none { it.id == category.id }
+        ) {
+            selectedCategory = FileCategory.Upload
+        }
+    }
 
     if (pendingDelete != null) {
         val target = pendingDelete!!
@@ -177,10 +231,10 @@ fun SettingFilesPage(
                     scope.launch {
                         val ok = selectedCleanRange.days?.let { days ->
                             filesManager.deleteOlderThan(
-                                folder = selectedFolder,
+                                folder = FileFolders.UPLOAD,
                                 cutoffMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(days.toLong()),
                             )
-                        } ?: filesManager.deleteAll(selectedFolder)
+                        } ?: filesManager.deleteAll(FileFolders.UPLOAD)
                         toaster.show(if (ok) cleanedToast else cleanFailedToast)
                     }
                 },
@@ -235,7 +289,7 @@ fun SettingFilesPage(
                                 actions = {
                                     IconButton(
                                         onClick = { showCleanSheet = true },
-                                        enabled = files.isNotEmpty(),
+                                    enabled = files.isNotEmpty() && selectedCategory == FileCategory.Upload,
                                     ) {
                                         Icon(
                                             imageVector = HugeIcons.Clean,
@@ -249,10 +303,11 @@ fun SettingFilesPage(
                                 scrollBehavior = scrollBehavior,
                                 colors = CustomColors.transparentTopBarColors,
                             )
-                            FolderRow(
-                                folders = folders,
-                                selectedFolder = selectedFolder,
-                                onFolderSelected = { selectedFolder = it }
+                            FileCategoryRow(
+                                selectedCategory = selectedCategory,
+                                assistants = settings.assistants,
+                                userName = userName,
+                                onCategorySelected = { selectedCategory = it },
                             )
                         }
                     }
@@ -273,7 +328,7 @@ fun SettingFilesPage(
                 .fillMaxSize()
                 .then(hazeSourceModifier)
         ) {
-            if (files.isEmpty()) {
+            if (visibleFiles.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -302,7 +357,7 @@ fun SettingFilesPage(
                     state = gridState,
                     columns = StaggeredGridCells.Fixed(2)
                 ) {
-                    items(files, key = { it.id }) { file ->
+                    items(visibleFiles, key = { it.id }) { file ->
                         FileItem(
                             file = file,
                             fileOnDisk = filesManager.getFile(file),
@@ -320,6 +375,13 @@ private enum class CleanRange(val days: Int?) {
     DAYS_14(14),
     DAYS_30(30),
     ALL(null),
+}
+
+private sealed interface FileCategory {
+    data object Upload : FileCategory
+    data object User : FileCategory
+    data object Uncategorized : FileCategory
+    data class Assistant(val id: Uuid) : FileCategory
 }
 
 @Composable
@@ -395,31 +457,39 @@ private fun CleanFilesSheet(
 }
 
 @Composable
-private fun FolderRow(
-    folders: List<String>,
-    selectedFolder: String,
-    onFolderSelected: (String) -> Unit,
+private fun FileCategoryRow(
+    selectedCategory: FileCategory,
+    assistants: List<Assistant>,
+    userName: String,
+    onCategorySelected: (FileCategory) -> Unit,
 ) {
-    Row(
+    val categories = remember(assistants) {
+        buildList {
+            add(FileCategory.Upload)
+            add(FileCategory.User)
+            add(FileCategory.Uncategorized)
+            assistants.forEach { add(FileCategory.Assistant(it.id)) }
+        }
+    }
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 4.dp)
             .selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        folders.forEach { folder ->
-            val selected = selectedFolder == folder
+        lazyRowItems(categories, key = { it.key }) { category ->
+            val selected = selectedCategory == category
             ToggleButton(
                 checked = selected,
-                onCheckedChange = { if (!selected) onFolderSelected(folder) },
+                onCheckedChange = { if (!selected) onCategorySelected(category) },
                 modifier = Modifier.semantics { role = Role.Tab },
                 colors = ToggleButtonDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                 ),
             ) {
                 Text(
-                    text = folderDisplayName(folder),
+                    text = category.displayName(assistants = assistants, userName = userName),
                     maxLines = 1,
                     softWrap = false,
                 )
@@ -428,10 +498,25 @@ private fun FolderRow(
     }
 }
 
+private val FileCategory.key: String
+    get() = when (this) {
+        FileCategory.Upload -> "upload"
+        FileCategory.User -> "user"
+        FileCategory.Uncategorized -> "uncategorized"
+        is FileCategory.Assistant -> "assistant:$id"
+    }
+
 @Composable
-private fun folderDisplayName(folder: String): String = when (folder) {
-    FileFolders.UPLOAD -> stringResource(R.string.setting_files_page_folder_upload)
-    else -> folder
+private fun FileCategory.displayName(
+    assistants: List<Assistant>,
+    userName: String,
+): String = when (this) {
+    FileCategory.Upload -> stringResource(R.string.setting_files_page_folder_upload)
+    FileCategory.User -> userName
+    FileCategory.Uncategorized -> stringResource(R.string.setting_files_page_category_uncategorized)
+    is FileCategory.Assistant -> assistants.firstOrNull { it.id == id }?.name
+        ?.ifBlank { stringResource(R.string.assistant_system_prompt_v2_unnamed_assistant) }
+        ?: stringResource(R.string.assistant_system_prompt_v2_unnamed_assistant)
 }
 
 private val FileItemCorner = 20.dp
