@@ -37,7 +37,9 @@ internal fun Modifier.chatInputHaze(
     return when (displaySetting.backgroundEffectType) {
         BackgroundEffectType.BLUR -> hazeBlur(
             input = HazeInput.Sources(hazeState),
-            style = HazeBlurStyle.Material3 {
+            style = HazeBlurStyle.Material3(
+                containerColor = containerColor,
+            ) {
                 blurRadius(12.dp)
             },
         )

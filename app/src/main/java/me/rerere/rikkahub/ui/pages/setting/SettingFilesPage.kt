@@ -196,65 +196,65 @@ fun SettingFilesPage(
                     .statusBarsPadding()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Surface(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(cardShape)
-                            .chatInputHaze(
-                                hazeState = hazeState,
-                                displaySetting = displaySetting,
-                                containerColor = cardColor,
-                                shape = cardShape,
-                            ),
-                        shape = cardShape,
-                        color = if (displaySetting.enableBlurEffect) {
-                            Color.Transparent
-                        } else {
-                            cardColor
-                        },
-                        border = BorderStroke(
-                            1.dp,
-                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                        ),
-                        tonalElevation = 0.dp,
-                        shadowElevation = 6.dp,
-                    ) {}
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = cardShape,
+                    color = cardColor,
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    ),
+                    tonalElevation = 0.dp,
+                    shadowElevation = 6.dp,
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clip(cardShape)
+                                .chatInputHaze(
+                                    hazeState = hazeState,
+                                    displaySetting = displaySetting,
+                                    containerColor = Color.Transparent,
+                                    shape = cardShape,
+                                )
+                        )
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                    ) {
-                        SettingsLargeTopAppBar(
-                            title = {
-                                SettingsTopBarTitle {
-                                    Text(stringResource(R.string.setting_files_page_title))
-                                }
-                            },
-                            navigationIcon = { BackButton() },
-                            actions = {
-                                IconButton(
-                                    onClick = { showCleanSheet = true },
-                                    enabled = files.isNotEmpty(),
-                                ) {
-                                    Icon(
-                                        imageVector = HugeIcons.Clean,
-                                        contentDescription = stringResource(
-                                            R.string.setting_files_page_clean_content_description
-                                        ),
-                                    )
-                                }
-                            },
-                            windowInsets = WindowInsets(0, 0, 0, 0),
-                            scrollBehavior = scrollBehavior,
-                            colors = CustomColors.transparentTopBarColors,
-                        )
-                        FolderRow(
-                            folders = folders,
-                            selectedFolder = selectedFolder,
-                            onFolderSelected = { selectedFolder = it }
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        ) {
+                            SettingsLargeTopAppBar(
+                                title = {
+                                    SettingsTopBarTitle {
+                                        Text(stringResource(R.string.setting_files_page_title))
+                                    }
+                                },
+                                navigationIcon = { BackButton() },
+                                actions = {
+                                    IconButton(
+                                        onClick = { showCleanSheet = true },
+                                        enabled = files.isNotEmpty(),
+                                    ) {
+                                        Icon(
+                                            imageVector = HugeIcons.Clean,
+                                            contentDescription = stringResource(
+                                                R.string.setting_files_page_clean_content_description
+                                            ),
+                                        )
+                                    }
+                                },
+                                windowInsets = WindowInsets(0, 0, 0, 0),
+                                scrollBehavior = scrollBehavior,
+                                colors = CustomColors.transparentTopBarColors,
+                            )
+                            FolderRow(
+                                folders = folders,
+                                selectedFolder = selectedFolder,
+                                onFolderSelected = { selectedFolder = it }
+                            )
+                        }
                     }
                 }
             }
