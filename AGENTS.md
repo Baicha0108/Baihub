@@ -4,6 +4,7 @@
 
 - Before changing code, read `fork.md` and provide a concise implementation plan. Wait for explicit user confirmation, and do not begin implementation until the requirement, visual target, and root cause (when debugging) are completely understood and confirmed.
 - Record each completed task in `fork.md` with a completion timestamp in Asia/Shanghai.
+- Keep the fixed conventions at the top of `fork.md` and order task records newest first directly below them.
 - After changing application source code, resources, or functional behavior, create a local commit by default. Do not push to GitHub unless the user explicitly requests it.
 - After completing an application feature change, build only the Release `arm64-v8a` APK. Keep `versionName` and `versionCode` aligned with upstream.
 - Pure documentation, rule, analysis, code-inspection, and investigation tasks do not automatically create commits or builds.
