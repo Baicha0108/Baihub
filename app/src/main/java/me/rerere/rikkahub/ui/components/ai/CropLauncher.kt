@@ -28,7 +28,7 @@ import java.io.File
  */
 @Composable
 internal fun useCropLauncher(
-    onCroppedImageReady: (Uri) -> Unit,
+    onCroppedImageReady: suspend (Uri) -> Unit,
     onCleanup: (() -> Unit)? = null,
     aspectRatio: Float? = null,
 ): (Uri) -> Unit {

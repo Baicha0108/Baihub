@@ -51,10 +51,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Edit03
 import me.rerere.rikkahub.R
+import me.rerere.rikkahub.data.files.FileFolders
 import me.rerere.rikkahub.data.files.FilesManager
 import me.rerere.rikkahub.data.model.Avatar
 import me.rerere.rikkahub.ui.components.ai.useCropLauncher
@@ -106,18 +108,27 @@ fun UIAvatar(
     var showEmojiPicker by remember { mutableStateOf(false) }
     var showUrlInput by remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
+    var pendingAvatarDisplayName by remember { mutableStateOf<String?>(null) }
     val emojiFontFamily = LocalEmojiFontFamily.current
 
-    fun saveAvatarImage(uri: Uri) {
-        val localUris = filesManager.createChatFilesByContents(listOf(uri))
-        localUris.firstOrNull()?.let { localUri ->
-            onUpdate?.invoke(Avatar.Image(localUri.toString()))
-        }
+    suspend fun saveAvatarImage(uri: Uri) {
+        val displayName = pendingAvatarDisplayName ?: "avatar.jpg"
+        val entity = filesManager.saveManagedFromUri(
+            folder = FileFolders.UPLOAD,
+            uri = uri,
+            displayName = displayName,
+            mimeType = "image/jpeg",
+        )
+        val localUri = filesManager.getFile(entity).toUri()
+        onUpdate?.invoke(Avatar.Image(localUri.toString()))
     }
 
     val launchImageCrop = useCropLauncher(
         onCroppedImageReady = { croppedUri ->
             saveAvatarImage(croppedUri)
+        },
+        onCleanup = {
+            pendingAvatarDisplayName = null
         },
         aspectRatio = 1f,
     )
@@ -125,7 +136,10 @@ fun UIAvatar(
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let(launchImageCrop)
+        uri?.let {
+            pendingAvatarDisplayName = avatarDisplayName(filesManager.getFileNameFromUri(it))
+            launchImageCrop(it)
+        }
     }
 
     Box(modifier = modifier.then(Modifier.size(32.dp))) {
@@ -323,6 +337,13 @@ fun UIAvatar(
             }
         )
     }
+}
+
+internal fun avatarDisplayName(originalName: String?): String {
+    val name = originalName?.trim().orEmpty()
+    if (name.isBlank()) return "avatar.jpg"
+    val baseName = if ('.' in name) name.substringBeforeLast('.') else name
+    return "${baseName.ifBlank { "avatar" }}.jpg"
 }
 
 @Composable
