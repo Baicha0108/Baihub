@@ -12,6 +12,49 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-13 05:18
+
+任务：调整多图轮换默认值，同步上游新提交，构建 Release arm64-v8a APK 并推送。
+
+调整：
+
+- 多图自动轮换默认开启。
+- 默认轮换间隔由 `30s` 改为 `10s`。
+- 默认淡入淡出时长由 `1000ms` 改为 `1500ms`。
+- 同步更新无效旧值的回退值和对应单元测试。
+- 按要求不迁移已有助手的已保存设置；此次修改只影响新助手、缺少相关字段的导入数据及后续默认值。
+
+上游同步：
+
+- 合并上游提交 `b10c1685 feat(phone-use): 将微信加入禁止操作的应用列表`。
+- 上游提交只修改 `PhoneUseTool.kt` 的禁止操作应用列表，与 Baihub 二开内容无冲突。
+- 合并提交：`32575f3b`。
+
+验证与构建：
+
+- `spotlessApply` 成功。
+- `AssistantBackgroundTest` 通过，`:app:testGithubDebugUnitTest` 构建成功，耗时 6 分 26 秒。
+- `:app:assembleGithubRelease` 成功，耗时 8 分 58 秒。
+- 功能提交：`691fe807 feat:调整多图轮换默认值`。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-多图轮换默认值-691fe807.apk`（16,420,795 字节）。
+- SHA-256：`32321883FE42214FF1A34292A64CC6B4D967E863FC2BF49D0C0CE36B609DD7B4`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次任务完成后将当前本地提交推送至 `origin/master`。
+
+## 2026-11-12 05:05
+
+任务：推送本地尚未推送的提交。
+
+结果：
+
+- 将 `master` 的 15 个待推送提交推送到 `origin/master`。
+- 远端分支由 `fca6ebed` 更新到 `98f718f2`。
+- 推送后本地 `HEAD` 与 `origin/master` 均为 `98f718f21b3c1500ec6367c74fac1b93cedc725f`。
+- 未修改应用源码或资源，未重新构建 APK。
+
+备注：未跟踪目录 `highlight/` 保持原样，未删除、未修改、未提交。
+
 ## 2026-11-12 04:53
 
 任务：修复头像裁剪后文件管理显示临时文件名的问题。
