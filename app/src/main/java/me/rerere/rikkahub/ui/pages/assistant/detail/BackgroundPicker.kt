@@ -291,11 +291,11 @@ fun BackgroundPicker(
 
             val normalizedInterval = rotationIntervalSeconds
                 .takeIf { it in BACKGROUND_ROTATION_INTERVALS }
-                ?: 30
+                ?: 10
             val selectedIndex = BACKGROUND_ROTATION_INTERVALS.indexOf(normalizedInterval)
             val normalizedFadeMillis = rotationFadeMillis
                 .takeIf { it in BACKGROUND_ROTATION_FADE_MILLIS }
-                ?: 1000
+                ?: 1500
             val selectedFadeIndex = BACKGROUND_ROTATION_FADE_MILLIS.indexOf(normalizedFadeMillis)
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),

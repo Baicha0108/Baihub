@@ -27,22 +27,22 @@ class AssistantBackgroundTest {
     }
 
     @Test
-    fun `old assistant json decodes with single-image fallback`() {
+    fun `old assistant json decodes with new rotation defaults`() {
         val assistant = JsonInstant.decodeFromString<Assistant>(
             """{"background":"file:///legacy.png"}"""
         )
 
         assertEquals(listOf("file:///legacy.png"), assistant.backgroundImagesInUse)
-        assertTrue(!assistant.backgroundRotationEnabled)
-        assertEquals(30, assistant.normalizedBackgroundRotationIntervalSeconds)
-        assertEquals(1000, assistant.normalizedBackgroundRotationFadeMillis)
+        assertTrue(assistant.backgroundRotationEnabled)
+        assertEquals(10, assistant.normalizedBackgroundRotationIntervalSeconds)
+        assertEquals(1500, assistant.normalizedBackgroundRotationFadeMillis)
     }
 
     @Test
-    fun `unsupported rotation interval falls back to thirty seconds`() {
+    fun `unsupported rotation interval falls back to ten seconds`() {
         val assistant = Assistant(backgroundRotationIntervalSeconds = 7)
 
-        assertEquals(30, assistant.normalizedBackgroundRotationIntervalSeconds)
+        assertEquals(10, assistant.normalizedBackgroundRotationIntervalSeconds)
     }
 
     @Test
@@ -54,10 +54,10 @@ class AssistantBackgroundTest {
     }
 
     @Test
-    fun `unsupported rotation fade falls back to one thousand milliseconds`() {
+    fun `unsupported rotation fade falls back to fifteen hundred milliseconds`() {
         val assistant = Assistant(backgroundRotationFadeMillis = 250)
 
-        assertEquals(1000, assistant.normalizedBackgroundRotationFadeMillis)
+        assertEquals(1500, assistant.normalizedBackgroundRotationFadeMillis)
     }
 
     @Test
