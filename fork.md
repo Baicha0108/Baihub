@@ -12,6 +12,40 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-14 02:15
+
+任务：同步上游新提交，检查 Baihub 二开兼容性，构建 Release arm64-v8a APK 并本地提交。
+
+上游同步：
+
+- 合并上游提交 `c1c3c4d1`：数据库升级到 v33，为 `message_node` 增加 `(conversation_id, node_index)` 复合索引。
+- 合并上游提交 `3adeba47`：请求体日志只在 Debug 构建打印。
+- 合并上游提交 `66149047`：自动压缩上下文默认开启。
+- 合并上游提交 `64452581`：手机使用截图用完后立即回收位图。
+- 合并提交：`64b56d5f`。
+- 上游版本仍为 `3.2.0 (196)`。
+
+兼容检查：
+
+- `Settings.kt` 是唯一与本地改动重叠的文件。上游修改 `enableAutoCompress`，本地聊天阴影、背景遮罩和 Emoji 字体字段均完整保留。
+- 数据库 v32→v33 迁移只创建复合索引并删除旧索引，不修改表内数据。
+- 自动压缩默认值变化不覆盖已保存设置；已有配置仍按保存值读取。
+- 未发现需要额外修改 Baihub 二开功能的兼容问题。
+
+验证与构建：
+
+- `spotlessApply` 成功。
+- `:app:compileGithubDebugAndroidTestKotlin` 成功，数据库迁移测试代码可正常编译。
+- 当前没有连接 Android 设备，因此未实际执行 v32→v33 仪器测试。
+- `SettingsFieldsTest`、`AssistantBackgroundTest` 通过。
+- 完整 `:app:testGithubDebugUnitTest` 中 558 个测试有 7 个失败：6 个 `SettingsStoreTest` 和 1 个 `ProviderAccountManagerTest`，均为 Windows 下 DataStore 测试文件原子重命名 `IOException`；相关测试和 `PreferencesStore` 未被上游修改。
+- `:app:assembleGithubRelease` 成功，耗时 58 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-同步上游20261114-64b56d5f.apk`（16,421,163 字节）。
+- SHA-256：`3C2734C1A8EB2B2A2BEF8E54EC5778257742BD70E68452DEFD3C2D5636C3B1A7`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次未推送 GitHub。
+
 ## 2026-11-13 05:18
 
 任务：调整多图轮换默认值，同步上游新提交，构建 Release arm64-v8a APK 并推送。
