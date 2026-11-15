@@ -1,7 +1,6 @@
 package me.rerere.rikkahub.ui.pages.chat
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -19,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -36,7 +34,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-internal object ChatDrawerSpec {
+private object ChatDrawerSpec {
     val WIDTH = 300.dp
 
     const val CONTENT_SCALE = 0.90f
@@ -65,16 +63,14 @@ internal object ChatDrawerSpec {
 @Composable
 internal fun ChatScalingDrawer(
     open: Boolean,
-    progress: Animatable<Float, AnimationVector1D>,
-    systemBackActive: Boolean,
     onOpenChange: (Boolean) -> Unit,
     drawerContent: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val backdropColor = DrawerDefaults.modalContainerColor
+    val progress = remember { Animatable(if (open) 1f else 0f) }
     val progressState = remember(progress) { derivedStateOf { progress.value } }
     val scope = rememberCoroutineScope()
-    val currentSystemBackActive by rememberUpdatedState(systemBackActive)
     val latestOnOpenChange = rememberUpdatedState(onOpenChange)
 
     LaunchedEffect(open) {
@@ -128,7 +124,6 @@ internal fun ChatScalingDrawer(
                     progress = { progress.value },
                     onDrag = { progress.snapTo(it) },
                     onSettle = ::settle,
-                    isSystemBackActive = { currentSystemBackActive },
                 ),
         ) {
             DrawerSlidePanel(
@@ -155,7 +150,6 @@ private fun Modifier.horizontalDrawerDrag(
     progress: () -> Float,
     onDrag: suspend (Float) -> Unit,
     onSettle: (Float) -> Unit,
-    isSystemBackActive: () -> Boolean,
 ): Modifier = pointerInput(dragSpan) {
     val dragSpanPx = dragSpan.toPx()
     coroutineScope {
@@ -185,16 +179,11 @@ private fun Modifier.horizontalDrawerDrag(
 
         detectHorizontalDragGestures(
             onDragStart = {
-                if (isSystemBackActive()) return@detectHorizontalDragGestures
                 startProgress = progress()
                 dragTarget = startProgress
                 dragStarted = true
             },
             onHorizontalDrag = { _, dragAmount ->
-                if (!dragStarted || isSystemBackActive()) {
-                    dragStarted = false
-                    return@detectHorizontalDragGestures
-                }
                 dragTarget = (dragTarget + dragAmount / dragSpanPx).coerceIn(0f, 1f)
                 dragUpdates.trySend(DragUpdate.Move(dragTarget))
             },

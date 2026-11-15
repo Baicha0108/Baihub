@@ -2,11 +2,7 @@ package me.rerere.rikkahub.ui.pages.chat
 
 import android.net.Uri
 import androidx.activity.ComponentActivity
-import androidx.activity.ExperimentalActivityApi
-import androidx.activity.compose.PredictiveBackHandler
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.AnimationVector1D
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -63,11 +59,8 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.rerere.ai.provider.Model
 import me.rerere.ai.provider.ProviderSetting
 import me.rerere.ai.ui.UIMessagePart
@@ -140,22 +133,13 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
     }
 
     var drawerOpen by rememberSaveable { mutableStateOf(false) }
-    var previewMode by rememberSaveable { mutableStateOf(false) }
-    val drawerProgress = remember { Animatable(if (drawerOpen) 1f else 0f) }
-    val previewProgress = rememberPreviewSwipeProgress(previewMode)
-    var systemBackActive by remember { mutableStateOf(false) }
     val softwareKeyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    ChatPredictiveBackHandler(
-        drawerOpen = drawerOpen,
-        previewMode = previewMode,
-        drawerProgress = drawerProgress,
-        previewProgress = previewProgress,
-        onDrawerOpenChange = { drawerOpen = it },
-        onPreviewModeChange = { previewMode = it },
-        onSystemBackActiveChange = { systemBackActive = it },
-    )
+    // Handle back press when drawer is open
+    BackHandler(enabled = drawerOpen) {
+        drawerOpen = false
+    }
 
     // Clear input focus so popup transitions cannot reopen the keyboard.
     LaunchedEffect(drawerOpen) {
@@ -232,8 +216,7 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                         navController = navController,
                         current = conversation,
                         vm = vm,
-                        settings = setting,
-                        onNavigate = {},
+                        settings = setting
                     )
                 }
             ) {
@@ -245,10 +228,6 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                     setting = setting,
                     conversation = conversation,
                     onOpenDrawer = {},
-                    previewMode = previewMode,
-                    previewProgress = previewProgress,
-                    systemBackActive = systemBackActive,
-                    onPreviewModeChange = { previewMode = it },
                     navController = navController,
                     vm = vm,
                     chatListState = chatListState,
@@ -265,16 +244,13 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
         else -> {
             ChatScalingDrawer(
                 open = drawerOpen,
-                progress = drawerProgress,
-                systemBackActive = systemBackActive,
                 onOpenChange = { drawerOpen = it },
                 drawerContent = {
                     ChatDrawerContent(
                         navController = navController,
                         current = conversation,
                         vm = vm,
-                        settings = setting,
-                        onNavigate = { drawerOpen = false },
+                        settings = setting
                     )
                 }
             ) {
@@ -285,17 +261,7 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
                     processingStatus = processingStatus,
                     setting = setting,
                     conversation = conversation,
-                    onOpenDrawer = {
-                        previewMode = false
-                        drawerOpen = true
-                    },
-                    previewMode = previewMode,
-                    previewProgress = previewProgress,
-                    systemBackActive = systemBackActive,
-                    onPreviewModeChange = {
-                        previewMode = it
-                        if (it) drawerOpen = false
-                    },
+                    onOpenDrawer = { drawerOpen = true },
                     navController = navController,
                     vm = vm,
                     chatListState = chatListState,
@@ -311,52 +277,6 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
     }
 }
 
-@OptIn(ExperimentalActivityApi::class)
-@Composable
-private fun ChatPredictiveBackHandler(
-    drawerOpen: Boolean,
-    previewMode: Boolean,
-    drawerProgress: Animatable<Float, AnimationVector1D>,
-    previewProgress: Animatable<Float, AnimationVector1D>,
-    onDrawerOpenChange: (Boolean) -> Unit,
-    onPreviewModeChange: (Boolean) -> Unit,
-    onSystemBackActiveChange: (Boolean) -> Unit,
-) {
-    PredictiveBackHandler(enabled = previewMode || drawerOpen) { events ->
-        val closingPreview = previewMode
-        val closingDrawer = !closingPreview && drawerOpen
-        if (!closingPreview && !closingDrawer) return@PredictiveBackHandler
-
-        val progress = if (closingPreview) previewProgress else drawerProgress
-        val settleSpec: AnimationSpec<Float> =
-            if (closingPreview) PreviewSwipeSpec else ChatDrawerSpec.DragSettleSpec
-
-        onSystemBackActiveChange(true)
-        try {
-            progress.stop()
-            val anchor = progress.value
-            events.collect { event ->
-                progress.snapTo(predictiveDismissProgress(anchor, event.progress))
-            }
-            withContext(NonCancellable) {
-                progress.animateTo(targetValue = 0f, animationSpec = settleSpec)
-            }
-            if (closingPreview) {
-                onPreviewModeChange(false)
-            } else {
-                onDrawerOpenChange(false)
-            }
-        } catch (cancel: CancellationException) {
-            withContext(NonCancellable) {
-                progress.animateTo(targetValue = 1f, animationSpec = settleSpec)
-            }
-            throw cancel
-        } finally {
-            onSystemBackActiveChange(false)
-        }
-    }
-}
-
 @Composable
 private fun ChatPageContent(
     onStartVoiceMode: () -> Unit,
@@ -367,10 +287,6 @@ private fun ChatPageContent(
     bigScreen: Boolean,
     conversation: Conversation,
     onOpenDrawer: () -> Unit,
-    previewMode: Boolean,
-    previewProgress: Animatable<Float, AnimationVector1D>,
-    systemBackActive: Boolean,
-    onPreviewModeChange: (Boolean) -> Unit,
     navController: Navigator,
     vm: ChatVM,
     chatListState: LazyListState,
@@ -385,6 +301,7 @@ private fun ChatPageContent(
     val workspaceRepository: WorkspaceRepository = koinInject()
     val sessionActivity by vm.sessionActivity.collectAsStateWithLifecycle()
 
+    var previewMode by rememberSaveable { mutableStateOf(false) }
     val selectionState = rememberChatSelectionState()
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val hazeState = rememberHazeState()
@@ -420,6 +337,10 @@ private fun ChatPageContent(
 
     TTSAutoPlay(vm = vm, setting = setting, conversation = conversation)
 
+    BackHandler(previewMode) {
+        previewMode = false
+    }
+
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
@@ -441,11 +362,11 @@ private fun ChatPageContent(
                     },
                     onShowOverview = {
                         selectionState.selecting = false
-                        onPreviewModeChange(true)
+                        previewMode = true
                     },
                     onExport = {
                         // 跟消息上的分享一样进入多选，默认全选，用户可以再挑
-                        onPreviewModeChange(false)
+                        previewMode = false
                         selectionState.start(conversation.messageNodes.map { it.id })
                     },
                     onDelete = {
@@ -544,9 +465,7 @@ private fun ChatPageContent(
                 compressing = sessionActivity == SessionActivity.Compressing,
                 processingStatus = processingStatus,
                 previewMode = previewMode,
-                previewProgress = previewProgress,
-                systemBackActive = systemBackActive,
-                onPreviewModeChange = onPreviewModeChange,
+                onPreviewModeChange = { previewMode = it },
                 settings = setting,
                 hazeState = hazeState,
                 errors = errors,
@@ -586,7 +505,7 @@ private fun ChatPageContent(
                     vm.clearTranslationField(message.id)
                 },
                 onJumpToMessage = { index ->
-                    onPreviewModeChange(false)
+                    previewMode = false
                     scope.launch {
                         chatListState.requestScrollToItem(index)
                     }

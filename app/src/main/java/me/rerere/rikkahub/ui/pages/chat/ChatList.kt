@@ -1,8 +1,6 @@
 package me.rerere.rikkahub.ui.pages.chat
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -87,8 +85,6 @@ fun ChatList(
     compressing: Boolean = false,
     processingStatus: String? = null,
     previewMode: Boolean,
-    previewProgress: Animatable<Float, AnimationVector1D>,
-    systemBackActive: Boolean,
     onPreviewModeChange: (Boolean) -> Unit,
     settings: Settings,
     hazeState: HazeState,
@@ -109,9 +105,9 @@ fun ChatList(
     onToggleFavorite: ((MessageNode) -> Unit)? = null,
     onConversationSystemPromptChange: ((String?) -> Unit)? = null,
 ) {
+    val previewProgress = rememberPreviewSwipeProgress(previewMode)
     val scope = rememberCoroutineScope()
     val currentPreviewMode by rememberUpdatedState(previewMode)
-    val currentSystemBackActive by rememberUpdatedState(systemBackActive)
     val currentOnPreviewModeChange by rememberUpdatedState(onPreviewModeChange)
     val currentConversation by rememberUpdatedState(conversation)
     val layoutDirection = LocalLayoutDirection.current
@@ -130,7 +126,6 @@ fun ChatList(
                 layoutDirection = layoutDirection,
                 canEnterPreview = { currentConversation.messageNodes.isNotEmpty() },
                 isPreviewMode = { currentPreviewMode },
-                isSystemBackActive = { currentSystemBackActive },
                 onPreviewModeChange = { currentOnPreviewModeChange(it) },
             ),
     ) {

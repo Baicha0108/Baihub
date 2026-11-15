@@ -1,7 +1,6 @@
 package me.rerere.rikkahub.ui.pages.chat
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -24,17 +23,14 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-internal val PreviewSwipeSpec = spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = 500f)
-
-internal fun predictiveDismissProgress(anchor: Float, backProgress: Float): Float =
-    (anchor * (1f - backProgress.coerceIn(0f, 1f))).coerceIn(0f, 1f)
+private val PreviewSwipeSpec = spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = 500f)
 
 /**
  * 概览页露出的比例，0 是聊天页，1 是概览页。
  * 外部切换 [previewMode]（如顶栏按钮、点击跳转）时动画过去；手势拖动时由 [previewSwipeGesture] 直接驱动。
  */
 @Composable
-internal fun rememberPreviewSwipeProgress(previewMode: Boolean): Animatable<Float, AnimationVector1D> {
+internal fun rememberPreviewSwipeProgress(previewMode: Boolean): Animatable<Float, *> {
     val progress = remember { Animatable(if (previewMode) 1f else 0f) }
     LaunchedEffect(previewMode) {
         val target = if (previewMode) 1f else 0f
@@ -56,7 +52,6 @@ internal fun Modifier.previewSwipeGesture(
     layoutDirection: LayoutDirection,
     canEnterPreview: () -> Boolean,
     isPreviewMode: () -> Boolean,
-    isSystemBackActive: () -> Boolean,
     onPreviewModeChange: (Boolean) -> Unit,
 ): Modifier = pointerInput(layoutDirection) {
     // 手指往左（LTR）是进入概览的方向
@@ -72,7 +67,6 @@ internal fun Modifier.previewSwipeGesture(
     }
 
     awaitEachGesture {
-        if (isSystemBackActive()) return@awaitEachGesture
         val down = awaitFirstDown(requireUnconsumed = false)
         val startInPreview = isPreviewMode()
         // 空对话没什么可概览的
@@ -95,7 +89,6 @@ internal fun Modifier.previewSwipeGesture(
         // 接管后在 Initial 阶段就消费掉，避免斜着拖时消息列表同时纵向滚动、长按菜单误触
         var completed = false
         while (true) {
-            if (isSystemBackActive()) return@awaitEachGesture
             val change = awaitPointerEvent(PointerEventPass.Initial).changes
                 .firstOrNull { it.id == drag.id } ?: break
             tracker.addPointerInputChange(change)
