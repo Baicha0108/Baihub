@@ -12,6 +12,28 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-15 23:38
+
+任务：同步上游新提交，兼容 Baihub 二开，构建 Release arm64-v8a APK 并推送。
+
+上游同步：
+
+- 合并上游提交 `7677f649 fix(phone-use): 后台生成期间由悬浮窗保持亮屏`。
+- 合并上游提交 `90ef90b7 feat(ai): Vertex 服务账号支持 Interactions API`。
+- 合并提交：`6a04c73d`。
+- 两个上游提交与 Baihub 当前源码无冲突。
+- Vertex Interactions API 变更已保留在 Baihub，悬浮窗亮屏逻辑与现有 Phone Use 功能兼容。
+
+验证与构建：
+
+- `InteractionsApiTest` 通过。
+- `:app:assembleGithubRelease` 成功，耗时 6 分 16 秒。
+- 产物：`dist/baihub-3.2.0-arm64-v8a-同步上游20261115-6a04c73d.apk`（16,422,363 字节）。
+- SHA-256：`D4DE847BED823B172942EED4B69D77859A9374DED7EE443DF559E89710F4A3C8`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `196`，versionName `3.2.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次任务完成后将当前提交推送到 `origin/master`。
+
 ## 2026-11-15 22:56
 
 任务：按用户要求回退聊天侧栏与对话地图预测返回功能提交 `c498375a`。
