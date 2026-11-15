@@ -121,6 +121,7 @@ fun ChatDrawerContent(
     current: Conversation,
     onProfileAreaClick: () -> Unit = {},
     onProfileAreaLongClick: () -> Unit = {},
+    onNavigate: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -223,7 +224,10 @@ fun ChatDrawerContent(
 
             BackupReminderCard(
                 settings = settings,
-                onClick = { navController.navigate(Screen.Backup) },
+                onClick = {
+                    onNavigate()
+                    navController.navigate(Screen.Backup)
+                },
             )
 
             // 透明的大圆角交互区域；头像和昵称作为前景叠在它上面
@@ -308,7 +312,10 @@ fun ChatDrawerContent(
                 }
             }
 
-            DrawerActions(navController = navController)
+            DrawerActions(
+                navController = navController,
+                onNavigate = onNavigate,
+            )
 
             Row(
                 modifier = Modifier
@@ -366,6 +373,7 @@ fun ChatDrawerContent(
                     .fillMaxWidth()
                     .weight(1f),
                 onClick = {
+                    onNavigate()
                     navigateToChatPage(navController, it.id)
                 },
                 onRegenerateTitle = {
@@ -376,6 +384,7 @@ fun ChatDrawerContent(
                         vm.deleteConversation(it).join()
                         conversations.refresh()
                         if (it.id == current.id) {
+                            onNavigate()
                             navigateToChatPage(navController)
                         }
                     }
@@ -395,7 +404,10 @@ fun ChatDrawerContent(
 
             if (memoryDreaming) {
                 MemoryDreamingEntry(
-                    onClick = { navController.navigate(Screen.AssistantMemory(settings.assistantId.toString())) },
+                    onClick = {
+                        onNavigate()
+                        navController.navigate(Screen.AssistantMemory(settings.assistantId.toString()))
+                    },
                 )
             }
 
@@ -414,11 +426,13 @@ fun ChatDrawerContent(
                                 .firstOrNull()
                                 ?.id ?: Uuid.random()
                         }
+                        onNavigate()
                         navigateToChatPage(navigator = navController, chatId = id)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 onClickSetting = {
+                    onNavigate()
                     val currentAssistantId = settings.assistantId
                     navController.navigate(Screen.AssistantDetail(id = currentAssistantId.toString()))
                 }
@@ -455,6 +469,7 @@ fun ChatDrawerContent(
                                 Text(stringResource(R.string.chat_page_menu_ai_translator))
                             },
                             onClick = {
+                                onNavigate()
                                 navController.navigate(Screen.Translator)
                             },
                         )
@@ -472,6 +487,7 @@ fun ChatDrawerContent(
                                 Text(stringResource(R.string.media_creation_title))
                             },
                             onClick = {
+                                onNavigate()
                                 navController.navigate(Screen.MediaCreationSessions)
                             },
                         )
@@ -486,6 +502,7 @@ fun ChatDrawerContent(
                                 Text(stringResource(R.string.favorite_page_title))
                             },
                             onClick = {
+                                onNavigate()
                                 navController.navigate(Screen.Favorite)
                             },
                         )
@@ -500,6 +517,7 @@ fun ChatDrawerContent(
                                 Text("统计数据")
                             },
                             onClick = {
+                                onNavigate()
                                 navController.navigate(Screen.Stats)
                             },
                         )
@@ -515,6 +533,7 @@ fun ChatDrawerContent(
                     },
                     label = { Text(stringResource(R.string.settings)) },
                     onClick = {
+                        onNavigate()
                         navController.navigate(Screen.Setting)
                     },
                 )
@@ -807,6 +826,7 @@ fun ChatDrawerContent(
             onDismiss = { showModeInjectionPicker = false },
             onManage = {
                 showModeInjectionPicker = false
+                onNavigate()
                 navController.navigate(Screen.Prompts)
             },
         )
@@ -944,16 +964,25 @@ private fun ModeInjectionShortcutDialog(
 }
 
 @Composable
-private fun DrawerActions(navController: Navigator) {
+private fun DrawerActions(
+    navController: Navigator,
+    onNavigate: () -> Unit,
+) {
     Column {
         // 历史记录入口，行尾是搜索入口
         DrawerEntry(
             icon = HugeIcons.TransactionHistory,
             text = stringResource(R.string.chat_page_history),
-            onClick = { navController.navigate(Screen.History) },
+            onClick = {
+                onNavigate()
+                navController.navigate(Screen.History)
+            },
             trailingIcon = HugeIcons.Search01,
             trailingDescription = stringResource(R.string.chat_page_search_chats),
-            onTrailingClick = { navController.navigate(Screen.MessageSearch) },
+            onTrailingClick = {
+                onNavigate()
+                navController.navigate(Screen.MessageSearch)
+            },
         )
     }
 }
