@@ -12,6 +12,40 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-17 02:55
+
+任务：同步上游 `3.3.0`，检查 Baihub 二开兼容，构建 Release arm64-v8a APK 并提交。
+
+上游同步：
+
+- 合并上游 12 个提交，发布版本由 `3.2.0 (196)` 升级到 `3.3.0 (197)`。
+- 新增助手回复按段落拆分气泡、Gemini `thoughtSignature` 兼容、DeepSeek TTS/ASR、DeepSeek 聊天记录导入、本地工作区共享存储挂载和安全模式超大字段清理。
+- 修复测试连接弹窗自动关闭、后台任务长命令无法滚动等问题。
+- 合并提交：`9afce961`。
+
+兼容检查：
+
+- 保留包名 `me.baicha.baihub`、显示名 `Baihub`、仅 `arm64-v8a` 和关闭 universal APK。
+- 保留 Baihub 的 `baihub_backup_*.zip` 导出命名。
+- 保留聊天阴影、背景遮罩、Emoji 字体、透明设置顶栏和聊天背景轮换字段。
+- 上游新增的段落气泡设置、Emoji 助手名称、DeepSeek 导入和设置页改动均与 Baihub 二开内容共存。
+- 数据库升级到 v34，新增工作区共享存储挂载字段；使用 Room 自动迁移。
+- GitHub 渠道新增共享存储所需的 `MANAGE_EXTERNAL_STORAGE` 权限。
+
+验证与构建：
+
+- AI 模块测试通过。
+- DeepSeek 导入、段落拆分、背景设置、设置序列化、备份路径和本地文件修复相关测试通过。
+- 数据库 v34 Android 测试代码编译成功。
+- `WorkspaceStorageMountTest` 中 2 项仅在 Windows 上失败：Windows 把 `/sdcard` 解释为当前盘符路径；对应 Android 路径规范化实现未修改。
+- 新增工作区挂载及路径解析测试单独通过。
+- `:app:assembleGithubRelease` 成功，耗时 53 秒。
+- 产物：`dist/baihub-3.3.0-arm64-v8a-同步上游3.3.0-9afce961.apk`（16,472,887 字节）。
+- SHA-256：`E3F870575E982D5EF94DD57B10AF0C94C8728A281981E4739EB054889C8D0231`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `197`，versionName `3.3.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：未推送 GitHub。
+
 ## 2026-11-15 23:38
 
 任务：同步上游新提交，兼容 Baihub 二开，构建 Release arm64-v8a APK 并推送。
