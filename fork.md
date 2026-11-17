@@ -12,6 +12,33 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-18 00:22
+
+任务：同步上游新提交，兼容 Baihub 二开，构建 Release arm64-v8a APK 并推送。
+
+上游同步：
+
+- 合并上游提交 `63a5192d feat(chat): 消息概览标出上下文压缩点`。
+- 合并上游提交 `41d77f1e feat(quickstart): 新增快速入门页和未配置模型提示卡片`。
+- 合并提交：`9e0e2988`。
+- 上游两个提交与 Baihub 当前源码无冲突，版本仍为 `3.3.0 (197)`。
+
+兼容检查：
+
+- 保留包名 `me.baicha.baihub`、显示名 `Baihub`、仅 `arm64-v8a`。
+- 快速入门路由与 Baihub 已有自定义页面路由共存。
+- 对话地图的压缩检查点与 Baihub 现有概览、Emoji 搜索和滚动逻辑共存。
+- DeepSeek 导入、`baihub_backup_*.zip` 命名、Emoji 字体、聊天背景和设置页二开内容均保留。
+
+验证与构建：
+
+- `:app:assembleGithubRelease` 成功，耗时 6 分 24 秒。
+- 产物：`dist/baihub-3.3.0-arm64-v8a-同步上游20261118-9e0e2988.apk`（16,522,551 字节）。
+- SHA-256：`10F4F9BC51AE1AB57A7148EF8CF4E0F384A87D01264D09676F1D54D5AF479FDA`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `197`，versionName `3.3.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次任务完成后将当前提交推送到 `origin/master`。
+
 ## 2026-11-17 02:55
 
 任务：同步上游 `3.3.0`，检查 Baihub 二开兼容，构建 Release arm64-v8a APK 并提交。
