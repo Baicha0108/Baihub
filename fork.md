@@ -12,6 +12,37 @@
 - 不向上游提交 PR（上游不接受 PR）。
 - APK 命名：`baihub-<versionName>-arm64-v8a-<本次改动摘要>-<feature-commit-id>.apk`。
 
+## 2026-11-20 01:30
+
+任务：同步上游新提交，处理助手删除逻辑冲突，构建 Release arm64-v8a APK 并推送。
+
+上游同步：
+
+- 合并上游提交 `2cd6acac`：修复开启 VPN 时应用内更新包无法下载。
+- 合并上游提交 `a8508e23`：修复 Android 9/10 导入文件名含 `#` 的 DeepSeek 附件时崩溃。
+- 合并上游提交 `ce0e3607`：允许删除内置默认助手，但至少保留一个。
+- 合并上游提交 `a9e9e53a`：移除自动关闭未使用模板 Issue 的工作流。
+- 合并上游提交 `1ed0a77c`：新增商汤日日新图标并扩展 NVIDIA 匹配。
+- 合并上游提交 `358e2931`：升级 bettertext 至 v0.1.6。
+- 合并提交：`0dee6274`，版本保持 `3.3.0 (197)`。
+
+冲突处理：
+
+- `AssistantVM.kt` 出现内容冲突；已合并双方逻辑。
+- 保留上游“至少保留一个助手”的检查，同时使用应用级作用域完成删除后的清理。
+- 只有助手实际删除成功后才删除对应的自定义提示词、记忆、对话和未被其他助手复用的背景图。
+- 复制助手时继续复制 Baihub 自定义提示词。
+
+验证与构建：
+
+- `DeepSeekImporterTest` 通过。
+- `:app:assembleGithubRelease` 成功，耗时 9 分 54 秒。
+- 产物：`dist/baihub-3.3.0-arm64-v8a-同步上游20261120-0dee6274.apk`（16,527,657 字节）。
+- SHA-256：`2C1112920250A0D46B236A878EF8515E35C64BF757F3B85300C24B68A98B5272`。
+- 校验：包名 `me.baicha.baihub`，显示名 `Baihub`，versionCode `197`，versionName `3.3.0`，仅 `arm64-v8a`，V2 签名有效（CN=Baihub）。
+
+备注：本次任务完成后将当前提交推送到 `origin/master`。
+
 ## 2026-11-18 00:22
 
 任务：同步上游新提交，兼容 Baihub 二开，构建 Release arm64-v8a APK 并推送。
